@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "514507937773",
+    "firebase_url": "https://monqez-6f9b1.firebaseio.com",
+    "project_id": "monqez-6f9b1",
+    "storage_bucket": "monqez-6f9b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:514507937773:android:63f415073a1509611d79e4",
+        "android_client_info": {
+          "package_name": "com.example.monqez_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "514507937773-jnbn06fu05r10iinc4o4cs6uq5cove1i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaKbdskRvWrKlTL80ItfHlW1ZV5nj6Hko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "514507937773-jnbn06fu05r10iinc4o4cs6uq5cove1i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
