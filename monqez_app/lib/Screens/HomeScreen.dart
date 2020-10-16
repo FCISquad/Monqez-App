@@ -66,9 +66,11 @@ class _HomeScreenState extends State<HomeScreen>
                   transitionDuration: Duration(milliseconds: 500),
                   transitionsBuilder:
                       (context, animation, animationTime, child) {
-                    return ScaleTransition(
-                      alignment: Alignment.center,
-                      scale: animation,
+                    return SlideTransition(
+                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.ease,
+                      )),
                       child: child,
                     );
                   },
@@ -101,7 +103,10 @@ class _HomeScreenState extends State<HomeScreen>
           borderRadius: BorderRadius.circular(30.0),
         ),
         color: Colors.white,
-        child: Text(text),
+        child: Text(text, style: TextStyle(
+            color: Colors.deepOrange,
+            fontSize: 16,
+            fontWeight: FontWeight.bold)),
           /*
                 textStyle: TextStyle(
                     color: Color(0xFF527DAA),
@@ -133,22 +138,18 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Tic Tac Toe'),/*,
-                    style: GoogleFonts.pressStart2P(
-                        textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            letterSpacing: 1.5,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                  */
+                    'Monqez', style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 48,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.bold)),
                   new Container(
                     padding: new EdgeInsets.all(32.0),
                     height: animation.value,
                     width: animation.value,
                     child: new Center(
                       child: new Image(
-                          image: new AssetImage('images/TTTWelcome.png')),
+                          image: new AssetImage('images/firstaid.png')),
                     ),
                   ),
                   _buildBtn('Signin'),
