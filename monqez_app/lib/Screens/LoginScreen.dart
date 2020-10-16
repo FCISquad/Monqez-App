@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:passwordfield/passwordfield.dart';
 
+import 'SignupScreen.dart';
 
 final kBoxDecorationStyle = BoxDecoration(
-  color: Color(0xFF6CA8F1),
+  color: Colors.white,
   borderRadius: BorderRadius.circular(10.0),
   boxShadow: [
     BoxShadow(
@@ -22,7 +24,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
-
+  bool _showPassword = false;
   Widget _buildEmailTF() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.deepOrange,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -50,11 +52,11 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.email,
-                color: Colors.white,
+                color: Colors.deepOrange,
               ),
               hintText: 'Enter your Email',
               hintStyle: TextStyle(
-                color: Colors.white54,
+                color: Colors.deepOrange,
               ),
             ),
           ),
@@ -75,14 +77,31 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         SizedBox(height: 10.0),
+        /*Container(
+          margin: EdgeInsets.symmetric(horizontal: 16),
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: PasswordField(
+            icon
+            inputStyle: TextStyle(fontSize: 26),
+
+            suffixIcon: Icon(
+              Icons.remove_red_eye,
+              color: Colors.deepOrange,
+            ),
+            textPadding: EdgeInsets.symmetric(horizontal: 20),
+            backgroundColor: Colors.blue[50],
+            backgroundBorderRadius: BorderRadius.circular(20),
+          ),
+        ),*/
         Container(
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
           height: 50.0,
           child: TextField(
-            obscureText: true,
+            obscureText: !_showPassword,
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.deepOrange,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -90,14 +109,34 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.white,
+                color: Colors.deepOrange,
+              ),
+
+              suffixIcon: GestureDetector(
+                onTapDown: (details) {
+                  setState(() {
+                    _showPassword = true;
+                  });
+                },
+                onTapUp: (details) {
+                  setState(() {
+                    _showPassword = false;
+                  });
+                },
+
+                child: Icon(
+                  Icons.remove_red_eye,
+                  color: Colors.deepOrange,
+
+                ),
               ),
               hintText: 'Enter your Password',
               hintStyle: TextStyle(
-                color: Colors.white54,
+                color: Colors.deepOrange,
               ),
             ),
           ),
+
         ),
       ],
     );
@@ -118,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Text(
           'LOGIN',
           style: TextStyle(
-            color: Color(0xFF527DAA),
+            color: Colors.deepOrange,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -189,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
           _buildSocialBtn(
                 () => print('Login with Google'),
             AssetImage(
-              'images/google.png',
+              'images/google.jpg',
             ),
           ),
         ],
@@ -199,7 +238,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
+      onTap: () {
+        Navigator.push(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder:
+                (context, animation, animationTime, child) {
+              return SlideTransition(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return SignupScreen();
+            }));},
       child: RichText(
         text: TextSpan(
           children: [
@@ -218,6 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
+
             ),
           ],
         ),
@@ -239,7 +296,7 @@ class _LoginScreenState extends State<LoginScreen> {
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(
                 horizontal: 40.0,
-                vertical: 25.0,
+                vertical: 60.0,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
