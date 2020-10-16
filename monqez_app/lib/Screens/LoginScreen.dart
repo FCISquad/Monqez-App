@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:passwordfield/passwordfield.dart';
 
 import 'SignupScreen.dart';
 
