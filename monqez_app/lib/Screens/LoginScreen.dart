@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:email_validator/email_validator.dart';
 import 'SignupScreen.dart';
 
 final kBoxDecorationStyle = BoxDecoration(
@@ -15,7 +15,6 @@ final kBoxDecorationStyle = BoxDecoration(
   ],
 );
 
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -24,6 +23,17 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
   bool _showPassword = false;
+  var _emailController = TextEditingController();
+  String _emailError = '';
+
+  void validateLoginCredentialis(String text) {
+    setState(() {
+      _emailError =
+          (EmailValidator.validate(text)) ? '' : "Email is not correct";
+    });
+    return;
+  }
+
   Widget _buildEmailTF() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
           height: 50.0,
-          child: TextField(
+          child: TextFormField(
+            controller: _emailController,
+            onChanged: validateLoginCredentialis,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.deepOrange,
@@ -53,11 +65,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 Icons.email,
                 color: Colors.deepOrange,
               ),
+              enabledBorder: new OutlineInputBorder(
+                borderRadius: new BorderRadius.circular(10.0),
+                borderSide: new BorderSide(
+                  color: _emailError.isEmpty ? Colors.white : Colors.blue,
+                  width: 3
+                ),
+              ),
+              focusedBorder: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(10.0),
+                  borderSide: new BorderSide(
+                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
+                    width: 3
+                  )),
               hintText: 'Enter your Email',
               hintStyle: TextStyle(
                 color: Colors.deepOrange,
               ),
             ),
+          ),
+        ),
+        SizedBox(height: 5.0),
+        Text(
+          _emailError,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ],
@@ -110,7 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 Icons.lock,
                 color: Colors.deepOrange,
               ),
-
               suffixIcon: GestureDetector(
                 onTapDown: (details) {
                   setState(() {
@@ -122,11 +154,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     _showPassword = false;
                   });
                 },
-
                 child: Icon(
                   Icons.remove_red_eye,
                   color: Colors.deepOrange,
-
                 ),
               ),
               hintText: 'Enter your Password',
@@ -135,7 +165,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-
         ),
       ],
     );
@@ -219,13 +248,13 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-                () => print('Login with Facebook'),
+            () => print('Login with Facebook'),
             AssetImage(
               'images/facebook.png',
             ),
           ),
           _buildSocialBtn(
-                () => print('Login with Google'),
+            () => print('Login with Google'),
             AssetImage(
               'images/google.jpg',
             ),
@@ -239,22 +268,23 @@ class _LoginScreenState extends State<LoginScreen> {
     return GestureDetector(
       onTap: () {
         Navigator.push(
-        context,
-        PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            transitionsBuilder:
-                (context, animation, animationTime, child) {
-              return SlideTransition(
-                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.ease,
-                )),
-                child: child,
-              );
-            },
-            pageBuilder: (context, animation, animationTime) {
-              return SignupScreen();
-            }));},
+            context,
+            PageRouteBuilder(
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder: (context, animation, animationTime, child) {
+                  return SlideTransition(
+                    position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                        .animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.ease,
+                    )),
+                    child: child,
+                  );
+                },
+                pageBuilder: (context, animation, animationTime) {
+                  return SignupScreen();
+                }));
+      },
       child: RichText(
         text: TextSpan(
           children: [
@@ -273,7 +303,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
-
             ),
           ],
         ),
