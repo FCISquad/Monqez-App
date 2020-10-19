@@ -186,7 +186,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   }
 
-
   Widget _buildPasswordTF() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,21 +306,20 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-
   Widget _buildLoginBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => print('Login Button Pressed'),
+        onPressed: () => print('Singup Button Pressed'),
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
         color: Colors.white,
         child: Text(
-          'LOGIN',
+          'SIGNUP',
           style: TextStyle(
             color: Colors.deepOrange,
             letterSpacing: 1.5,
@@ -333,7 +331,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildSignInWithText() {
+  Widget _buildSignupWithText() {
     return Column(
       children: <Widget>[
         Text(
@@ -345,7 +343,7 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
         SizedBox(height: 20.0),
         Text(
-          'Sign in with',
+          'Sign up with',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -386,13 +384,13 @@ class _SignupScreenState extends State<SignupScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-                () => print('Login with Facebook'),
+                () => print('Singup with Facebook'),
             AssetImage(
               'images/facebook.png',
             ),
           ),
           _buildSocialBtn(
-                () => print('Login with Google'),
+                () => print('Signup with Google'),
             AssetImage(
               'images/google.jpg',
             ),
@@ -402,7 +400,7 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildSignupBtn() {
+  Widget _buildSigninBtn() {
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -489,9 +487,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   _buildConfirmPasswordTF(),
 
                   _buildLoginBtn(),
-                  _buildSignInWithText(),
+                  _buildSignupWithText(),
                   _buildSocialBtnRow(),
-                  _buildSignupBtn(),
+                  _buildSigninBtn(),
                 ],
               ),
             ),
