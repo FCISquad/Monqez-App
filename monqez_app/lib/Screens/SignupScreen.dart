@@ -1,5 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Screens/LoginScreen.dart';
+
+final kBoxDecorationStyle = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.circular(10.0),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.black12,
+      blurRadius: 6.0,
+      offset: Offset(0, 2),
+    ),
+  ],
+);
 
 
 class SignupScreen extends StatefulWidget {
@@ -8,6 +21,433 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  bool _showPassword = false;
+
+  Widget _buildNameTF(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Full Name',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.name,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.account_circle_sharp,
+                color: Colors.deepOrange,
+              ),
+              hintText: 'Enter your Name',
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+  }
+
+  Widget _buildEmailTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Email',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.emailAddress,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.email,
+                color: Colors.deepOrange,
+              ),
+              hintText: 'Enter your Email',
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhoneNumberTF(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Phone Number',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.phone,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.phone,
+                color: Colors.deepOrange,
+              ),
+              hintText: 'Enter your Phone Number',
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+  }
+
+  Widget _buildIDNumberTF(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'ID Number',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.number,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.assignment_ind_outlined,
+                color: Colors.deepOrange,
+              ),
+              hintText: 'Enter your ID Number',
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+  }
+
+
+  Widget _buildPasswordTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Password',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            obscureText: !_showPassword,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.lock,
+                color: Colors.deepOrange,
+              ),
+
+              suffixIcon: GestureDetector(
+                onTapDown: (details) {
+                  setState(() {
+                    _showPassword = true;
+                  });
+                },
+                onTapUp: (details) {
+                  setState(() {
+                    _showPassword = false;
+                  });
+                },
+
+                child: Icon(
+                  Icons.remove_red_eye,
+                  color: Colors.deepOrange,
+
+                ),
+              ),
+              hintText: 'Enter your Password',
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmPasswordTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Confirm Password',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            obscureText: !_showPassword,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.lock,
+                color: Colors.deepOrange,
+              ),
+
+              suffixIcon: GestureDetector(
+                onTapDown: (details) {
+                  setState(() {
+                    _showPassword = true;
+                  });
+                },
+                onTapUp: (details) {
+                  setState(() {
+                    _showPassword = false;
+                  });
+                },
+
+                child: Icon(
+                  Icons.remove_red_eye,
+                  color: Colors.deepOrange,
+
+                ),
+              ),
+              hintText: 'Re-enter your Password',
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+
+        ),
+      ],
+    );
+  }
+
+
+  Widget _buildLoginBtn() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: double.infinity,
+      child: RaisedButton(
+        elevation: 5.0,
+        onPressed: () => print('Login Button Pressed'),
+        padding: EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        color: Colors.white,
+        child: Text(
+          'LOGIN',
+          style: TextStyle(
+            color: Colors.deepOrange,
+            letterSpacing: 1.5,
+            fontSize: 18.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignInWithText() {
+    return Column(
+      children: <Widget>[
+        Text(
+          '- OR -',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        SizedBox(height: 20.0),
+        Text(
+          'Sign in with',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 60.0,
+        width: 60.0,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              offset: Offset(0, 2),
+              blurRadius: 6.0,
+            ),
+          ],
+          image: DecorationImage(
+            image: logo,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialBtnRow() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 30.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          _buildSocialBtn(
+                () => print('Login with Facebook'),
+            AssetImage(
+              'images/facebook.png',
+            ),
+          ),
+          _buildSocialBtn(
+                () => print('Login with Google'),
+            AssetImage(
+              'images/google.jpg',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSignupBtn() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            PageRouteBuilder(
+                transitionDuration: Duration(milliseconds: 500),
+                transitionsBuilder:
+                    (context, animation, animationTime, child) {
+                  return SlideTransition(
+                    position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.ease,
+                    )),
+                    child: child,
+                  );
+                },
+                pageBuilder: (context, animation, animationTime) {
+                  return LoginScreen();
+                }));},
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: 'Have an Account? ',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            TextSpan(
+              text: 'Sign in',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,19 +462,36 @@ class _SignupScreenState extends State<SignupScreen> {
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(
                 horizontal: 40.0,
-                vertical: 25.0,
+                vertical: 60.0,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Register',
+                    'Sign Up',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  SizedBox(height: 30.0),
+                  _buildNameTF(),
+                  SizedBox(height: 30.0),
+                  _buildPhoneNumberTF(),
+                  SizedBox(height: 30.0),
+                  _buildEmailTF(),
+                  SizedBox(height: 30.0),
+                  _buildIDNumberTF(),
+                  SizedBox(height: 30.0),
+                  _buildPasswordTF(),
+                  SizedBox(height: 30.0),
+                  _buildConfirmPasswordTF(),
+
+                  _buildLoginBtn(),
+                  _buildSignInWithText(),
+                  _buildSocialBtnRow(),
+                  _buildSignupBtn(),
                 ],
               ),
             ),
