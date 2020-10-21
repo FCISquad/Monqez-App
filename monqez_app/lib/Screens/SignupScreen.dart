@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:email_validator/email_validator.dart';
+import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 final kBoxDecorationStyle = BoxDecoration(
   color: Colors.white,
@@ -14,7 +20,6 @@ final kBoxDecorationStyle = BoxDecoration(
   ],
 );
 
-
 class SignupScreen extends StatefulWidget {
   @override
   _SignupScreenState createState() => _SignupScreenState();
@@ -22,46 +27,124 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   bool _showPassword = false;
+  bool _showConfirmPassword = false;
+  var _emailController = TextEditingController();
+  var _passwordController = TextEditingController();
+  var _confirmPasswordController = TextEditingController();
+  String _emailError = '';
+  String _passwordError = '';
+  String _confirmPasswordError = '';
+  bool _correctEmail= false ;
+  bool _correctPassword = false ;
+  bool _correctConfirmPassword = false ;
 
-  Widget _buildNameTF(){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Full Name',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: TextField(
-            keyboardType: TextInputType.name,
-            style: TextStyle(
-              color: Colors.deepOrange,
-              fontFamily: 'OpenSans',
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.account_circle_sharp,
-                color: Colors.deepOrange,
-              ),
-              hintText: 'Enter your Name',
-              hintStyle: TextStyle(
-                color: Colors.deepOrange,
-              ),
-            ),
-          ),
-        ),
-      ],
+
+  Future<void> _signup() async {
+
+    if(_correctEmail && _correctPassword && _correctConfirmPassword) {
+      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      /*print("HUSIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN");
+    print(result); ///TO DELETE
+     */
+      if (result != null) {
+        makeToast("Signup successful") ;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SecondSignupScreen()),
+        );
+      } else {
+        makeToast('Please try later');
+      }
+    }
+    else
+     {
+       makeToast("Enter all fields correctly") ;
+     }
+  }
+  void makeToast(String text) {
+    Fluttertoast.showToast(
+      msg: text,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
     );
+  }
 
+  void _validateEmail(String text) {
+    setState(() {
+      if (text.isEmpty)
+    {
+      _emailError = "" ;
+      _correctEmail = false ;
+    }
+      else if (EmailValidator.validate(text)){
+        _emailError = "";
+        _correctEmail = true;
+      }
+      else
+      {
+        _emailError = "Email is not correct" ;
+        _correctEmail= false ;
+      }
+
+    });
+    return;
+  }
+
+  void _validatePassword(String value) {
+    Pattern pattern =
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
+    RegExp regex = new RegExp(pattern);
+    if (value.isEmpty) {
+      setState(() {
+        _passwordError = '';
+        _correctPassword = false ;
+
+      });
+    } else if (value.length < 8) {
+      setState(() {
+        _passwordError = 'Password is too short';
+        _correctPassword = false ;
+      });
+    } else {
+      setState(() {
+        if (!regex.hasMatch(value))
+         {
+           _passwordError = 'Password is week' ;
+           _correctPassword = false ;
+         }
+        else
+         {
+           _passwordError = '' ;
+           _correctPassword = true ;
+         }
+
+      });
+    }
+  }
+  void _validateconfirmPassword(String value)
+  {
+    if (value.isEmpty)
+      {
+        setState(() {
+          _confirmPasswordError = '' ;
+          _correctConfirmPassword = false ;
+        });
+      }
+    else if (value != _passwordController.text)
+     {
+       setState(() {
+         _confirmPasswordError = "Password doesn\'t match" ;
+         _correctConfirmPassword = false;
+       });
+     }
+    else
+      {
+        setState(() {
+          _confirmPasswordError = '' ;
+          _correctConfirmPassword = true ;
+        });
+      }
   }
 
   Widget _buildEmailTF() {
@@ -80,7 +163,9 @@ class _SignupScreenState extends State<SignupScreen> {
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
           height: 50.0,
-          child: TextField(
+          child: TextFormField(
+            controller: _emailController,
+            onChanged: _validateEmail,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.deepOrange,
@@ -93,6 +178,17 @@ class _SignupScreenState extends State<SignupScreen> {
                 Icons.email,
                 color: Colors.deepOrange,
               ),
+              enabledBorder: new OutlineInputBorder(
+                borderRadius: new BorderRadius.circular(10.0),
+                borderSide: new BorderSide(
+                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
+                    width: 3),
+              ),
+              focusedBorder: new OutlineInputBorder(
+                  borderRadius: new BorderRadius.circular(10.0),
+                  borderSide: new BorderSide(
+                      color: _emailError.isEmpty ? Colors.white : Colors.blue,
+                      width: 3)),
               hintText: 'Enter your Email',
               hintStyle: TextStyle(
                 color: Colors.deepOrange,
@@ -100,90 +196,16 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildPhoneNumberTF(){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+        SizedBox(height: 5.0),
         Text(
-          'Phone Number',
+          _emailError,
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: TextField(
-            keyboardType: TextInputType.phone,
-            style: TextStyle(
-              color: Colors.deepOrange,
-              fontFamily: 'OpenSans',
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.phone,
-                color: Colors.deepOrange,
-              ),
-              hintText: 'Enter your Phone Number',
-              hintStyle: TextStyle(
-                color: Colors.deepOrange,
-              ),
-            ),
-          ),
-        ),
       ],
     );
-
-  }
-
-  Widget _buildIDNumberTF(){
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'ID Number',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: TextField(
-            keyboardType: TextInputType.number,
-            style: TextStyle(
-              color: Colors.deepOrange,
-              fontFamily: 'OpenSans',
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.assignment_ind_outlined,
-                color: Colors.deepOrange,
-              ),
-              hintText: 'Enter your ID Number',
-              hintStyle: TextStyle(
-                color: Colors.deepOrange,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-
   }
 
   Widget _buildPasswordTF() {
@@ -202,8 +224,10 @@ class _SignupScreenState extends State<SignupScreen> {
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
           height: 50.0,
-          child: TextField(
+          child: TextFormField(
+            controller: _passwordController,
             obscureText: !_showPassword,
+            onChanged: _validatePassword,
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -215,23 +239,15 @@ class _SignupScreenState extends State<SignupScreen> {
                 Icons.lock,
                 color: Colors.deepOrange,
               ),
-
               suffixIcon: GestureDetector(
-                onTapDown: (details) {
+                onTap: () {
                   setState(() {
-                    _showPassword = true;
+                    _showPassword = !_showPassword;
                   });
                 },
-                onTapUp: (details) {
-                  setState(() {
-                    _showPassword = false;
-                  });
-                },
-
                 child: Icon(
                   Icons.remove_red_eye,
                   color: Colors.deepOrange,
-
                 ),
               ),
               hintText: 'Enter your Password',
@@ -240,7 +256,14 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
           ),
-
+        ),
+        SizedBox(height: 5.0),
+        Text(
+          _passwordError,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
@@ -262,8 +285,11 @@ class _SignupScreenState extends State<SignupScreen> {
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
           height: 50.0,
-          child: TextField(
-            obscureText: !_showPassword,
+          child: TextFormField(
+            obscureText: !_showConfirmPassword,
+            controller: _confirmPasswordController,
+            onChanged: _validateconfirmPassword,
+
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -275,23 +301,15 @@ class _SignupScreenState extends State<SignupScreen> {
                 Icons.lock,
                 color: Colors.deepOrange,
               ),
-
               suffixIcon: GestureDetector(
-                onTapDown: (details) {
+                onTap: () {
                   setState(() {
-                    _showPassword = true;
+                    _showConfirmPassword = !_showConfirmPassword;
                   });
                 },
-                onTapUp: (details) {
-                  setState(() {
-                    _showPassword = false;
-                  });
-                },
-
                 child: Icon(
                   Icons.remove_red_eye,
                   color: Colors.deepOrange,
-
                 ),
               ),
               hintText: 'Re-enter your Password',
@@ -300,20 +318,27 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
           ),
-
+        ),
+        SizedBox(height: 5.0),
+        Text(
+          _confirmPasswordError,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildLoginBtn() {
+  Widget _buildSignupBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => print('Singup Button Pressed'),
-        padding: EdgeInsets.all(15.0),
+        onPressed: _signup,
+
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -331,75 +356,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Widget _buildSignupWithText() {
-    return Column(
-      children: <Widget>[
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Text(
-          'Sign up with',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 60.0,
-        width: 60.0,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 2),
-              blurRadius: 6.0,
-            ),
-          ],
-          image: DecorationImage(
-            image: logo,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialBtnRow() {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 30.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          _buildSocialBtn(
-                () => print('Singup with Facebook'),
-            AssetImage(
-              'images/facebook.png',
-            ),
-          ),
-          _buildSocialBtn(
-                () => print('Signup with Google'),
-            AssetImage(
-              'images/google.jpg',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSigninBtn() {
     return GestureDetector(
       onTap: () {
@@ -407,10 +363,10 @@ class _SignupScreenState extends State<SignupScreen> {
             context,
             PageRouteBuilder(
                 transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder:
-                    (context, animation, animationTime, child) {
+                transitionsBuilder: (context, animation, animationTime, child) {
                   return SlideTransition(
-                    position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                    position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                        .animate(CurvedAnimation(
                       parent: animation,
                       curve: Curves.ease,
                     )),
@@ -419,7 +375,8 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
                 pageBuilder: (context, animation, animationTime) {
                   return LoginScreen();
-                }));},
+                }));
+      },
       child: RichText(
         text: TextSpan(
           children: [
@@ -438,7 +395,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
-
             ),
           ],
         ),
@@ -448,6 +404,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp();
     return Scaffold(
       backgroundColor: Colors.deepOrangeAccent,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -474,21 +431,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   SizedBox(height: 30.0),
-                  _buildNameTF(),
-                  SizedBox(height: 30.0),
-                  _buildPhoneNumberTF(),
-                  SizedBox(height: 30.0),
                   _buildEmailTF(),
-                  SizedBox(height: 30.0),
-                  _buildIDNumberTF(),
                   SizedBox(height: 30.0),
                   _buildPasswordTF(),
                   SizedBox(height: 30.0),
                   _buildConfirmPasswordTF(),
-
-                  _buildLoginBtn(),
-                  _buildSignupWithText(),
-                  _buildSocialBtnRow(),
+                  _buildSignupBtn(),
                   _buildSigninBtn(),
                 ],
               ),
