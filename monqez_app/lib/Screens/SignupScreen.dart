@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 final kBoxDecorationStyle = BoxDecoration(
@@ -32,27 +33,60 @@ class _SignupScreenState extends State<SignupScreen> {
   var _confirmPasswordController = TextEditingController();
   String _emailError = '';
   String _passwordError = '';
+  String _confirmPasswordError = '';
+  bool _correctEmail= false ;
+  bool _correctPassword = false ;
+  bool _correctConfirmPassword = false ;
+
 
   Future<void> _signup() async {
-    var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text, password: _passwordController.text);
-    /*print("HUSIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN");
+
+    if(_correctEmail && _correctPassword && _correctConfirmPassword) {
+      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      /*print("HUSIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN");
     print(result); ///TO DELETE
      */
-    if (result != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SecondSignupScreen()),
-      );
-    } else {
-      print('please try later');
+      if (result != null) {
+        makeToast("Signup successful") ;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SecondSignupScreen()),
+        );
+      } else {
+        makeToast('Please try later');
+      }
     }
+    else
+     {
+       makeToast("Enter all fields correctly") ;
+     }
+  }
+  void makeToast(String text) {
+    Fluttertoast.showToast(
+      msg: text,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+    );
   }
 
   void _validateEmail(String text) {
     setState(() {
-      _emailError =
-          (EmailValidator.validate(text)) ? '' : "Email is not correct";
+      if (text.isEmpty)
+    {
+      _emailError = "" ;
+      _correctEmail = false ;
+    }
+      else if (EmailValidator.validate(text)){
+        _emailError = "";
+        _correctEmail = true;
+      }
+      else
+      {
+        _emailError = "Email is not correct" ;
+        _correctEmail= false ;
+      }
+
     });
     return;
   }
@@ -61,12 +95,56 @@ class _SignupScreenState extends State<SignupScreen> {
     Pattern pattern =
         r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
     RegExp regex = new RegExp(pattern);
-    print(value);
-    setState(() {
-      _emailError =
-      (!regex.hasMatch(value)) ? '' : "Password is not correct";
-    });
+    if (value.isEmpty) {
+      setState(() {
+        _passwordError = '';
+        _correctPassword = false ;
 
+      });
+    } else if (value.length < 8) {
+      setState(() {
+        _passwordError = 'Password is too short';
+        _correctPassword = false ;
+      });
+    } else {
+      setState(() {
+        if (!regex.hasMatch(value))
+         {
+           _passwordError = 'Password is week' ;
+           _correctPassword = false ;
+         }
+        else
+         {
+           _passwordError = '' ;
+           _correctPassword = true ;
+         }
+
+      });
+    }
+  }
+  void _validateconfirmPassword(String value)
+  {
+    if (value.isEmpty)
+      {
+        setState(() {
+          _confirmPasswordError = '' ;
+          _correctConfirmPassword = false ;
+        });
+      }
+    else if (value != _passwordController.text)
+     {
+       setState(() {
+         _confirmPasswordError = "Password doesn\'t match" ;
+         _correctConfirmPassword = false;
+       });
+     }
+    else
+      {
+        setState(() {
+          _confirmPasswordError = '' ;
+          _correctConfirmPassword = true ;
+        });
+      }
   }
 
   Widget _buildEmailTF() {
@@ -187,7 +265,6 @@ class _SignupScreenState extends State<SignupScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-
       ],
     );
   }
@@ -211,6 +288,8 @@ class _SignupScreenState extends State<SignupScreen> {
           child: TextFormField(
             obscureText: !_showConfirmPassword,
             controller: _confirmPasswordController,
+            onChanged: _validateconfirmPassword,
+
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -240,6 +319,14 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ),
         ),
+        SizedBox(height: 5.0),
+        Text(
+          _confirmPasswordError,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
@@ -251,6 +338,7 @@ class _SignupScreenState extends State<SignupScreen> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: _signup,
+
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
