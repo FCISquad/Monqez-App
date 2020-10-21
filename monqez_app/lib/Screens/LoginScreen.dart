@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'HomeScreenMap.dart';
 import 'SignupScreen.dart';
 
 final kBoxDecorationStyle = BoxDecoration(
@@ -21,9 +26,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _rememberMe = false;
+  var _prefs = SharedPreferences.getInstance();
   bool _showPassword = false;
   var _emailController = TextEditingController();
+  var _passwordController = TextEditingController();
   String _emailError = '';
 
   void validateLoginCredentialis(String text) {
@@ -32,6 +38,21 @@ class _LoginScreenState extends State<LoginScreen> {
           (EmailValidator.validate(text)) ? '' : "Email is not correct";
     });
     return;
+  }
+
+  Future<bool> _saveUserToken(String token, String email, String userID) async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.setString("email", email);
+    prefs.setString("userID", userID);
+    return prefs.setString("userToken", token);
+  }
+
+  void makeToast(String text) {
+    Fluttertoast.showToast(
+      msg: text,
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.BOTTOM,
+    );
   }
 
   Widget _buildEmailTF() {
@@ -68,16 +89,14 @@ class _LoginScreenState extends State<LoginScreen> {
               enabledBorder: new OutlineInputBorder(
                 borderRadius: new BorderRadius.circular(10.0),
                 borderSide: new BorderSide(
-                  color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                  width: 3
-                ),
+                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
+                    width: 3),
               ),
               focusedBorder: new OutlineInputBorder(
                   borderRadius: new BorderRadius.circular(10.0),
                   borderSide: new BorderSide(
-                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                    width: 3
-                  )),
+                      color: _emailError.isEmpty ? Colors.white : Colors.blue,
+                      width: 3)),
               hintText: 'Enter your Email',
               hintStyle: TextStyle(
                 color: Colors.deepOrange,
@@ -131,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 50.0,
           child: TextField(
+            controller: _passwordController,
             obscureText: !_showPassword,
             style: TextStyle(
               color: Colors.deepOrange,
@@ -176,7 +196,51 @@ class _LoginScreenState extends State<LoginScreen> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: () => print('Login Button Pressed'),
+        onPressed: () async {
+          print('Login Button Pressed');
+          if (_emailError != '') {
+            makeToast("Email is not correct!");
+            return;
+          }
+          try {
+            UserCredential userCredential = await FirebaseAuth.instance
+                .signInWithEmailAndPassword(
+                    email: _emailController.text,
+                    password: _passwordController.text);
+
+            var token = await FirebaseAuth.instance.currentUser.getIdToken();
+            _saveUserToken(
+                token, userCredential.user.email, userCredential.user.uid);
+
+            makeToast("Logged in Successfully");
+
+            Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder:
+                        (context, animation, animationTime, child) {
+                      return SlideTransition(
+                        position:
+                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                                .animate(CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.ease,
+                        )),
+                        child: child,
+                      );
+                    },
+                    pageBuilder: (context, animation, animationTime) {
+                      return HomeScreenMap();
+                    }));
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'user-not-found') {
+              makeToast('No user found for that email.');
+            } else if (e.code == 'wrong-password') {
+              makeToast('Wrong password provided for that user.');
+            }
+          }
+        },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -312,6 +376,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp();
     return Scaffold(
       backgroundColor: Colors.deepOrangeAccent,
       body: AnnotatedRegion<SystemUiOverlayStyle>(

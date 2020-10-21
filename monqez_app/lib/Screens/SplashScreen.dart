@@ -1,14 +1,52 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Screens/HomeScreenMap.dart';
 import 'package:splashscreen/splashscreen.dart';
 import 'package:monqez_app/Screens/HomeScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Splash extends StatelessWidget {
+class Splash extends StatefulWidget {
+  @override
+  _SplashState createState() => _SplashState();
+}
+class _SplashState extends State<Splash> {
+  var _prefs;
+  bool loggedin = false;
+  String email;
+  String token;
+
+  void redirect () async {
+    _prefs = await SharedPreferences.getInstance();
+    email = _prefs.getString("email");
+    token = _prefs.getString("userToken");
+    var FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
+    loggedin = FirebaseToken == token;
+    Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder:
+                (context, animation, animationTime, child) {
+              return SlideTransition(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return loggedin ? HomeScreenMap() : HomeScreen();
+            }));
+  }
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp();
+    redirect();
     return SplashScreen(
-      backgroundColor: Colors.deepOrangeAccent,
       seconds: 3,
-      navigateAfterSeconds: new HomeScreen(),
+      backgroundColor: Colors.deepOrangeAccent,
       title:                   Text(
           'Monqez', style: TextStyle(
           color: Colors.white,
@@ -23,4 +61,5 @@ class Splash extends StatelessWidget {
       loaderColor: Colors.white,
     );
   }
+
 }
