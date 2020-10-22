@@ -31,11 +31,46 @@ class _LoginScreenState extends State<LoginScreen> {
   var _emailController = TextEditingController();
   var _passwordController = TextEditingController();
   String _emailError = '';
+  String _passwordError = '' ;
+  bool correctPassword = false ;
+  bool correctEmail = false ;
 
   void validateLoginCredentialis(String text) {
     setState(() {
-      _emailError =
-          (EmailValidator.validate(text)) ? '' : "Email is not correct";
+
+      if (text.isEmpty)
+      {
+        _emailError = "Enter your email" ;
+        correctEmail = false ;
+      }
+      else if (EmailValidator.validate(text)) {
+        _emailError = '' ;
+        correctEmail = true ;
+      }
+      else{
+        _emailError = "Email is not correct";
+        correctEmail = false ;
+      }
+
+    });
+    return;
+  }
+  void validatePassword(String text) {
+    setState(() {
+        if (text.isEmpty) {
+          _passwordError = "Enter your password" ;
+          correctPassword = false ;
+
+        }
+        else if (text.length < 8){
+          _passwordError = "Your password must be at least 8 characters" ;
+          correctPassword = false;
+        }
+        else
+        {
+          _passwordError = "" ;
+          correctPassword = true ;
+        }
     });
     return;
   }
@@ -152,6 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             controller: _passwordController,
             obscureText: !_showPassword,
+            onChanged: validatePassword  ,
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -186,6 +222,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+    SizedBox(height: 5.0),
+    Text(
+    _passwordError,
+    style: TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -198,9 +240,17 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 5.0,
         onPressed: () async {
           print('Login Button Pressed');
-          if (_emailError != '') {
-            makeToast("Email is not correct!");
+          if (!correctPassword && !correctEmail) {
+            makeToast("please enter all fields correctly");
             return;
+          }
+          else if (!correctPassword){
+            makeToast("please enter your password correctly");
+            return;
+          }
+          else if (!correctEmail) {
+            makeToast("please enter your email correctly") ;
+            return ;
           }
           try {
             UserCredential userCredential = await FirebaseAuth.instance

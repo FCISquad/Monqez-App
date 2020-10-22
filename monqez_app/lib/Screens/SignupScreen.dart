@@ -44,9 +44,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if(_correctEmail && _correctPassword && _correctConfirmPassword) {
       var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: _emailController.text, password: _passwordController.text);
-      /*print("HUSIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEN");
-    print(result); ///TO DELETE
-     */
+
       if (result != null) {
         makeToast("Signup successful") ;
         Navigator.pushReplacement(
