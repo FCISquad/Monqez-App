@@ -18,6 +18,33 @@ class _SplashState extends State<Splash> {
 
   void redirect () async {
     _prefs = await SharedPreferences.getInstance();
+    if (FirebaseAuth.instance.currentUser == null){
+      Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, animationTime, child) {
+
+              return FadeTransition(opacity: animation, child: child,);
+                },
+
+                    /*
+                return SlideTransition(
+                  position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.ease,
+                  )),
+                  child: child,
+                );
+
+
+              },*/
+              pageBuilder: (context, animation, animationTime) {
+                return HomeScreen();
+              }));
+    }
+else{
     email = _prefs.getString("email");
     token = _prefs.getString("userToken");
     var FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
@@ -25,9 +52,14 @@ class _SplashState extends State<Splash> {
     Navigator.pushReplacement(
         context,
         PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
+            transitionDuration: Duration(milliseconds: 3000),
             transitionsBuilder:
                 (context, animation, animationTime, child) {
+
+              return FadeTransition(opacity: animation, child: child,);
+                },
+
+                  /*
               return SlideTransition(
                 position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
                   parent: animation,
@@ -35,10 +67,10 @@ class _SplashState extends State<Splash> {
                 )),
                 child: child,
               );
-            },
+            },*/
             pageBuilder: (context, animation, animationTime) {
               return loggedin ? HomeScreenMap() : HomeScreen();
-            }));
+            }));}
   }
   @override
   Widget build(BuildContext context) {
