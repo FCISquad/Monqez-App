@@ -10,26 +10,31 @@ class Splash extends StatefulWidget {
   @override
   _SplashState createState() => _SplashState();
 }
+
 class _SplashState extends State<Splash> {
   var _prefs;
   bool loggedin = false;
   String email;
   String token;
 
-  void redirect () async {
+  void redirect() async {
+    await Firebase.initializeApp();
+
     _prefs = await SharedPreferences.getInstance();
     email = _prefs.getString("email");
     token = _prefs.getString("userToken");
-    var FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
-    loggedin = FirebaseToken == token;
+    var FirebaseToken;
+    if (FirebaseAuth.instance.currentUser != null)
+      FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
+    loggedin = (FirebaseToken == token) && (token != null);
     Navigator.pushReplacement(
         context,
         PageRouteBuilder(
             transitionDuration: Duration(milliseconds: 500),
-            transitionsBuilder:
-                (context, animation, animationTime, child) {
+            transitionsBuilder: (context, animation, animationTime, child) {
               return SlideTransition(
-                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                    .animate(CurvedAnimation(
                   parent: animation,
                   curve: Curves.ease,
                 )),
@@ -39,27 +44,25 @@ class _SplashState extends State<Splash> {
             pageBuilder: (context, animation, animationTime) {
               return loggedin ? HomeScreenMap() : HomeScreen();
             }));
+
   }
+
   @override
   Widget build(BuildContext context) {
-    Firebase.initializeApp();
     redirect();
     return SplashScreen(
       seconds: 3,
       backgroundColor: Colors.deepOrangeAccent,
-      title:                   Text(
-          'Monqez', style: TextStyle(
-          color: Colors.white,
-          fontSize: 48,
-          letterSpacing: 1.5,
-          fontWeight: FontWeight.bold)),
-      image: new Image(
-          image: new AssetImage('images/firstaid.png')
-      ),
+      title: Text('Monqez',
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 48,
+              letterSpacing: 1.5,
+              fontWeight: FontWeight.bold)),
+      image: new Image(image: new AssetImage('images/firstaid.png')),
       loadingText: Text(""),
       photoSize: 100.0,
       loaderColor: Colors.white,
     );
   }
-
 }
