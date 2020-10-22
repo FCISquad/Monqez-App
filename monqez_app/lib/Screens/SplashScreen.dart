@@ -19,48 +19,32 @@ class _SplashState extends State<Splash> {
 
   void redirect() async {
     await Firebase.initializeApp();
-    if (FirebaseAuth.instance.currentUser == null) {
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder: (context, animation, animationTime, child) {
-                return SlideTransition(
-                  position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                      .animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.ease,
-                  )),
-                  child: child,
-                );
-              },
-              pageBuilder: (context, animation, animationTime) {
-                return HomeScreen();
-              }));
-    } else {
-      _prefs = await SharedPreferences.getInstance();
-      email = _prefs.getString("email");
-      token = _prefs.getString("userToken");
-      var FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
-      loggedin = FirebaseToken == token;
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder: (context, animation, animationTime, child) {
-                return SlideTransition(
-                  position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                      .animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.ease,
-                  )),
-                  child: child,
-                );
-              },
-              pageBuilder: (context, animation, animationTime) {
-                return loggedin ? HomeScreenMap() : HomeScreen();
-              }));
-    }
+
+    _prefs = await SharedPreferences.getInstance();
+    email = _prefs.getString("email");
+    token = _prefs.getString("userToken");
+    var FirebaseToken;
+    if (FirebaseAuth.instance.currentUser != null)
+      FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
+    loggedin = (FirebaseToken == token) && (token != null);
+    Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder: (context, animation, animationTime, child) {
+              return SlideTransition(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                    .animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return loggedin ? HomeScreenMap() : HomeScreen();
+            }));
+
   }
 
   @override
