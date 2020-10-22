@@ -163,23 +163,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         SizedBox(height: 10.0),
-        /*Container(
-          margin: EdgeInsets.symmetric(horizontal: 16),
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: PasswordField(
-            icon
-            inputStyle: TextStyle(fontSize: 26),
-
-            suffixIcon: Icon(
-              Icons.remove_red_eye,
-              color: Colors.deepOrange,
-            ),
-            textPadding: EdgeInsets.symmetric(horizontal: 20),
-            backgroundColor: Colors.blue[50],
-            backgroundBorderRadius: BorderRadius.circular(20),
-          ),
-        ),*/
         Container(
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
@@ -234,7 +217,6 @@ class _LoginScreenState extends State<LoginScreen> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () async {
-          print('Login Button Pressed');
           if (!correctPassword && !correctEmail) {
             makeToast("Please enter all fields correctly");
             return;
