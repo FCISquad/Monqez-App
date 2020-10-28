@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'login.dart';
 import 'HomeScreenMap.dart';
 import 'SignupScreen.dart';
 
@@ -31,14 +32,51 @@ class _LoginScreenState extends State<LoginScreen> {
   var _emailController = TextEditingController();
   var _passwordController = TextEditingController();
   String _emailError = '';
+  String _passwordError = '' ;
+  bool correctPassword = false ;
+  bool correctEmail = false ;
 
   void validateLoginCredentialis(String text) {
     setState(() {
-      _emailError =
-          (EmailValidator.validate(text)) ? '' : "Email is not correct";
+
+      if (text.isEmpty)
+      {
+        _emailError = "Enter your email" ;
+        correctEmail = false ;
+      }
+      else if (EmailValidator.validate(text)) {
+        _emailError = '' ;
+        correctEmail = true ;
+      }
+      else{
+        _emailError = "Email is not correct";
+        correctEmail = false ;
+      }
+
     });
     return;
   }
+
+  void validatePassword(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _passwordError = "Enter your password" ;
+        correctPassword = false ;
+
+      }
+      else if (text.length < 8){
+        _passwordError = "Your password must be at least 8 characters" ;
+        correctPassword = false;
+      }
+      else
+      {
+        _passwordError = "" ;
+        correctPassword = true ;
+      }
+    });
+    return;
+  }
+
 
   Future<bool> _saveUserToken(String token, String email, String userID) async {
     final SharedPreferences prefs = await _prefs;
@@ -128,23 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         SizedBox(height: 10.0),
-        /*Container(
-          margin: EdgeInsets.symmetric(horizontal: 16),
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: PasswordField(
-            icon
-            inputStyle: TextStyle(fontSize: 26),
-
-            suffixIcon: Icon(
-              Icons.remove_red_eye,
-              color: Colors.deepOrange,
-            ),
-            textPadding: EdgeInsets.symmetric(horizontal: 20),
-            backgroundColor: Colors.blue[50],
-            backgroundBorderRadius: BorderRadius.circular(20),
-          ),
-        ),*/
         Container(
           alignment: Alignment.centerLeft,
           decoration: kBoxDecorationStyle,
@@ -152,6 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             controller: _passwordController,
             obscureText: !_showPassword,
+            onChanged: validatePassword  ,
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -164,14 +186,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.deepOrange,
               ),
               suffixIcon: GestureDetector(
-                onTapDown: (details) {
+                onTap: () {
                   setState(() {
-                    _showPassword = true;
-                  });
-                },
-                onTapUp: (details) {
-                  setState(() {
-                    _showPassword = false;
+                    _showPassword = !_showPassword;
                   });
                 },
                 child: Icon(
@@ -186,6 +203,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+        SizedBox(height: 5.0),
+        Text(
+            _passwordError,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -197,16 +220,23 @@ class _LoginScreenState extends State<LoginScreen> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () async {
-          print('Login Button Pressed');
-          if (_emailError != '') {
-            makeToast("Email is not correct!");
+          if (!correctPassword && !correctEmail) {
+            makeToast("Please enter all fields correctly");
             return;
+          }
+          else if (!correctPassword){
+            makeToast("Please enter your password correctly");
+            return;
+          }
+          else if (!correctEmail) {
+            makeToast("Please enter your email correctly") ;
+            return ;
           }
           try {
             UserCredential userCredential = await FirebaseAuth.instance
                 .signInWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text);
+                email: _emailController.text,
+                password: _passwordController.text);
 
             var token = await FirebaseAuth.instance.currentUser.getIdToken();
             _saveUserToken(
@@ -222,8 +252,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         (context, animation, animationTime, child) {
                       return SlideTransition(
                         position:
-                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                                .animate(CurvedAnimation(
+                        Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                            .animate(CurvedAnimation(
                           parent: animation,
                           curve: Curves.ease,
                         )),
@@ -235,9 +265,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     }));
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {
-              makeToast('No user found for that email.');
+              makeToast('Email not found!');
             } else if (e.code == 'wrong-password') {
-              makeToast('Wrong password provided for that user.');
+              makeToast('Wrong password!');
             }
           }
         },
@@ -283,7 +313,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSocialBtn(Function onTap, AssetImage logo) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () async {
+          String result = await onTap();
+          if (result == null)
+            makeToast("Login failed");
+          else{
+            makeToast("Logged in successfully!");
+          Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, animationTime, child) {
+                    return SlideTransition(
+                      position:
+                      Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                          .animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.ease,
+                      )),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (context, animation, animationTime) {
+                    return HomeScreenMap();
+                  }));}
+      },
       child: Container(
         height: 60.0,
         width: 60.0,
@@ -312,13 +367,13 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => print('Login with Facebook'),
+                () => print('Login with Facebook'),
             AssetImage(
               'images/facebook.png',
             ),
           ),
           _buildSocialBtn(
-            () => print('Login with Google'),
+                signInWithGoogle,
             AssetImage(
               'images/google.jpg',
             ),
