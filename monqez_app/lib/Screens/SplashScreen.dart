@@ -12,7 +12,6 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  var _prefs;
   bool loggedin = false;
   String email;
   String token;
@@ -20,13 +19,13 @@ class _SplashState extends State<Splash> {
   void redirect() async {
     await Firebase.initializeApp();
 
-    _prefs = await SharedPreferences.getInstance();
+    var _prefs = await SharedPreferences.getInstance();
     email = _prefs.getString("email");
     token = _prefs.getString("userToken");
-    var FirebaseToken;
+    var firebaseToken;
     if (FirebaseAuth.instance.currentUser != null)
-      FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
-    loggedin = (FirebaseToken == token) && (token != null);
+      firebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
+    loggedin = (firebaseToken == token) && (token != null);
     Navigator.pushReplacement(
         context,
         PageRouteBuilder(

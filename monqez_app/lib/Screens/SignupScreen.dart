@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'UI.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'LoginScreen.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import '../Backend/Authentication.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -22,64 +21,67 @@ class _SignupScreenState extends State<SignupScreen> {
   String _emailError = '';
   String _passwordError = '';
   String _confirmPasswordError = '';
-  bool _correctEmail= false ;
-  bool _correctPassword = false ;
-  bool _correctConfirmPassword = false ;
+  bool _correctEmail = false;
+  bool _correctPassword = false;
+  bool _correctConfirmPassword = false;
 
-
-  Future<void> _signup() async {
-
-    if(_correctEmail && _correctPassword && _correctConfirmPassword) {
-      try {
-        var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text);
-        if (result != null) {
-          makeToast("Signup successful");
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => SecondSignupScreen()),
-          );
-        } else {
-          makeToast('Please try later');
-        }
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'email-already-in-use') {
-          makeToast('Email already exists!');
-        } else {
-          makeToast(e.code);
-        }
-      }
-    }
-    else
-     {
-       makeToast("Enter all fields correctly") ;
-     }
-  }
-  void makeToast(String text) {
-    Fluttertoast.showToast(
-      msg: text,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
+  @override
+  Widget build(BuildContext context) {
+    Firebase.initializeApp();
+    return Scaffold(
+      backgroundColor: Colors.deepOrangeAccent,
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            height: double.infinity,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: 40.0,
+                vertical: 60.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 30.0),
+                  _buildEmailTF(),
+                  SizedBox(height: 30.0),
+                  _buildPasswordTF(),
+                  SizedBox(height: 30.0),
+                  _buildConfirmPasswordTF(),
+                  _buildSignupBtn(),
+                  _buildSigninBtn(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   void _validateEmail(String text) {
     setState(() {
-      if (text.isEmpty)
-    {
-      _emailError = "" ;
-      _correctEmail = false ;
-    }
-      else if (EmailValidator.validate(text)){
+      if (text.isEmpty) {
+        _emailError = "";
+        _correctEmail = false;
+      } else if (EmailValidator.validate(text)) {
         _emailError = "";
         _correctEmail = true;
+      } else {
+        _emailError = "Email is not correct";
+        _correctEmail = false;
       }
-      else
-      {
-        _emailError = "Email is not correct" ;
-        _correctEmail= false ;
-      }
-
     });
     return;
   }
@@ -91,53 +93,43 @@ class _SignupScreenState extends State<SignupScreen> {
     if (value.isEmpty) {
       setState(() {
         _passwordError = '';
-        _correctPassword = false ;
-
+        _correctPassword = false;
       });
     } else if (value.length < 8) {
       setState(() {
         _passwordError = 'Password is too short';
-        _correctPassword = false ;
+        _correctPassword = false;
       });
     } else {
       setState(() {
-        if (!regex.hasMatch(value))
-         {
-           _passwordError = 'Password is week' ;
-           _correctPassword = false ;
-         }
-        else
-         {
-           _passwordError = '' ;
-           _correctPassword = true ;
-         }
-
+        if (!regex.hasMatch(value)) {
+          _passwordError = 'Password is week';
+          _correctPassword = false;
+        } else {
+          _passwordError = '';
+          _correctPassword = true;
+        }
       });
     }
   }
-  void _validateconfirmPassword(String value)
-  {
-    if (value.isEmpty)
-      {
-        setState(() {
-          _confirmPasswordError = '' ;
-          _correctConfirmPassword = false ;
-        });
-      }
-    else if (value != _passwordController.text)
-     {
-       setState(() {
-         _confirmPasswordError = "Password doesn\'t match" ;
-         _correctConfirmPassword = false;
-       });
-     }
-    else
-      {
-        setState(() {
-          _confirmPasswordError = '' ;
-          _correctConfirmPassword = true ;
-        });
-      }
+
+  void _validateconfirmPassword(String value) {
+    if (value.isEmpty) {
+      setState(() {
+        _confirmPasswordError = '';
+        _correctConfirmPassword = false;
+      });
+    } else if (value != _passwordController.text) {
+      setState(() {
+        _confirmPasswordError = "Password doesn\'t match";
+        _correctConfirmPassword = false;
+      });
+    } else {
+      setState(() {
+        _confirmPasswordError = '';
+        _correctConfirmPassword = true;
+      });
+    }
   }
 
   Widget _buildEmailTF() {
@@ -282,7 +274,6 @@ class _SignupScreenState extends State<SignupScreen> {
             obscureText: !_showConfirmPassword,
             controller: _confirmPasswordController,
             onChanged: _validateconfirmPassword,
-
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -330,8 +321,20 @@ class _SignupScreenState extends State<SignupScreen> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: _signup,
-
+        onPressed: () async {
+          if (_correctEmail && _correctPassword && _correctConfirmPassword) {
+            bool result = await signup(_emailController, _passwordController);
+            if (result) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => SecondSignupScreen()),
+              );
+            }
+          }
+          else {
+            makeToast("Enter all fields correctly");
+          }
+        },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -390,51 +393,6 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Firebase.initializeApp();
-    return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
-                vertical: 60.0,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 30.0),
-                  _buildEmailTF(),
-                  SizedBox(height: 30.0),
-                  _buildPasswordTF(),
-                  SizedBox(height: 30.0),
-                  _buildConfirmPasswordTF(),
-                  _buildSignupBtn(),
-                  _buildSigninBtn(),
-                ],
-              ),
-            ),
-          ),
         ),
       ),
     );
