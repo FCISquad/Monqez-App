@@ -1,18 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'UI.dart';
 
-final kBoxDecorationStyle = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
-    ),
-  ],
-);
 
 Widget _buildNameTF() {
   return Column(

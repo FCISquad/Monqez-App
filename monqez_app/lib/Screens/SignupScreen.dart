@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'LoginScreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
-
-final kBoxDecorationStyle = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
-    ),
-  ],
-);
 
 class SignupScreen extends StatefulWidget {
   @override
