@@ -7,20 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'UI.dart';
 import 'HomeScreenMap.dart';
-
-final kBoxDecorationStyle = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
-    ),
-  ],
-);
 
 
 class SecondSignupScreen extends StatefulWidget {
@@ -48,7 +36,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     var FirebaseToken;
     if (FirebaseAuth.instance.currentUser != null)
       FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
-    print("Token at the second is : " + FirebaseToken);
     return FirebaseToken;
   }
   Future<void> _submit() async {

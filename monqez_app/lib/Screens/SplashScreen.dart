@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HomeScreenMap.dart';
+import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:splashscreen/splashscreen.dart';
-import 'package:monqez_app/Screens/HomeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Splash extends StatefulWidget {
@@ -12,7 +12,6 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  var _prefs;
   bool loggedin = false;
   String email;
   String token;
@@ -20,30 +19,15 @@ class _SplashState extends State<Splash> {
   void redirect() async {
     await Firebase.initializeApp();
 
-    _prefs = await SharedPreferences.getInstance();
+    var _prefs = await SharedPreferences.getInstance();
     email = _prefs.getString("email");
     token = _prefs.getString("userToken");
-    var FirebaseToken;
+    var firebaseToken;
     if (FirebaseAuth.instance.currentUser != null)
-      FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
-    loggedin = (FirebaseToken == token) && (token != null);
-    Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            transitionsBuilder: (context, animation, animationTime, child) {
-              return SlideTransition(
-                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                    .animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.ease,
-                )),
-                child: child,
-              );
-            },
-            pageBuilder: (context, animation, animationTime) {
-              return loggedin ? HomeScreenMap() : HomeScreen();
-            }));
+      firebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
+    setState(() {
+      loggedin = (firebaseToken == token) && (token != null);
+    });
 
   }
 
@@ -52,6 +36,7 @@ class _SplashState extends State<Splash> {
     redirect();
     return SplashScreen(
       seconds: 3,
+      navigateAfterSeconds: loggedin ? HomeScreenMap() : LoginScreen(),
       backgroundColor: Colors.deepOrangeAccent,
       title: Text('Monqez',
           style: TextStyle(
