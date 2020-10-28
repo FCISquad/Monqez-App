@@ -6,6 +6,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 final kBoxDecorationStyle = BoxDecoration(
@@ -26,6 +27,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  var _prefs = SharedPreferences.getInstance();
   bool _showPassword = false;
   bool _showConfirmPassword = false;
   var _emailController = TextEditingController();
@@ -38,13 +40,22 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _correctPassword = false ;
   bool _correctConfirmPassword = false ;
 
-
+  Future<bool> _saveUserToken(String token, String email, String userID) async {
+    final SharedPreferences prefs = await _prefs;
+    prefs.setString("email", email);
+    prefs.setString("userID", userID);
+    return prefs.setString("userToken", token);
+  }
   Future<void> _signup() async {
 
     if(_correctEmail && _correctPassword && _correctConfirmPassword) {
       try {
         var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: _emailController.text, password: _passwordController.text);
+        var token = await FirebaseAuth.instance.currentUser.getIdToken();
+        _saveUserToken(
+            token, result.user.email, result.user.uid);
+        print("Token at the first is : " + token);
         if (result != null) {
           makeToast("Signup successful");
           Navigator.pushReplacement(
