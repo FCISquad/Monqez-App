@@ -355,7 +355,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget _buildSigninBtn() {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             PageRouteBuilder(
                 transitionDuration: Duration(milliseconds: 500),

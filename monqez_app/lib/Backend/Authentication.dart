@@ -31,6 +31,8 @@ Future<bool> signup( TextEditingController _emailController,
           email: _emailController.text, password: _passwordController.text);
       if (result != null) {
         makeToast("Signup successful");
+        var token = await FirebaseAuth.instance.currentUser.getIdToken();
+        saveUserToken(token, result.user.email, result.user.uid);
         return true;
 
       } else {
