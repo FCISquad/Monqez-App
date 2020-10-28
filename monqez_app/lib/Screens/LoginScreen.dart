@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'login.dart';
 import 'HomeScreenMap.dart';
 import 'SignupScreen.dart';
 
@@ -55,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     return;
   }
+
   void validatePassword(String text) {
     setState(() {
       if (text.isEmpty) {
@@ -74,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
     return;
   }
+
 
   Future<bool> _saveUserToken(String token, String email, String userID) async {
     final SharedPreferences prefs = await _prefs;
@@ -310,7 +313,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSocialBtn(Function onTap, AssetImage logo) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () async {
+          String result = await onTap();
+          if (result == null)
+            makeToast("Login failed");
+          else{
+            makeToast("Logged in successfully!");
+          Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, animationTime, child) {
+                    return SlideTransition(
+                      position:
+                      Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                          .animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.ease,
+                      )),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (context, animation, animationTime) {
+                    return HomeScreenMap();
+                  }));}
+      },
       child: Container(
         height: 60.0,
         width: 60.0,
@@ -345,7 +373,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           _buildSocialBtn(
-                () => print('Login with Google'),
+                signInWithGoogle,
             AssetImage(
               'images/google.jpg',
             ),
