@@ -42,17 +42,24 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _signup() async {
 
     if(_correctEmail && _correctPassword && _correctConfirmPassword) {
-      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-
-      if (result != null) {
-        makeToast("Signup successful") ;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => SecondSignupScreen()),
-        );
-      } else {
-        makeToast('Please try later');
+      try {
+        var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: _emailController.text, password: _passwordController.text);
+        if (result != null) {
+          makeToast("Signup successful");
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => SecondSignupScreen()),
+          );
+        } else {
+          makeToast('Please try later');
+        }
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'email-already-in-use') {
+          makeToast('Email already exists!');
+        } else {
+          makeToast(e.code);
+        }
       }
     }
     else
