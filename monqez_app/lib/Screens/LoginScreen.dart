@@ -1,25 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'login.dart';
+import 'package:email_validator/email_validator.dart';
+import '../Backend/Authentication.dart';
+import 'UI.dart';
 import 'HomeScreenMap.dart';
 import 'SignupScreen.dart';
-
-final kBoxDecorationStyle = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(10.0),
-  boxShadow: [
-    BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
-    ),
-  ],
-);
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -27,32 +13,73 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  var _prefs = SharedPreferences.getInstance();
   bool _showPassword = false;
   var _emailController = TextEditingController();
   var _passwordController = TextEditingController();
   String _emailError = '';
-  String _passwordError = '' ;
-  bool correctPassword = false ;
-  bool correctEmail = false ;
+  String _passwordError = '';
+  bool correctPassword = false;
+  bool correctEmail = false;
 
-  void validateLoginCredentialis(String text) {
+  @override
+  Widget build(BuildContext context) {
+    Firebase.initializeApp();
+    return Scaffold(
+      backgroundColor: Colors.deepOrangeAccent,
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            height: double.infinity,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: 40.0,
+                vertical: 60.0,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    'Sign In',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 30.0),
+                  _buildEmailTF(),
+                  SizedBox(
+                    height: 30.0,
+                  ),
+                  _buildPasswordTF(),
+                  _buildLoginBtn(),
+                  _buildSignInWithText(),
+                  _buildSocialBtnRow(),
+                  _buildSignupBtn(),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void validateLoginCredentials(String text) {
     setState(() {
-
-      if (text.isEmpty)
-      {
-        _emailError = "Enter your email" ;
-        correctEmail = false ;
-      }
-      else if (EmailValidator.validate(text)) {
-        _emailError = '' ;
-        correctEmail = true ;
-      }
-      else{
+      if (text.isEmpty) {
+        _emailError = "Enter your email";
+        correctEmail = false;
+      } else if (EmailValidator.validate(text)) {
+        _emailError = '';
+        correctEmail = true;
+      } else {
         _emailError = "Email is not correct";
-        correctEmail = false ;
+        correctEmail = false;
       }
-
     });
     return;
   }
@@ -60,37 +87,17 @@ class _LoginScreenState extends State<LoginScreen> {
   void validatePassword(String text) {
     setState(() {
       if (text.isEmpty) {
-        _passwordError = "Enter your password" ;
-        correctPassword = false ;
-
-      }
-      else if (text.length < 8){
-        _passwordError = "Your password must be at least 8 characters" ;
+        _passwordError = "Enter your password";
         correctPassword = false;
-      }
-      else
-      {
-        _passwordError = "" ;
-        correctPassword = true ;
+      } else if (text.length < 8) {
+        _passwordError = "Your password must be at least 8 characters";
+        correctPassword = false;
+      } else {
+        _passwordError = "";
+        correctPassword = true;
       }
     });
     return;
-  }
-
-
-  Future<bool> _saveUserToken(String token, String email, String userID) async {
-    final SharedPreferences prefs = await _prefs;
-    prefs.setString("email", email);
-    prefs.setString("userID", userID);
-    return prefs.setString("userToken", token);
-  }
-
-  void makeToast(String text) {
-    Fluttertoast.showToast(
-      msg: text,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-    );
   }
 
   Widget _buildEmailTF() {
@@ -111,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 50.0,
           child: TextFormField(
             controller: _emailController,
-            onChanged: validateLoginCredentialis,
+            onChanged: validateLoginCredentials,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
               color: Colors.deepOrange,
@@ -173,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: TextField(
             controller: _passwordController,
             obscureText: !_showPassword,
-            onChanged: validatePassword  ,
+            onChanged: validatePassword,
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -204,11 +211,8 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         SizedBox(height: 5.0),
-        Text(
-            _passwordError,
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold)),
+        Text(_passwordError,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -223,27 +227,15 @@ class _LoginScreenState extends State<LoginScreen> {
           if (!correctPassword && !correctEmail) {
             makeToast("Please enter all fields correctly");
             return;
-          }
-          else if (!correctPassword){
+          } else if (!correctPassword) {
             makeToast("Please enter your password correctly");
             return;
+          } else if (!correctEmail) {
+            makeToast("Please enter your email correctly");
+            return;
           }
-          else if (!correctEmail) {
-            makeToast("Please enter your email correctly") ;
-            return ;
-          }
-          try {
-            UserCredential userCredential = await FirebaseAuth.instance
-                .signInWithEmailAndPassword(
-                email: _emailController.text,
-                password: _passwordController.text);
-
-            var token = await FirebaseAuth.instance.currentUser.getIdToken();
-            _saveUserToken(
-                token, userCredential.user.email, userCredential.user.uid);
-
-            makeToast("Logged in Successfully");
-
+          bool result = await normalSignIn(_emailController, _passwordController);
+          if (result) {
             Navigator.pushReplacement(
                 context,
                 PageRouteBuilder(
@@ -263,14 +255,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     pageBuilder: (context, animation, animationTime) {
                       return HomeScreenMap();
                     }));
-          } on FirebaseAuthException catch (e) {
-            if (e.code == 'user-not-found') {
-              makeToast('Email not found!');
-            } else if (e.code == 'wrong-password') {
-              makeToast('Wrong password!');
-            }
           }
+
         },
+
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -289,36 +277,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSignInWithText() {
-    return Column(
-      children: <Widget>[
-        Text(
-          '- OR -',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        SizedBox(height: 20.0),
-        Text(
-          'Sign in with',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSocialBtn(Function onTap, AssetImage logo) {
     return GestureDetector(
       onTap: () async {
-          String result = await onTap();
-          if (result == null)
-            makeToast("Login failed");
-          else{
-            makeToast("Logged in successfully!");
+        bool result = await onTap();
+        if (result){
           Navigator.pushReplacement(
               context,
               PageRouteBuilder(
@@ -326,8 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   transitionsBuilder:
                       (context, animation, animationTime, child) {
                     return SlideTransition(
-                      position:
-                      Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
                           .animate(CurvedAnimation(
                         parent: animation,
                         curve: Curves.ease,
@@ -337,7 +299,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   pageBuilder: (context, animation, animationTime) {
                     return HomeScreenMap();
-                  }));}
+                  }));
+        }
       },
       child: Container(
         height: 60.0,
@@ -367,13 +330,13 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-                () => print('Login with Facebook'),
+            () => print('Login with Facebook'),
             AssetImage(
               'images/facebook.png',
             ),
           ),
           _buildSocialBtn(
-                signInWithGoogle,
+            signInWithGoogle,
             AssetImage(
               'images/google.jpg',
             ),
@@ -429,50 +392,25 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Firebase.initializeApp();
-    return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
-                vertical: 60.0,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    'Sign In',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 30.0),
-                  _buildEmailTF(),
-                  SizedBox(
-                    height: 30.0,
-                  ),
-                  _buildPasswordTF(),
-                  _buildLoginBtn(),
-                  _buildSignInWithText(),
-                  _buildSocialBtnRow(),
-                  _buildSignupBtn(),
-                ],
-              ),
-            ),
+  Widget _buildSignInWithText() {
+    return Column(
+      children: <Widget>[
+        Text(
+          '- OR -',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w400,
           ),
         ),
-      ),
+        SizedBox(height: 20.0),
+        Text(
+          'Sign in with',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
     );
   }
 }
