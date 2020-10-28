@@ -27,6 +27,7 @@ dependencies:
   firebase_auth: ^0.18.1+2
   email_validator: ^1.0.6
   google_sign_in: ^4.5.5
+  flutter_facebook_login: ^3.0.0
 
 
   flutter:
