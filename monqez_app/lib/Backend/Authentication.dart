@@ -31,15 +31,19 @@ Future<bool> signup( TextEditingController _emailController,
           email: _emailController.text, password: _passwordController.text);
       if (result != null) {
         makeToast("Signup successful");
+        return true;
 
       } else {
         makeToast('Please try later');
+        return false;
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         makeToast('Email already exists!');
+        return false;
       } else {
         makeToast(e.code);
+        return false;
       }
 
   }
