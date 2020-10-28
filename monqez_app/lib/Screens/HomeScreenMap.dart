@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../Backend/Authentication.dart';
-import 'HomeScreen.dart';
+import 'LoginScreen.dart';
 
 class HomeScreenMap extends StatefulWidget {
   @override
@@ -44,7 +44,7 @@ class _HomeScreenMapState extends State<HomeScreenMap> with SingleTickerProvider
                     );
                   },
                   pageBuilder: (context, animation, animationTime) {
-                    return HomeScreen();
+                    return LoginScreen();
                   }));
         },
         padding: EdgeInsets.all(15.0),
