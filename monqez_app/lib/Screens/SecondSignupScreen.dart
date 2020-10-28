@@ -21,7 +21,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _nameController = TextEditingController();
   var _phoneController = TextEditingController();
   var _idController = TextEditingController();
-
+  var token;
+  var uid;
   void makeToast(String text) {
     Fluttertoast.showToast(
       msg: text,
@@ -30,30 +31,35 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
   }
 
-  Future<String> getToken() async {
+  Future<String> intializeData() async {
     await Firebase.initializeApp();
     _prefs = await SharedPreferences.getInstance();
-    var FirebaseToken;
     if (FirebaseAuth.instance.currentUser != null)
-      FirebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
-    return FirebaseToken;
+    {
+      token = await FirebaseAuth.instance.currentUser.getIdToken();
+      uid = _prefs.get("userID");
+    }
   }
   Future<void> _submit() async {
+    await intializeData();
+    print("Token: " + token);
+    print("Uid: " + uid);
     makeToast("Submitted");
     final http.Response response = await http.post(
-      'url',
+      'https://lucky-crab-97.loca.lt/signup/',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(<String, String>{
-        'token': await getToken(),
+        'token': token,
+        'uid': uid,
         'name': _nameController.text,
-        'id': _idController.text,
+        'national_id': _idController.text,
         'phone': _phoneController.text
       }),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       Navigator.pushReplacement(
           context,
           PageRouteBuilder(
