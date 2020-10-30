@@ -26,7 +26,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var uid;
 
   String _fileName= "File Path";
-  List<String> _types = [".pdf", ".jpg", ".png"];
+  List<String> _types = ["pdf", "jpg", "png"];
   List<PlatformFile> _paths;
 
   bool _isMonqez = false;
@@ -96,9 +96,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   void _openFileExplorer() async {
     try {
       _paths = (await FilePicker.platform.pickFiles(
-        type: FileType.custom,
+        type: FileType.any,
         allowMultiple: false,
-        allowedExtensions: _types
+        //allowedExtensions: _types
       ))
           ?.files;
     } on PlatformException catch (e) {
@@ -114,7 +114,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
   Widget _buildCheckBox(){
     return CheckboxListTile(
-      title: Text("Singup as Monqez?",           style: TextStyle(
+      title: Text("Signup as Monqez?",           style: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.bold,
       ),
