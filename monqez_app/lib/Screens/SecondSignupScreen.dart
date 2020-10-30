@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
@@ -23,6 +24,13 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _idController = TextEditingController();
   var token;
   var uid;
+
+  String _fileName= "File Path";
+  List<String> _types = ["pdf", "jpg", "png"];
+  List<PlatformFile> _paths;
+
+  bool _isMonqez = false;
+
   void makeToast(String text) {
     Fluttertoast.showToast(
       msg: text,
@@ -84,6 +92,43 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       throw Exception('Failed to create album.');
     }
   }
+
+  void _openFileExplorer() async {
+    try {
+      _paths = (await FilePicker.platform.pickFiles(
+        type: FileType.any,
+        allowMultiple: false,
+        //allowedExtensions: _types
+      ))
+          ?.files;
+    } on PlatformException catch (e) {
+      makeToast("Unsupported operation" + e.toString());
+    } catch (ex) {
+      makeToast(ex);
+    }
+    if (!mounted) return;
+    setState(() {
+      _fileName = _paths != null ? _paths.map((e) => e.name).toString() : '...';
+    });
+  }
+
+  Widget _buildCheckBox(){
+    return CheckboxListTile(
+      title: Text("Signup as Monqez?",           style: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+      ),
+      value: _isMonqez,
+      onChanged: (newValue) {
+        setState(() {
+          _isMonqez = newValue;
+        });
+      },
+      controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+    );
+  }
+
 
   Widget _buildNameTF() {
     return Column(
@@ -208,6 +253,54 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
   }
 
+  Widget _buildCertificateTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "First-Aid Certificate",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextFormField(
+            readOnly: true,
+            style: TextStyle(
+              color: Colors.deepOrange,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.book,
+                color: Colors.deepOrange,
+              ),
+              suffixIcon: GestureDetector(
+                onTap: _openFileExplorer,
+                child: Icon(
+                  Icons.file_copy,
+                  color: Colors.deepOrange,
+                ),
+              ),
+              hintText: _fileName,
+              hintStyle: TextStyle(
+                color: Colors.deepOrange,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
   Widget _buildSubmitBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
@@ -267,6 +360,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   _buildPhoneNumberTF(),
                   SizedBox(height: 10.0),
                   _buildIDNumberTF(),
+                  SizedBox(height: 10.0),
+                  _buildCheckBox(),
+                  SizedBox(height: 10.0),
+                  Visibility(
+                      visible: _isMonqez,
+                      child: _buildCertificateTF()),
                   SizedBox(height: 200.0),
                   _buildSubmitBtn()
                 ],
