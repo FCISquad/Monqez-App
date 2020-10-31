@@ -330,12 +330,6 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildSocialBtn(
-            () => print('Login with Facebook'),
-            AssetImage(
-              'images/facebook.png',
-            ),
-          ),
-          _buildSocialBtn(
             signInWithGoogle,
             AssetImage(
               'images/google.jpg',
