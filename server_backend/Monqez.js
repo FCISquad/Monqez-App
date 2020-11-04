@@ -15,7 +15,10 @@ admin.initializeApp({
     Routes Sections
  */
 
-const signupRoute = require('./API/routes/authentication/signup');
-app.use('/signup' , signupRoute);
+const signupRoute = require('./API/routes/authentication/signup')
+app.use('/signup' , signupRoute)
+
+const getUserInformation = require('./API/routes/authentication/getuser')
+app.use('/getuser' , getUserInformation)
 
 module.exports = app;

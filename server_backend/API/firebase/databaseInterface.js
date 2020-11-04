@@ -18,5 +18,21 @@ module.exports = {
         }).catch(function (error){
             callback('unauthorized')
         })
+    },
+
+    getUserInformation(userJson , callback){
+        admin.database().ref('users/' + userJson.uid).once("value" , function (userInfo){
+            if (userInfo.val() === null){
+                callback({
+                    "state" : "user not founded"
+                })
+            }
+            else{
+                callback({
+                    "state" : "user founded",
+                    "phone" : userInfo.val().phone
+                })
+            }
+        })
     }
 }
