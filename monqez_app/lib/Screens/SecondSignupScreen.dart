@@ -2,17 +2,17 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:file/file.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
 import 'HomeScreenMap.dart';
+import 'LoginScreen.dart';
+import '../Backend/Authentication.dart';
 
 
 class SecondSignupScreen extends StatefulWidget {
@@ -40,16 +40,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
   bool _isMonqez = false;
 
-  void makeToast(String text) {
-    Fluttertoast.showToast(
-      msg: text,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-    );
-  }
 
   Future<void> intializeData() async {
-    await Firebase.initializeApp();
     _prefs = await SharedPreferences.getInstance();
     if (FirebaseAuth.instance.currentUser != null)
     {
@@ -57,13 +49,24 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       uid = _prefs.get("userID");
     }
   }
+
+
+  Future <void> _click(){
+    if (_isMonqez){
+      _apply();
+    }
+    else{
+      _submit();
+    }
+  }
+
   Future<void> _submit() async {
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
     makeToast("Submitted");
     final http.Response response = await http.post(
-      'https://lucky-crab-97.loca.lt/signup/',
+      '$url/signup/',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -72,11 +75,18 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'uid': uid,
         'name': _nameController.text,
         'national_id': _idController.text,
-        'phone': _phoneController.text
+        'phone': _phoneController.text,
+        'birthdate': selectedDate.toString(),
+        'gender': gender,
+        'country': _countryController.text,
+        'city': _cityController.text,
+        'street': _streetController.text,
+        'buildNumber': _buildNumberController.text
       }),
     );
 
     if (response.statusCode == 200) {
+
       Navigator.pushReplacement(
           context,
           PageRouteBuilder(
@@ -101,6 +111,60 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       throw Exception('Failed to create album.');
     }
   }
+
+  Future<void> _apply() async {
+    await intializeData();
+    print("Token: " + token);
+    print("Uid: " + uid);
+    final http.Response response = await http.post(
+      '$url/apply/',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'token': token,
+        'uid': uid,
+        'name': _nameController.text,
+        'national_id': _idController.text,
+        'phone': _phoneController.text,
+        'birthdate': selectedDate.toString(),
+        'gender': gender,
+        'country': _countryController.text,
+        'city': _cityController.text,
+        'street': _streetController.text,
+        'buildNumber': _buildNumberController.text
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      makeToast("Please wait while your application is reviewed");
+      logout();
+      Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+              transitionDuration: Duration(milliseconds: 500),
+              transitionsBuilder:
+                  (context, animation, animationTime, child) {
+                return SlideTransition(
+                  position:
+                  Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                      .animate(CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.ease,
+                  )),
+                  child: child,
+                );
+              },
+              pageBuilder: (context, animation, animationTime) {
+                return LoginScreen();
+              }));
+      //return Album.fromJson(jsonDecode(response.body));
+    } else {
+      print(response.statusCode);
+      throw Exception('Failed to create album.');
+    }
+  }
+
 
   void _uploadCertificate() async {
     try {
@@ -576,7 +640,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       height: 90,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: _submit,
+        onPressed: _click,
 
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -660,7 +724,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   SizedBox(height: 10.0),
                   _buildAddress(),
                   SizedBox(height: 10.0),
-                  addRadioButton(1, "male"),
+                  addRadioButton(1, "Male"),
                   addRadioButton(2, "Female"),
                   SizedBox(height: 10.0),
                   _buildCheckBox(),
