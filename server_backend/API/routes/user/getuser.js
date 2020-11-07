@@ -12,8 +12,8 @@ router.post('/' , function(request , response){
             response.send(http.STATUS_CODES[400])
         }
         else{
-            database.getUserInformation(requestJson , function (status){
-                response.send(status)
+            database.getUserInformation(requestJson , function (statusJson){
+                response.status(200).send(statusJson)
             })
         }
     })

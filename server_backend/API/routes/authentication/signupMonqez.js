@@ -20,6 +20,7 @@ router.post('/' , function(request , response){
                     response.send(http.STATUS_CODES[403])
                 }
                 else if ( status === 'okay' ){
+                    database.changeToMonqez(requestJson)
                     response.send(http.STATUS_CODES[200])
                 }
                 else if ( status === 'nationalID founded' ){

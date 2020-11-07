@@ -5,12 +5,28 @@ module.exports = {
         admin.auth().verifyIdToken(userJson.token).then(function (decodedToken){
             let userId = decodedToken.uid
             if ( userId === userJson.uid ){
-                admin.database().ref('users/' + userId).set({
-                    name: userJson.name,
-                    phone: userJson.phone,
-                    nationalID: userJson.national_id
+                admin.database().ref('user/' + userJson.uid).once("value" , function (userInfo){
+                    // if ( userInfo.val().national_id === userJson.national_id ){
+                        admin.database().ref('user/' + userId).set({
+                            name: userJson.name,
+                            national_id: userJson.national_id,
+                            phone: userJson.phone,
+                            gender: userJson.gender,
+                            birthdate: userJson.birthdate,
+                            country: userJson.country,
+                            city: userJson.city,
+                            street: userJson.street,
+                            buildNumber: userJson.buildNumber,
+                            chronicDiseases: "",
+                            disable: "false",
+                            type: "0"
+                        })
+                        callback('okay')
+                    // }
+                    // else{
+                    //     callback('nationalID founded')
+                    // }
                 })
-                callback('okay')
             }
             else{
                 callback('invalid id')
@@ -20,41 +36,63 @@ module.exports = {
         })
     },
 
+    changeToMonqez(userJson , callback){
+        admin.database().ref('monqez/' + userJson.uid).set({
+            certificate: userJson.certificate,
+            certificateName: userJson.certificateName
+        })
+        admin.database().ref('user/' + userJson.uid).update({
+            "type": "1",
+            "disable": "true"
+        })
+    },
+
     getUserInformation(userJson , callback){
-        admin.database().ref('users/' + userJson.uid).once("value" , function (userInfo){
-            if (userInfo.val() === null){
-                callback({
-                    "databaseStatus" : "user not founded"
+        console.log(0)
+        admin.auth().verifyIdToken(userJson.token).then(function (decodedToken){
+            let userId = decodedToken.uid
+            console.log(1)
+            if ( userId === userJson.uid ){
+                console.log(2)
+                admin.database().ref('user/' + userJson.uid).once("value" , function (userInfo){
+                    if (userInfo.val() === null){
+                        callback({
+                            type: "-1",
+                            isDisabled: "false",
+                            firstLogin: "true"
+                        })
+                    }
+                    else{
+                        callback({
+                            type: userInfo.val().type,
+                            isDisabled: userInfo.val().disable,
+                            firstLogin: "false"
+                        })
+                    }
                 })
-            }
-            else{
-                let user = userInfo.val()
-                let databaseStatus = {"state" : "user founded"}
-                admin.database.ref('monqez/')
-                callback({databaseStatus , user})
             }
         })
     },
 
-    uploadCertificate(certificate , callback){
-        admin.database.ref('monqez/' + certificate.uid).once("value" , function (userInfo){
-            if ( userInfo.val() === null ){
-                callback({
-                    "Status": "User type is not monqez"
-                })
-            }
-            else{
-                admin.database.ref("monqez/" + certificate.uid).update({
-                    "disable": userInfo.disable,
-                    "certificate": certificate.image,
-                    "certificateName": certificate.name
-                })
-                callback({
-                    "Status": "Certificate Added Successfully"
-                })
-            }
-        })
-    },
+    // uploadCertificate(certificate , callback){
+    //     admin.database.ref('monqez/' + certificate.uid).once("value" , function (userInfo){
+    //         if ( userInfo.val() === null ){
+    //             callback({
+    //                 "Status": "User type is not monqez"
+    //             })
+    //         }
+    //         else{
+    //             admin.database.ref("monqez/" + certificate.uid).update({
+    //                 "disable": userInfo.disable,
+    //                 "certificate": certificate.image,
+    //                 "certificateName": certificate.name
+    //             })
+    //             callback({
+    //                 "Status": "Certificate Added Successfully"
+    //             })
+    //         }
+    //     })
+    // },
 
     downloadCertificate(certificate , callback){
         admin.database.ref('monqez/' + certificate.uid).once("value" , function (userInfo){

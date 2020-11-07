@@ -2,12 +2,14 @@
   "user": {
     "uid": {
       "name": "-",
-      "email": "-",
-      "nationalID": "-",
-      "phoneNumber": "-",
+      "national_id": "-",
+      "phone": "-",
       "gender": "-",
-      "age": "-",
-      "address": "-",
+      "birthdate": "-",
+      "country": "-",
+      "city": "-",
+      "street": "-",
+      "buildNumber": "-",
       "chronicDiseases": "-",
       "disable": "-",
       "type": "-"

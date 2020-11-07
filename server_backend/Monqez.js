@@ -18,10 +18,13 @@ admin.initializeApp({
 const signupRoute = require('./API/routes/authentication/signup')
 app.use('/signup' , signupRoute)
 
-const UserInformation = require('./API/routes/user/getuser')
-app.use('/user' , UserInformation)
+const signupMonqezRoute = require('./API/routes/authentication/signupMonqez')
+app.use('/apply' , signupMonqezRoute)
 
-const certificate = require('./API/routes/user/firstAidCertificate')
-app.use('/certificate' , certificate)
+const UserInformation = require('./API/routes/user/getuser')
+app.use('/checkUser' , UserInformation)
+
+// const certificate = require('./API/routes/user/firstAidCertificate')
+// app.use('/certificate' , certificate)
 
 module.exports = app;
