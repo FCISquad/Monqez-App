@@ -1,0 +1,23 @@
+{
+  "user": {
+    "uid": {
+      "name": "-",
+      "email": "-",
+      "nationalID": "-",
+      "phoneNumber": "-",
+      "gender": "-",
+      "age": "-",
+      "address": "-",
+      "chronicDiseases": "-",
+      "disable": "-",
+      "type": "-"
+    }
+  },
+
+  "monqez": {
+    "uid": {
+      "certificate": "-",
+      "certificateName": "-"
+    }
+  }
+}

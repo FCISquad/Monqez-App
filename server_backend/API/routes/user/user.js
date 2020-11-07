@@ -5,8 +5,7 @@ const http = require('http')
 const helper = require('../../helper/RequestFunctions')
 const database = require('../../firebase/databaseInterface')
 
-
-router.post('/' , function(request , response){
+router.post('/getuser' , function(request , response){
     helper.RequestToJson(request , function (requestJson){
         if ( requestJson === null ){
             response.send(http.STATUS_CODES[400])
@@ -20,5 +19,4 @@ router.post('/' , function(request , response){
 })
 
 
-
-module.exports = router;
+module.exports = router

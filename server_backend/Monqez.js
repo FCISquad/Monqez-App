@@ -18,7 +18,10 @@ admin.initializeApp({
 const signupRoute = require('./API/routes/authentication/signup')
 app.use('/signup' , signupRoute)
 
-const getUserInformation = require('./API/routes/authentication/getuser')
-app.use('/getuser' , getUserInformation)
+const UserInformation = require('./API/routes/user/getuser')
+app.use('/user' , UserInformation)
+
+const certificate = require('./API/routes/user/firstAidCertificate')
+app.use('/certificate' , certificate)
 
 module.exports = app;
