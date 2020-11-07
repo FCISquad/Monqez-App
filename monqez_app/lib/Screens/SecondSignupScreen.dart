@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ui';
-import 'package:file/file.dart';
+import 'dart:io';
+//import 'package:file/file.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,7 +37,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   File imageFile;
   String _fileName= "File Path", _imageName = "Image Path";
   List<String> _types = ["pdf", "jpg", "png"];
-  List<PlatformFile> _paths;
+  FilePickerResult _path;
+  File certificateFile;
 
   bool _isMonqez = false;
 
@@ -116,8 +118,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
-    File file = _paths.first as File;
-    String base64Image = base64Encode(file.readAsBytesSync());
+
+    String base64Image = base64Encode(certificateFile.readAsBytesSync());
     final http.Response response = await http.post(
       '$url/apply/',
       headers: <String, String>{
@@ -172,12 +174,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
   void _uploadCertificate() async {
     try {
-      _paths = (await FilePicker.platform.pickFiles(
+      _path = (await FilePicker.platform.pickFiles());
+        /*
         type: FileType.any,
         allowMultiple: false,
         //allowedExtensions: _types
       ))
           ?.files;
+         */
     } on PlatformException catch (e) {
       makeToast("Unsupported operation" + e.toString());
     } catch (ex) {
@@ -185,18 +189,22 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     }
     if (!mounted) return;
     setState(() {
-      _fileName = _paths != null ? _paths.map((e) => e.name).toString() : '...';
+      certificateFile = File(_path.files.single.path);
+      _fileName = certificateFile.path.split("/").last;
     });
   }
-
+///ERRORS HERE
   void _uploadID() async {
     try {
-      _paths = (await FilePicker.platform.pickFiles(
+      _path = (await FilePicker.platform.pickFiles());
+      /*
         type: FileType.any,
         allowMultiple: false,
         //allowedExtensions: _types
       ))
           ?.files;
+
+       */
     } on PlatformException catch (e) {
       makeToast("Unsupported operation" + e.toString());
     } catch (ex) {
@@ -204,7 +212,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     }
     if (!mounted) return;
     setState(() {
-      _imageName = _paths != null ? _paths.map((e) => e.name).toString() : '...';
+      imageFile = File(_path.files.single.path);
+      _imageName = imageFile.path.split("/").last;
     });
   }
 
