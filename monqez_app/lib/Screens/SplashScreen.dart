@@ -25,6 +25,7 @@ class _SplashState extends State<Splash> {
     var firebaseToken;
     if (FirebaseAuth.instance.currentUser != null)
       firebaseToken = await FirebaseAuth.instance.currentUser.getIdToken();
+    //network-request-failed
     setState(() {
       loggedin = (firebaseToken == token) && (token != null);
     });
