@@ -125,12 +125,15 @@ class _LoginScreenState extends State<LoginScreen> {
       }),
     );
     if (response2.statusCode == 200){
-      final parsed = jsonDecode(response2.body).cast<Map<String, dynamic>>();
+      var parsed = jsonDecode(response2.body).cast<String, dynamic>();
+      String sType = parsed['type'];
+      String sDisabled = parsed['isDisabled'];
+      String sFirst = parsed['firstLogin'];
 
       setState(() {
-        type = parsed["type"];
-        isDisabled = parsed['isDisabled'];
-        firstLogin = parsed["firstLogin"];
+        type = int.parse(sType);
+        isDisabled = (sDisabled == 'true') ? true: false;
+        firstLogin = (sFirst == 'true') ? true: false;
       });
 
     }

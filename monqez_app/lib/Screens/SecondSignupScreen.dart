@@ -116,6 +116,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
+    File file = _paths.first as File;
+    String base64Image = base64Encode(file.readAsBytesSync());
     final http.Response response = await http.post(
       '$url/apply/',
       headers: <String, String>{
@@ -132,7 +134,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'country': _countryController.text,
         'city': _cityController.text,
         'street': _streetController.text,
-        'buildNumber': _buildNumberController.text
+        'buildNumber': _buildNumberController.text,
+        'certificate': base64Image,
+        'certificateName': _fileName
       }),
     );
 
