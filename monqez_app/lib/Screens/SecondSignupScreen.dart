@@ -47,6 +47,27 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       gravity: ToastGravity.BOTTOM,
     );
   }
+  void navigateReplacement(Widget map) {
+    Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder:
+                (context, animation, animationTime, child) {
+              return SlideTransition(
+                position:
+                Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                    .animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return map;
+            }));
+  }
 
   Future<void> intializeData() async {
     await Firebase.initializeApp();
@@ -77,25 +98,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
 
     if (response.statusCode == 200) {
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder:
-                  (context, animation, animationTime, child) {
-                return SlideTransition(
-                  position:
-                  Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                      .animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.ease,
-                  )),
-                  child: child,
-                );
-              },
-              pageBuilder: (context, animation, animationTime) {
-                return HomeScreenMap();
-              }));
+      navigateReplacement(HomeScreenMap());
       //return Album.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to create album.');

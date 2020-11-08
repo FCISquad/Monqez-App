@@ -21,6 +21,25 @@ class _LoginScreenState extends State<LoginScreen> {
   bool correctPassword = false;
   bool correctEmail = false;
 
+  void navigateReplacement(Widget map) {
+    Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder: (context, animation, animationTime, child) {
+              return SlideTransition(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                    .animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return map;
+            }));
+  }
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp();
@@ -236,25 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
           }
           bool result = await normalSignIn(_emailController, _passwordController);
           if (result) {
-            Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, animationTime, child) {
-                      return SlideTransition(
-                        position:
-                        Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                            .animate(CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.ease,
-                        )),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (context, animation, animationTime) {
-                      return HomeScreenMap();
-                    }));
+            navigateReplacement(HomeScreenMap());
           }
 
         },
@@ -282,24 +283,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onTap: () async {
         bool result = await onTap();
         if (result){
-          Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, animationTime, child) {
-                    return SlideTransition(
-                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                          .animate(CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.ease,
-                      )),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (context, animation, animationTime) {
-                    return HomeScreenMap();
-                  }));
+          navigateReplacement(HomeScreenMap());
         }
       },
       child: Container(
@@ -343,23 +327,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildSignupBtn() {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder: (context, animation, animationTime, child) {
-                  return SlideTransition(
-                    position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                        .animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.ease,
-                    )),
-                    child: child,
-                  );
-                },
-                pageBuilder: (context, animation, animationTime) {
-                  return SignupScreen();
-                }));
+        navigateReplacement(SignupScreen());
       },
       child: RichText(
         text: TextSpan(

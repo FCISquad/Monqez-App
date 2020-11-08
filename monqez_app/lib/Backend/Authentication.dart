@@ -11,9 +11,8 @@ final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 var _prefs = SharedPreferences.getInstance();
 
-Future<bool> saveUserToken(String token, String email, String userID) async {
+Future<bool> saveUserToken(String token, String userID) async {
   final SharedPreferences prefs = await _prefs;
-  prefs.setString("email", email);
   prefs.setString("userID", userID);
   return prefs.setString("userToken", token);
 }
@@ -34,7 +33,7 @@ Future<bool> signup( TextEditingController _emailController,
       if (result != null) {
         makeToast("Signup successful");
         var token = await FirebaseAuth.instance.currentUser.getIdToken();
-        saveUserToken(token, result.user.email, result.user.uid);
+        saveUserToken(token, result.user.uid);
         return true;
 
       } else {
@@ -81,7 +80,7 @@ Future<bool> signInWithGoogle() async {
       assert(user.uid == currentUser.uid);
       var token = await FirebaseAuth.instance.currentUser.getIdToken();
 
-      saveUserToken(token, authResult.user.email, authResult.user.uid);
+      saveUserToken(token, authResult.user.uid);
 
       makeToast("Logged in successfully!");
 
@@ -102,7 +101,7 @@ Future<bool> normalSignIn(TextEditingController _emailController,
             email: _emailController.text, password: _passwordController.text);
 
     var token = await FirebaseAuth.instance.currentUser.getIdToken();
-    saveUserToken(token, userCredential.user.email, userCredential.user.uid);
+    saveUserToken(token, userCredential.user.uid);
 
     makeToast("Logged in Successfully");
 

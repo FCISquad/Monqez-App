@@ -20,7 +20,6 @@ class _SplashState extends State<Splash> {
     await Firebase.initializeApp();
 
     var _prefs = await SharedPreferences.getInstance();
-    email = _prefs.getString("email");
     token = _prefs.getString("userToken");
     var firebaseToken;
     if (FirebaseAuth.instance.currentUser != null)
