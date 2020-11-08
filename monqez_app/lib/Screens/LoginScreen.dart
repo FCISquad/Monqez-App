@@ -1,11 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import '../Backend/Authentication.dart';
 import 'UI.dart';
 import 'HomeScreenMap.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'SignupScreen.dart';
+import 'package:http/http.dart' as http;
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,6 +20,11 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  int type = -1;
+  bool isDisabled;
+  bool firstLogin;
+
+
   bool _showPassword = false;
   var _emailController = TextEditingController();
   var _passwordController = TextEditingController();
@@ -117,6 +129,37 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     });
     return;
+  }
+
+  Future <void> checkUser(var token, var uid) async{
+    final http.Response response2 = await http.post(
+      '$url/checkUser/',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'token': token,
+        'uid': uid,
+        'request': "check"
+      }),
+    );
+    if (response2.statusCode == 200){
+      var parsed = jsonDecode(response2.body).cast<String, dynamic>();
+      String sType = parsed['type'];
+      String sDisabled = parsed['isDisabled'];
+      String sFirst = parsed['firstLogin'];
+
+      setState(() {
+        type = int.parse(sType);
+        isDisabled = (sDisabled == 'true') ? true: false;
+        firstLogin = (sFirst == 'true') ? true: false;
+      });
+
+    }
+    else{
+      print(response2.statusCode);
+      makeToast("Error!");
+    }
   }
 
   Widget _buildEmailTF() {
@@ -253,9 +296,131 @@ class _LoginScreenState extends State<LoginScreen> {
             makeToast("Please enter your email correctly");
             return;
           }
-          bool result = await normalSignIn(_emailController, _passwordController);
+          //bool result = await normalSignIn(_emailController, _passwordController);
+          bool result;
+          var token;
+          UserCredential userCredential;
+          try {
+            userCredential = await FirebaseAuth.instance
+                .signInWithEmailAndPassword(
+                email: _emailController.text, password: _passwordController.text);
+
+            token = await FirebaseAuth.instance.currentUser.getIdToken();
+            result =  true;
+          } on FirebaseAuthException catch (e) {
+            if (e.code == 'user-not-found') {
+              makeToast('Email not found!');
+              result = false;
+            } else if (e.code == 'wrong-password') {
+              makeToast('Wrong password!');
+              result = false;
+            } else {
+              makeToast(e.code);
+              result = false;
+            }
+          }
+
           if (result) {
-            navigateReplacement(HomeScreenMap());
+            await checkUser(token, userCredential.user.uid);
+            if (isDisabled){
+              if (type == 0)
+                makeToast("Account is banned!");
+              else if (type == 1)
+                makeToast("Please wait while your application is reviewed");
+            }
+            else if (firstLogin){
+              saveUserToken(token, userCredential.user.email, userCredential.user.uid);
+              Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, animationTime, child) {
+                        return SlideTransition(
+                          position:
+                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                              .animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.ease,
+                          )),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, animation, animationTime) {
+                        return SecondSignupScreen();
+                      }));
+
+            }
+            else{
+              saveUserToken(token, userCredential.user.email, userCredential.user.uid);
+              makeToast("Logged in Successfully");
+              if (type == 0){
+                Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 500),
+                        transitionsBuilder:
+                            (context, animation, animationTime, child) {
+                          return SlideTransition(
+                            position:
+                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                                .animate(CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.ease,
+                            )),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, animation, animationTime) {
+                          return HomeScreenMap();
+                        }));
+
+              }
+              else if (type == 1){
+                Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 500),
+                        transitionsBuilder:
+                            (context, animation, animationTime, child) {
+                          return SlideTransition(
+                            position:
+                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                                .animate(CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.ease,
+                            )),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, animation, animationTime) {
+                          return HomeScreenMap();
+                        }));
+              }
+              else if (type == 2){
+                Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                        transitionDuration: Duration(milliseconds: 500),
+                        transitionsBuilder:
+                            (context, animation, animationTime, child) {
+                          return SlideTransition(
+                            position:
+                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                                .animate(CurvedAnimation(
+                              parent: animation,
+                              curve: Curves.ease,
+                            )),
+                            child: child,
+                          );
+                        },
+                        pageBuilder: (context, animation, animationTime) {
+                          return HomeScreenMap();
+                        }));
+
+              }
+            }
+
           }
 
         },
@@ -281,9 +446,137 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildSocialBtn(Function onTap, AssetImage logo) {
     return GestureDetector(
       onTap: () async {
-        bool result = await onTap();
+        bool result;
+        final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+        final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        var token;
+        UserCredential authResult;
+        try {
+          authResult =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+          final User user = authResult.user;
+
+          if (user != null) {
+            assert(!user.isAnonymous);
+            assert(await user.getIdToken() != null);
+
+            final User currentUser = FirebaseAuth.instance.currentUser;
+            assert(user.uid == currentUser.uid);
+            token = await FirebaseAuth.instance.currentUser.getIdToken();
+            result = true;
+          }
+        } on FirebaseAuthException catch (e) {
+          makeToast(e.code);
+          result = false;
+        }
         if (result){
-          navigateReplacement(HomeScreenMap());
+          await checkUser(token, authResult.user.uid);
+          if (isDisabled){
+            if (type == 0)
+              makeToast("Account is banned!");
+            else if (type == 1)
+              makeToast("Please wait while your application is reviewed");
+          }
+          else if (firstLogin){
+            saveUserToken(token, authResult.user.email, authResult.user.uid);
+            Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                    transitionDuration: Duration(milliseconds: 500),
+                    transitionsBuilder:
+                        (context, animation, animationTime, child) {
+                      return SlideTransition(
+                        position:
+                        Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                            .animate(CurvedAnimation(
+                          parent: animation,
+                          curve: Curves.ease,
+                        )),
+                        child: child,
+                      );
+                    },
+                    pageBuilder: (context, animation, animationTime) {
+                      return SecondSignupScreen();
+                    }));
+
+          }
+          else{
+            saveUserToken(token, authResult.user.email, authResult.user.uid);
+            makeToast("Logged in Successfully");
+            if (type == 0){
+              Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, animationTime, child) {
+                        return SlideTransition(
+                          position:
+                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                              .animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.ease,
+                          )),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, animation, animationTime) {
+                        return HomeScreenMap();
+                      }));
+
+            }
+            else if (type == 1){
+              Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, animationTime, child) {
+                        return SlideTransition(
+                          position:
+                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                              .animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.ease,
+                          )),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, animation, animationTime) {
+                        return HomeScreenMap();
+                      }));
+            }
+            else if (type == 2){
+              Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 500),
+                      transitionsBuilder:
+                          (context, animation, animationTime, child) {
+                        return SlideTransition(
+                          position:
+                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                              .animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.ease,
+                          )),
+                          child: child,
+                        );
+                      },
+                      pageBuilder: (context, animation, animationTime) {
+                        return HomeScreenMap();
+                      }));
+
+            }
+          }
+
         }
       },
       child: Container(

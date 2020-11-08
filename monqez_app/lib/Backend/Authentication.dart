@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 String url = "https://monqezapp.loca.lt";
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -56,8 +57,6 @@ Future<bool> signup( TextEditingController _emailController,
 
 
 Future<bool> signInWithGoogle() async {
-  await Firebase.initializeApp();
-
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
       await googleSignInAccount.authentication;
@@ -119,6 +118,7 @@ Future<bool> normalSignIn(TextEditingController _emailController,
     }
   }
 }
+
 //not used
 Future<void> signOutGoogle() async {
   await googleSignIn.signOut();
