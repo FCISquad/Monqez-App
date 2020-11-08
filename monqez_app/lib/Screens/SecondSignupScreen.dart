@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'dart:ui';
 import 'dart:io';
-//import 'package:file/file.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
+import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
 import 'HomeScreenMap.dart';
@@ -82,7 +84,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   }
 
 
-  Future <void> _click(){
+  void _click(){
     if (_isMonqez){
       _apply();
     }
@@ -117,30 +119,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
 
     if (response.statusCode == 200) {
-
-
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder:
-                  (context, animation, animationTime, child) {
-                return SlideTransition(
-                  position:
-                  Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                      .animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.ease,
-                  )),
-                  child: child,
-                );
-              },
-              pageBuilder: (context, animation, animationTime) {
-                return HomeScreenMap();
-              }));
-      //return Album.fromJson(jsonDecode(response.body));
+        navigateReplacement(_isMonqez ? HelperHomeScreen() : NormalHomeScreen());
     } else {
-      throw Exception('Failed to create album.');
+      makeToast('Failed to submit user.');
     }
   }
 
@@ -175,25 +156,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     if (response.statusCode == 200) {
       makeToast("Please wait while your application is reviewed");
       logout();
-      Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-              transitionDuration: Duration(milliseconds: 500),
-              transitionsBuilder:
-                  (context, animation, animationTime, child) {
-                return SlideTransition(
-                  position:
-                  Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                      .animate(CurvedAnimation(
-                    parent: animation,
-                    curve: Curves.ease,
-                  )),
-                  child: child,
-                );
-              },
-              pageBuilder: (context, animation, animationTime) {
-                return LoginScreen();
-              }));
+      navigateReplacement(LoginScreen());
       //return Album.fromJson(jsonDecode(response.body));
     } else {
       print(response.statusCode);
@@ -249,7 +212,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
   Widget _buildCheckBox(){
     return CheckboxListTile(
-      title: Text("Signup as Monqez?",           style: TextStyle(
+      title: Text("Signup as Monqez?", style: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.bold,
       ),

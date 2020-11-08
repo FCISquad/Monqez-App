@@ -6,9 +6,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
+import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
+import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
+import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import '../Backend/Authentication.dart';
 import 'UI.dart';
-import 'HomeScreenMap.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'SignupScreen.dart';
 import 'package:http/http.dart' as http;
@@ -329,100 +331,23 @@ class _LoginScreenState extends State<LoginScreen> {
                 makeToast("Please wait while your application is reviewed");
             }
             else if (firstLogin){
-              saveUserToken(token, userCredential.user.email, userCredential.user.uid);
-              Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, animationTime, child) {
-                        return SlideTransition(
-                          position:
-                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                              .animate(CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.ease,
-                          )),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, animation, animationTime) {
-                        return SecondSignupScreen();
-                      }));
-
+              saveUserToken(token, userCredential.user.uid);
+              navigateReplacement(SecondSignupScreen());
             }
             else{
-              saveUserToken(token, userCredential.user.email, userCredential.user.uid);
+              saveUserToken(token, userCredential.user.uid);
               makeToast("Logged in Successfully");
               if (type == 0){
-                Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionsBuilder:
-                            (context, animation, animationTime, child) {
-                          return SlideTransition(
-                            position:
-                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                                .animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.ease,
-                            )),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (context, animation, animationTime) {
-                          return HomeScreenMap();
-                        }));
-
+                navigateReplacement(NormalHomeScreen());
               }
               else if (type == 1){
-                Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionsBuilder:
-                            (context, animation, animationTime, child) {
-                          return SlideTransition(
-                            position:
-                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                                .animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.ease,
-                            )),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (context, animation, animationTime) {
-                          return HomeScreenMap();
-                        }));
+                navigateReplacement(HelperHomeScreen());
               }
               else if (type == 2){
-                Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                        transitionDuration: Duration(milliseconds: 500),
-                        transitionsBuilder:
-                            (context, animation, animationTime, child) {
-                          return SlideTransition(
-                            position:
-                            Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                                .animate(CurvedAnimation(
-                              parent: animation,
-                              curve: Curves.ease,
-                            )),
-                            child: child,
-                          );
-                        },
-                        pageBuilder: (context, animation, animationTime) {
-                          return HomeScreenMap();
-                        }));
-
+                navigateReplacement(AdminHomeScreen());
               }
             }
-
           }
-
         },
 
         padding: EdgeInsets.all(15.0),
@@ -485,95 +410,21 @@ class _LoginScreenState extends State<LoginScreen> {
               makeToast("Please wait while your application is reviewed");
           }
           else if (firstLogin){
-            saveUserToken(token, authResult.user.email, authResult.user.uid);
-            Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                    transitionDuration: Duration(milliseconds: 500),
-                    transitionsBuilder:
-                        (context, animation, animationTime, child) {
-                      return SlideTransition(
-                        position:
-                        Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                            .animate(CurvedAnimation(
-                          parent: animation,
-                          curve: Curves.ease,
-                        )),
-                        child: child,
-                      );
-                    },
-                    pageBuilder: (context, animation, animationTime) {
-                      return SecondSignupScreen();
-                    }));
+            saveUserToken(token, authResult.user.uid);
+            navigateReplacement(SecondSignupScreen());
 
           }
           else{
-            saveUserToken(token, authResult.user.email, authResult.user.uid);
+            saveUserToken(token, authResult.user.uid);
             makeToast("Logged in Successfully");
             if (type == 0){
-              Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, animationTime, child) {
-                        return SlideTransition(
-                          position:
-                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                              .animate(CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.ease,
-                          )),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, animation, animationTime) {
-                        return HomeScreenMap();
-                      }));
-
+              navigateReplacement(NormalHomeScreen());
             }
             else if (type == 1){
-              Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, animationTime, child) {
-                        return SlideTransition(
-                          position:
-                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                              .animate(CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.ease,
-                          )),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, animation, animationTime) {
-                        return HomeScreenMap();
-                      }));
+              navigateReplacement(HelperHomeScreen());
             }
             else if (type == 2){
-              Navigator.pushReplacement(
-                  context,
-                  PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 500),
-                      transitionsBuilder:
-                          (context, animation, animationTime, child) {
-                        return SlideTransition(
-                          position:
-                          Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                              .animate(CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.ease,
-                          )),
-                          child: child,
-                        );
-                      },
-                      pageBuilder: (context, animation, animationTime) {
-                        return HomeScreenMap();
-                      }));
-
+              navigateReplacement(AdminHomeScreen());
             }
           }
 
