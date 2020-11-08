@@ -5,7 +5,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+<<<<<<< Updated upstream
+=======
 String url = "https://monqezapp.loca.lt";
+
+
+>>>>>>> Stashed changes
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 var _prefs = SharedPreferences.getInstance();
