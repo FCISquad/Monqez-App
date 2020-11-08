@@ -20,7 +20,7 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  bool loggedin = false;
+  Widget map;
   String uid;
   String token;
   int type;
@@ -60,34 +60,39 @@ class _SplashState extends State<Splash> {
     var _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
     uid = _prefs.getString("userID");
-
-    if (token == null)
-      return LoginScreen();
-
-    await checkUser(token, uid);
-    if (isDisabled){
-      if (type == 0)
-        makeToast("Account is banned!");
-      else if (type == 1)
-        makeToast("Please wait while your application is reviewed");
+    Widget navigate ;
+    if (token == null) {
+        navigate = LoginScreen();
     }
-    else if (firstLogin){
-      saveUserToken(token, uid);
-      return SecondSignupScreen();
+    else {
+      await checkUser(token, uid);
+      if (isDisabled) {
+        if (type == 0)
+          makeToast("Account is banned!");
+        else if (type == 1)
+          makeToast("Please wait while your application is reviewed");
+      }
+      else if (firstLogin) {
+        saveUserToken(token, uid);
+        navigate = SecondSignupScreen();
+      }
+      else {
+        saveUserToken(token, uid);
+        makeToast("Logged in Successfully");
+        if (type == 0) {
+          navigate = NormalHomeScreen();
+        }
+        else if (type == 1) {
+          navigate = HelperHomeScreen();
+        }
+        else if (type == 2) {
+          navigate = AdminHomeScreen();
+        }
+      }
     }
-    else{
-      saveUserToken(token, uid);
-      makeToast("Logged in Successfully");
-      if (type == 0){
-        return NormalHomeScreen();
-      }
-      else if (type == 1){
-        return HelperHomeScreen();
-      }
-      else if (type == 2){
-        return AdminHomeScreen();
-      }
-    }
+    setState(() {
+      map = navigate;
+    });
   }
 
   @override
@@ -95,7 +100,7 @@ class _SplashState extends State<Splash> {
     redirect();
     return SplashScreen(
       seconds: 3,
-      navigateAfterSeconds: redirect(),
+      navigateAfterSeconds: map,
       backgroundColor: Colors.deepOrangeAccent,
       title: Text('Monqez',
           style: TextStyle(
