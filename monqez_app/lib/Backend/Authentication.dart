@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 
 
@@ -93,6 +92,7 @@ Future<bool> signInWithGoogle() async {
   }
   return false;
 }
+/*
 Future<bool> signInWithFacebook() async {
   try {
     var facebookLogin = new FacebookLogin();
@@ -112,6 +112,8 @@ Future<bool> signInWithFacebook() async {
     print(e.message);
   }
 }
+
+ */
 
 
 Future<bool> normalSignIn(TextEditingController _emailController,
