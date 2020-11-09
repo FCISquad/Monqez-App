@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,13 +6,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 
+
+String url = "https://monqezapp.loca.lt";
+
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 var _prefs = SharedPreferences.getInstance();
 
-Future<bool> saveUserToken(String token, String email, String userID) async {
+Future<bool> saveUserToken(String token, String userID) async {
   final SharedPreferences prefs = await _prefs;
-  prefs.setString("email", email);
   prefs.setString("userID", userID);
   return prefs.setString("userToken", token);
 }
@@ -34,7 +36,7 @@ Future<bool> signup( TextEditingController _emailController,
       if (result != null) {
         makeToast("Signup successful");
         var token = await FirebaseAuth.instance.currentUser.getIdToken();
-        saveUserToken(token, result.user.email, result.user.uid);
+        saveUserToken(token, result.user.uid);
         return true;
 
       } else {
@@ -57,8 +59,6 @@ Future<bool> signup( TextEditingController _emailController,
 
 
 Future<bool> signInWithGoogle() async {
-  await Firebase.initializeApp();
-
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
       await googleSignInAccount.authentication;
@@ -81,7 +81,7 @@ Future<bool> signInWithGoogle() async {
       assert(user.uid == currentUser.uid);
       var token = await FirebaseAuth.instance.currentUser.getIdToken();
 
-      saveUserToken(token, authResult.user.email, authResult.user.uid);
+      saveUserToken(token, authResult.user.uid);
 
       makeToast("Logged in successfully!");
 
@@ -122,7 +122,7 @@ Future<bool> normalSignIn(TextEditingController _emailController,
             email: _emailController.text, password: _passwordController.text);
 
     var token = await FirebaseAuth.instance.currentUser.getIdToken();
-    saveUserToken(token, userCredential.user.email, userCredential.user.uid);
+    saveUserToken(token, userCredential.user.uid);
 
     makeToast("Logged in Successfully");
 
@@ -140,6 +140,7 @@ Future<bool> normalSignIn(TextEditingController _emailController,
     }
   }
 }
+
 //not used
 Future<void> signOutGoogle() async {
   await googleSignIn.signOut();

@@ -1,26 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../Backend/Authentication.dart';
-import 'LoginScreen.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/LoginScreen.dart';
 
-class HomeScreenMapmmmm extends StatefulWidget {
+class NormalHomeScreen extends StatefulWidget {
   @override
-  _HomeScreenMapState createState() => _HomeScreenMapState();
+  _NormalHomeScreenState createState() => _NormalHomeScreenState();
 }
-class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProviderStateMixin {
+class _NormalHomeScreenState extends State<NormalHomeScreen> with SingleTickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
-  /*
-  void logout () async {
-    _prefs = await SharedPreferences.getInstance();
-    _prefs.remove('email');
-    _prefs.remove('userID');
-    _prefs.remove('userToken');
-    makeToast('Logged out!');
-  }
-   */
   Widget _buildBtn(String text){
-
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
@@ -95,7 +85,7 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                      'Monqez', style: TextStyle(
+                      'Normal', style: TextStyle(
                       color: Colors.white,
                       fontSize: 48,
                       letterSpacing: 1.5,
