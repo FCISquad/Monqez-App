@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'HomeScreen.dart';
+import '../Backend/Authentication.dart';
+import 'LoginScreen.dart';
 
 class HomeScreenMap extends StatefulWidget {
   @override
   _HomeScreenMapState createState() => _HomeScreenMapState();
 }
 class _HomeScreenMapState extends State<HomeScreenMap> with SingleTickerProviderStateMixin {
-  var _prefs;
   Animation<double> animation;
   AnimationController controller;
-  void makeToast(String text) {
-    Fluttertoast.showToast(
-      msg: text,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-    );
-  }
+  /*
   void logout () async {
     _prefs = await SharedPreferences.getInstance();
     _prefs.remove('email');
@@ -26,6 +18,7 @@ class _HomeScreenMapState extends State<HomeScreenMap> with SingleTickerProvider
     _prefs.remove('userToken');
     makeToast('Logged out!');
   }
+   */
   Widget _buildBtn(String text){
 
     return Container(
@@ -51,7 +44,7 @@ class _HomeScreenMapState extends State<HomeScreenMap> with SingleTickerProvider
                     );
                   },
                   pageBuilder: (context, animation, animationTime) {
-                    return HomeScreen();
+                    return LoginScreen();
                   }));
         },
         padding: EdgeInsets.all(15.0),

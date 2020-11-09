@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+String url = "https://monqezz.loca.lt";
+
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -24,9 +26,37 @@ void makeToast(String text) {
   );
 }
 
-Future<bool> signInWithGoogle() async {
-  await Firebase.initializeApp();
+Future<bool> signup( TextEditingController _emailController,
+    TextEditingController _passwordController ) async {
+    try {
+      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+      if (result != null) {
+        makeToast("Signup successful");
+        var token = await FirebaseAuth.instance.currentUser.getIdToken();
+        saveUserToken(token, result.user.email, result.user.uid);
+        return true;
 
+      } else {
+        makeToast('Please try later');
+        return false;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        makeToast('Email already exists!');
+        return false;
+      } else {
+        makeToast(e.code);
+        return false;
+      }
+
+  }
+}
+
+
+
+
+Future<bool> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
   final GoogleSignInAuthentication googleSignInAuthentication =
       await googleSignInAccount.authentication;
@@ -89,8 +119,18 @@ Future<bool> normalSignIn(TextEditingController _emailController,
   }
 }
 
+//not used
 Future<void> signOutGoogle() async {
   await googleSignIn.signOut();
 
   print("User Signed Out");
 }
+
+void logout () async {
+  var _prefs = await SharedPreferences.getInstance();
+  _prefs.remove('email');
+  _prefs.remove('userID');
+  _prefs.remove('userToken');
+  makeToast('Logged out!');
+}
+
