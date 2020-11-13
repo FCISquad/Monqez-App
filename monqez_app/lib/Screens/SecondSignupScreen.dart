@@ -80,6 +80,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         }
         else{
           _correctCertificate = true;
+          _certificateError = "";
         }
       }
 
