@@ -435,13 +435,15 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               ),
             ),
           ),
-          SizedBox(height: 5.0),
-          Text(
-            _nationalIdError,
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+          Visibility(
+            child: Text(
+              _nationalIdError,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            visible: !_nationalIdError.isEmpty,
           ),
           Visibility(
             child: TextField(
@@ -673,12 +675,15 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           ),
         ),
         SizedBox(height: 10.0),
-        Text(
-        _addressError,
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-        )
+        Visibility(
+          child: Text(
+          _addressError,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          )
+          ),
+          visible: !_addressError.isEmpty,
         )
       ],
     );
