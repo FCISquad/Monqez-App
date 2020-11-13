@@ -265,10 +265,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       makeToast("Please wait while your application is reviewed");
       logout();
       navigateReplacement(LoginScreen());
-      //return Album.fromJson(jsonDecode(response.body));
     } else {
       print(response.statusCode);
-      throw Exception('Failed to create album.');
+      throw Exception('Failed to create user.');
     }
   }
 
