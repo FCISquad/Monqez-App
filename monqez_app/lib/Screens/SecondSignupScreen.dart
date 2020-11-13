@@ -17,7 +17,6 @@ import 'HomeScreenMap.dart';
 import 'LoginScreen.dart';
 import '../Backend/Authentication.dart';
 
-
 class SecondSignupScreen extends StatefulWidget {
   @override
   _SecondSignupScreenState createState() => _SecondSignupScreenState();
@@ -34,10 +33,26 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _buildNumberController = TextEditingController();
   var token;
   var uid;
+  String _fullNameError = '';
+  String _phoneNumberError = '';
+  String _nationalIdError = '';
+  String _countryError = '';
+  String _cityError = '';
+  String _buildNumberError = '';
+  String _streetError = '';
+
+  bool _correctFullName = false;
+  bool _correctPhoneNumber = false;
+  bool _correctNationalId = false;
+  bool _correctStreet = false;
+  bool _correctCity = false;
+  bool _correctCountry = false;
+  bool _correctBuildNumber = false;
+
   String gender;
   DateTime selectedDate = DateTime.now();
   File imageFile;
-  String _fileName= "File Path", _imageName = "Image Path";
+  String _fileName = "File Path", _imageName = "Image Path";
   List<String> _types = ["pdf", "jpg", "png"];
   FilePickerResult _path;
   File certificateFile;
@@ -51,16 +66,119 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       gravity: ToastGravity.BOTTOM,
     );
   }
+  bool _validateAllFields(){
+    if(_correctFullName && _correctPhoneNumber
+        && _correctNationalId &&_correctCountry && _correctCity && _correctStreet && _correctBuildNumber){
+      return true ;
+    }
+    else{
+      return false ;
+    }
+  }
+
+  void _validateFullName(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _fullNameError = "You must enter your full name";
+        _correctFullName = false;
+      } else {
+        _fullNameError = "";
+        _correctFullName = true;
+      }
+    });
+    return;
+  }
+
+  void _validatePhoneNumber(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _phoneNumberError = "You must enter your phone number";
+        _correctPhoneNumber = false;
+      } else if (text.length < 11) {
+        _phoneNumberError = "your phone number must be 11 numbers";
+        _correctPhoneNumber = false;
+      } else {
+        _phoneNumberError = "";
+        _correctPhoneNumber = true;
+      }
+    });
+    return;
+  }
+
+  void _validateNationalId(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _nationalIdError =
+            "please enter your national id number or upload an image of your national id";
+        _correctNationalId = false;
+      } else {
+        _nationalIdError = "";
+        _correctNationalId = true;
+      }
+    });
+    return;
+  }
+
+  void _validateCountry(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _countryError = "please enter your country";
+        _correctCountry = false;
+      } else {
+        _countryError = "";
+        _correctCountry = true;
+      }
+    });
+    return;
+  }
+
+  void _validateCity(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _cityError = "please enter your city";
+        _correctCity = false;
+      } else {
+        _cityError = "";
+        _correctCity = true;
+      }
+    });
+    return;
+  }
+
+  void _validateStreet(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _streetError = "please enter your street";
+        _correctStreet = false;
+      } else {
+        _streetError = "";
+        _correctStreet = true;
+      }
+    });
+    return;
+  }
+
+  void validateBuildNumber(String text) {
+    setState(() {
+      if (text.isEmpty) {
+        _buildNumberError = "please enter your build number";
+        _correctBuildNumber = false;
+      } else {
+        _buildNumberError = "";
+        _correctBuildNumber = true;
+      }
+    });
+    return;
+  }
+
   void navigateReplacement(Widget map) {
     Navigator.pushReplacement(
         context,
         PageRouteBuilder(
             transitionDuration: Duration(milliseconds: 500),
-            transitionsBuilder:
-                (context, animation, animationTime, child) {
+            transitionsBuilder: (context, animation, animationTime, child) {
               return SlideTransition(
-                position:
-                Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
                     .animate(CurvedAnimation(
                   parent: animation,
                   curve: Curves.ease,
@@ -73,22 +191,18 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             }));
   }
 
-
   Future<void> intializeData() async {
     _prefs = await SharedPreferences.getInstance();
-    if (FirebaseAuth.instance.currentUser != null)
-    {
+    if (FirebaseAuth.instance.currentUser != null) {
       token = await FirebaseAuth.instance.currentUser.getIdToken();
       uid = _prefs.get("userID");
     }
   }
 
-
-  void _click(){
-    if (_isMonqez){
+  void _click() {
+    if (_isMonqez) {
       _apply();
-    }
-    else{
+    } else {
       _submit();
     }
   }
@@ -119,7 +233,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
 
     if (response.statusCode == 200) {
-        navigateReplacement(_isMonqez ? HelperHomeScreen() : NormalHomeScreen());
+      navigateReplacement(_isMonqez ? HelperHomeScreen() : NormalHomeScreen());
     } else {
       makeToast('Failed to submit user.');
     }
@@ -164,11 +278,10 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     }
   }
 
-
   void _uploadCertificate() async {
     try {
       _path = (await FilePicker.platform.pickFiles());
-        /*
+      /*
         type: FileType.any,
         allowMultiple: false,
         //allowedExtensions: _types
@@ -186,7 +299,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       _fileName = certificateFile.path.split("/").last;
     });
   }
-///ERRORS HERE
+
+  ///ERRORS HERE
   void _uploadID() async {
     try {
       _path = (await FilePicker.platform.pickFiles());
@@ -210,12 +324,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     });
   }
 
-  Widget _buildCheckBox(){
+  Widget _buildCheckBox() {
     return CheckboxListTile(
-      title: Text("Signup as Monqez?", style: TextStyle(
-        color: Colors.white,
-        fontWeight: FontWeight.bold,
-      ),
+      title: Text(
+        "Signup as Monqez?",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       value: _isMonqez,
       onChanged: (newValue) {
@@ -223,10 +339,10 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           _isMonqez = newValue;
         });
       },
-      controlAffinity: ListTileControlAffinity.trailing,  //  <-- leading Checkbox
+      controlAffinity:
+          ListTileControlAffinity.trailing, //  <-- leading Checkbox
     );
   }
-
 
   Widget _buildNameTF() {
     return Column(
@@ -247,6 +363,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           child: TextField(
             keyboardType: TextInputType.name,
             controller: _nameController,
+            onChanged: _validateFullName,
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -264,6 +381,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               ),
             ),
           ),
+        ),
+        SizedBox(height: 5.0),
+        Text(
+          _fullNameError,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -288,6 +410,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           child: TextField(
             keyboardType: TextInputType.phone,
             controller: _phoneController,
+            onChanged: _validatePhoneNumber,
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -306,80 +429,96 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             ),
           ),
         ),
+        SizedBox(height: 5.0),
+        Text(
+          _phoneNumberError,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
 
   Widget _buildIDNumberTF() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'ID Number',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: TextField(
-            controller: _idController,
-            keyboardType: TextInputType.number,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'ID Number',
             style: TextStyle(
-              color: Colors.deepOrange,
-              fontFamily: 'OpenSans',
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.assignment_ind_outlined,
+          ),
+          SizedBox(height: 10.0),
+          Container(
+            alignment: Alignment.centerLeft,
+            decoration: kBoxDecorationStyle,
+            height: 50.0,
+            child: TextField(
+              controller: _idController,
+              onChanged: _validateNationalId,
+              keyboardType: TextInputType.number,
+              style: TextStyle(
                 color: Colors.deepOrange,
+                fontFamily: 'OpenSans',
               ),
-              suffixIcon: GestureDetector(
-                onTap: () { _buildImagePicker(context);},
-                child: Icon(
-                  Icons.camera_alt,
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.only(top: 14.0),
+                prefixIcon: Icon(
+                  Icons.assignment_ind_outlined,
+                  color: Colors.deepOrange,
+                ),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    _buildImagePicker(context);
+                  },
+                  child: Icon(
+                    Icons.camera_alt,
+                    color: Colors.deepOrange,
+                  ),
+                ),
+                hintText: 'Enter your ID Number',
+                hintStyle: TextStyle(
                   color: Colors.deepOrange,
                 ),
               ),
-              hintText: 'Enter your ID Number',
-              hintStyle: TextStyle(
-                color: Colors.deepOrange,
-              ),
             ),
           ),
-        ),
-
-        Visibility(
-          child: TextField(
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-
-              suffixIcon: GestureDetector(
-                onTap: () { setState(() {
-                  _imageName = "Image Path"; imageFile = null;
-                });},
-                child: Icon(
-                  Icons.highlight_remove,
+          SizedBox(height: 5.0),
+          Text(
+            _nationalIdError,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Visibility(
+            child: TextField(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.only(top: 14.0),
+                suffixIcon: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _imageName = "Image Path";
+                      imageFile = null;
+                    });
+                  },
+                  child: Icon(
+                    Icons.highlight_remove,
+                    color: Colors.white,
+                  ),
+                ),
+                hintText: _imageName,
+                hintStyle: TextStyle(
                   color: Colors.white,
                 ),
               ),
-              hintText: _imageName,
-              hintStyle: TextStyle(
-                color: Colors.white,
-              ),
             ),
-          ),
-          visible: _imageName != "Image Path",
-        )
-      ]
-    );
+            visible: _imageName != "Image Path",
+          )
+        ]);
   }
 
   Widget _buildCertificateTF() {
@@ -440,6 +579,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         selectedDate = picked;
       });
   }
+
   Widget _buildDatePicker(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -502,52 +642,68 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: MediaQuery.of(context).size.width / 2.55,
-                alignment: Alignment.centerLeft,
-                decoration: kBoxDecorationStyle,
-                child: TextFormField(
-                  controller: _countryController,
-                  style: TextStyle(
-                    color: Colors.deepOrange,
-                    fontFamily: 'OpenSans',
-                  ),
-
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.only(left: 14.0),
-
-                    hintText: "Country",
-                    hintStyle: TextStyle(
+                  width: MediaQuery.of(context).size.width / 2.55,
+                  alignment: Alignment.centerLeft,
+                  decoration: kBoxDecorationStyle,
+                  child: TextFormField(
+                    controller: _countryController,
+                    onChanged: _validateCountry,
+                    style: TextStyle(
                       color: Colors.deepOrange,
+                      fontFamily: 'OpenSans',
                     ),
-                  ),
-                )
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.only(left: 14.0),
+                      hintText: "Country",
+                      hintStyle: TextStyle(
+                        color: Colors.deepOrange,
+                      ),
+                    ),
+                  )),
+              /*SizedBox(height: 5.0),
+              Text(
+                _countryError,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+
+               */
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _cityController,
+                    onChanged: _validateCity,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
                     ),
-
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.only(left: 14.0),
-
                       hintText: "City",
                       hintStyle: TextStyle(
                         color: Colors.deepOrange,
                       ),
                     ),
-                  )
-              )
+                  ))
             ],
           ),
         ),
+        /*SizedBox(height: 5.0),
+        Text(
+          _cityError,
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+         */
         SizedBox(height: 10.0),
         Container(
           width: MediaQuery.of(context).size.width,
@@ -560,44 +716,60 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _streetController,
+                    onChanged: _validateStreet,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
                     ),
-
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.only(left: 14.0),
-
                       hintText: "Street",
                       hintStyle: TextStyle(
                         color: Colors.deepOrange,
                       ),
                     ),
-                  )
+                  )),
+              /*SizedBox(height: 5.0),
+              Text(
+                _streetError,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+
+               */
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _buildNumberController,
+                    onChanged: validateBuildNumber,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
                     ),
-
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.only(left: 14.0),
-
                       hintText: "Build Number",
                       hintStyle: TextStyle(
                         color: Colors.deepOrange,
                       ),
                     ),
-                  )
-              )
+                  )),
+              /*SizedBox(height: 5.0),
+              Text(
+                _buildNumberError,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+
+               */
+
             ],
           ),
         )
@@ -612,6 +784,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     });
     //Navigator.of(context).pop();
   }
+
   void _buildImagePicker(BuildContext context) async {
     return showDialog(
         context: context,
@@ -639,6 +812,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               ));
         });
   }
+
   Widget _buildSubmitBtn() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
@@ -646,8 +820,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       height: 90,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: _click,
-
+        onPressed: _validateAllFields,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -674,7 +847,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           focusColor: Colors.blue,
           value: title,
           groupValue: gender,
-          onChanged: (value){
+          onChanged: (value) {
             setState(() {
               gender = value;
             });
@@ -683,10 +856,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         Text(
           title,
           style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 16
-          ),
+              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ],
     );
@@ -725,7 +895,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   _buildPhoneNumberTF(),
                   SizedBox(height: 10.0),
                   _buildIDNumberTF(),
-                  SizedBox(height: 10.0,),
+                  SizedBox(
+                    height: 10.0,
+                  ),
                   _buildDatePicker(context),
                   SizedBox(height: 10.0),
                   _buildAddress(),
@@ -735,9 +907,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   SizedBox(height: 10.0),
                   _buildCheckBox(),
                   SizedBox(height: 10.0),
-                  Visibility(
-                      visible: _isMonqez,
-                      child: _buildCertificateTF()),
+                  Visibility(visible: _isMonqez, child: _buildCertificateTF()),
                   SizedBox(height: 20.0),
                   _buildSubmitBtn()
                 ],
