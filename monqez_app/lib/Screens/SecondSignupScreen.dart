@@ -35,18 +35,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   String _fullNameError = '';
   String _phoneNumberError = '';
   String _nationalIdError = '';
-  String _countryError = '';
-  String _cityError = '';
-  String _buildNumberError = '';
-  String _streetError = '';
+  String _addressError = '';
 
   bool _correctFullName = false;
   bool _correctPhoneNumber = false;
   bool _correctNationalId = false;
-  bool _correctStreet = false;
-  bool _correctCity = false;
-  bool _correctCountry = false;
-  bool _correctBuildNumber = false;
+  bool _correctAddress = false;
 
   String gender;
   DateTime selectedDate = DateTime.now();
@@ -66,8 +60,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
   }
   bool _validateAllFields(){
-    if(_correctFullName && _correctPhoneNumber
-        && _correctNationalId &&_correctCountry && _correctCity && _correctStreet && _correctBuildNumber){
+    if(_correctFullName && _correctPhoneNumber && _correctNationalId && _correctAddress){
       return true ;
     }
     else{
@@ -117,58 +110,29 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     });
     return;
   }
-
-  void _validateCountry(String text) {
+  Widget getTitle(String text) {
+    return  Text(
+      text,
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 16.0,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+  void _validateAddress(String text) {
     setState(() {
-      if (text.isEmpty) {
-        _countryError = "please enter your country";
-        _correctCountry = false;
+      if (_cityController.text.isEmpty || _streetController.text.isEmpty || _buildNumberController.text.isEmpty || _countryController.text.isEmpty) {
+        _addressError = "Please enter your address correctly";
+        _correctAddress = false;
       } else {
-        _countryError = "";
-        _correctCountry = true;
+        _addressError = "";
+        _correctAddress = true;
       }
     });
     return;
   }
 
-  void _validateCity(String text) {
-    setState(() {
-      if (text.isEmpty) {
-        _cityError = "please enter your city";
-        _correctCity = false;
-      } else {
-        _cityError = "";
-        _correctCity = true;
-      }
-    });
-    return;
-  }
-
-  void _validateStreet(String text) {
-    setState(() {
-      if (text.isEmpty) {
-        _streetError = "please enter your street";
-        _correctStreet = false;
-      } else {
-        _streetError = "";
-        _correctStreet = true;
-      }
-    });
-    return;
-  }
-
-  void validateBuildNumber(String text) {
-    setState(() {
-      if (text.isEmpty) {
-        _buildNumberError = "please enter your build number";
-        _correctBuildNumber = false;
-      } else {
-        _buildNumberError = "";
-        _correctBuildNumber = true;
-      }
-    });
-    return;
-  }
 
   void navigateReplacement(Widget map) {
     Navigator.pushReplacement(
@@ -352,13 +316,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Full Name',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        getTitle("Full Name"),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
@@ -399,13 +357,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          'Phone Number',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        getTitle("Phone Number"),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
@@ -446,13 +398,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            'ID Number',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          getTitle("ID Number"),
           SizedBox(height: 10.0),
           Container(
             alignment: Alignment.centerLeft,
@@ -588,13 +534,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "Date of birth",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        getTitle("Date of Birth"),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
@@ -632,13 +572,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "Address",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        getTitle("Address"),
         SizedBox(height: 10.0),
         Container(
           width: MediaQuery.of(context).size.width,
@@ -651,7 +585,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _countryController,
-                    onChanged: _validateCountry,
+                    onChanged: _validateAddress,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
@@ -665,23 +599,13 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       ),
                     ),
                   )),
-              SizedBox(height: 5.0),
-              Text(
-                _countryError,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _cityController,
-                    onChanged: _validateCity,
+                    onChanged: _validateAddress,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
@@ -698,16 +622,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             ],
           ),
         ),
-        /*SizedBox(height: 5.0),
-        Text(
-          _cityError,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-         */
         SizedBox(height: 10.0),
         Container(
           width: MediaQuery.of(context).size.width,
@@ -720,7 +634,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _streetController,
-                    onChanged: _validateStreet,
+                    onChanged: _validateAddress,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
@@ -734,23 +648,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       ),
                     ),
                   )),
-              /*SizedBox(height: 5.0),
-              Text(
-                _streetError,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
 
-               */
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
                   decoration: kBoxDecorationStyle,
                   child: TextFormField(
                     controller: _buildNumberController,
-                    onChanged: validateBuildNumber,
+                    onChanged: _validateAddress,
                     style: TextStyle(
                       color: Colors.deepOrange,
                       fontFamily: 'OpenSans',
@@ -764,18 +669,16 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       ),
                     ),
                   )),
-              /*SizedBox(height: 5.0),
-              Text(
-                _buildNumberError,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-
-               */
-
             ],
           ),
+        ),
+        SizedBox(height: 10.0),
+        Text(
+        _addressError,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        )
         )
       ],
     );
@@ -905,9 +808,19 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   _buildDatePicker(context),
                   SizedBox(height: 10.0),
                   _buildAddress(),
-                  SizedBox(height: 10.0),
-                  addRadioButton(1, "Male"),
-                  addRadioButton(2, "Female"),
+                  SizedBox(height: 20.0),
+                  
+                  SizedBox(
+                    width: double.infinity,
+                    height: 20,
+                    child: getTitle("Gender")
+                  ),
+                  Row(
+                    children: <Widget>[
+                      addRadioButton(1, "Male"),
+                      addRadioButton(2, "Female"),
+                    ]
+                  ),
                   SizedBox(height: 10.0),
                   _buildCheckBox(),
                   SizedBox(height: 10.0),

@@ -20,7 +20,7 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  Widget map;
+  Widget map = LoginScreen();
   String uid;
   String token;
   int type;
