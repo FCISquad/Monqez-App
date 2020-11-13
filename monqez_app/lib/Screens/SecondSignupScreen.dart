@@ -30,17 +30,20 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _cityController = TextEditingController();
   var _streetController = TextEditingController();
   var _buildNumberController = TextEditingController();
+  var _certificateController = TextEditingController() ;
   var token;
   var uid;
   String _fullNameError = '';
   String _phoneNumberError = '';
   String _nationalIdError = '';
   String _addressError = '';
+  String _certificateError = '' ;
 
   bool _correctFullName = false;
   bool _correctPhoneNumber = false;
   bool _correctNationalId = false;
   bool _correctAddress = false;
+  bool _correctCertificate = false ;
 
   String gender;
   DateTime selectedDate = DateTime.now();
@@ -60,12 +63,28 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
   }
   bool _validateAllFields(){
-    if(_correctFullName && _correctPhoneNumber && _correctNationalId && _correctAddress){
+    if(_correctFullName && _correctPhoneNumber && _correctNationalId && _correctAddress &&((_isMonqez && _correctCertificate)|| !_isMonqez)){
       return true ;
     }
     else{
       return false ;
     }
+  }
+  void _validateCertificate(String text) {
+    setState(() {
+      if (_isMonqez){
+        print(_fileName) ;
+        if (_fileName == "File Path" ) {
+          _certificateError = "You must enter your certificate";
+          _correctCertificate = false;
+        }
+        else{
+          _correctCertificate = true;
+        }
+      }
+
+    });
+    return;
   }
 
   void _validateFullName(String text) {
@@ -84,10 +103,10 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   void _validatePhoneNumber(String text) {
     setState(() {
       if (text.isEmpty) {
-        _phoneNumberError = "You must enter your phone number";
+        _phoneNumberError = "Phone number is required";
         _correctPhoneNumber = false;
-      } else if (text.length < 11) {
-        _phoneNumberError = "your phone number must be 11 numbers";
+      } else if (text.length != 11) {
+        _phoneNumberError = "Phone number is incorrect";
         _correctPhoneNumber = false;
       } else {
         _phoneNumberError = "";
@@ -101,9 +120,15 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     setState(() {
       if (text.isEmpty) {
         _nationalIdError =
-            "please enter your national id number or upload an image of your national id";
+            "National ID number is required";
         _correctNationalId = false;
-      } else {
+      }
+      else if (text.length != 14 ){
+        _nationalIdError =
+        "National ID number is incorrect";
+        _correctNationalId = false;
+      }
+      else {
         _nationalIdError = "";
         _correctNationalId = true;
       }
@@ -170,7 +195,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         _submit();
       }
     } else {
-      makeToast("Data is not correct");
+      makeToast("Data is incomplete");
     }
   }
 
@@ -305,6 +330,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       onChanged: (newValue) {
         setState(() {
           _isMonqez = newValue;
+          _validateCertificate("");
         });
       },
       controlAffinity:
@@ -345,9 +371,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           ),
         ),
         SizedBox(height: 5.0),
-        Text(
-          _fullNameError,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        Visibility(
+          child: Text(
+            _fullNameError,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          visible:  _fullNameError.isNotEmpty,
         ),
       ],
     );
@@ -386,9 +415,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           ),
         ),
         SizedBox(height: 5.0),
-        Text(
-          _phoneNumberError,
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        Visibility(
+          child: Text(
+            _phoneNumberError,
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          visible: _phoneNumberError.isNotEmpty,
         ),
       ],
     );
@@ -443,7 +475,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            visible: !_nationalIdError.isEmpty,
+            visible: _nationalIdError.isNotEmpty,
           ),
           Visibility(
             child: TextField(
@@ -490,6 +522,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           decoration: kBoxDecorationStyle,
           height: 50.0,
           child: TextFormField(
+            controller: _certificateController ,
+            onChanged: _validateCertificate,
             readOnly: true,
             style: TextStyle(
               color: Colors.deepOrange,
@@ -515,6 +549,16 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               ),
             ),
           ),
+        ),
+        Visibility(
+          child: Text(
+            _certificateError,
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          visible: _certificateError.isNotEmpty,
         ),
       ],
     );
