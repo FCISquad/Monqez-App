@@ -48,7 +48,6 @@ class _SplashState extends State<Splash> {
       type = int.parse(sType);
       isDisabled = (sDisabled == 'true') ? true: false;
       firstLogin = (sFirst == 'true') ? true: false;
-
     }
     else{
       print(response2.statusCode);
