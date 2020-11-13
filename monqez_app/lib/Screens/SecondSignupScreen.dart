@@ -13,7 +13,6 @@ import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
-import 'HomeScreenMap.dart';
 import 'LoginScreen.dart';
 import '../Backend/Authentication.dart';
 
@@ -53,7 +52,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   DateTime selectedDate = DateTime.now();
   File imageFile;
   String _fileName = "File Path", _imageName = "Image Path";
-  List<String> _types = ["pdf", "jpg", "png"];
+  //List<String> _types = ["pdf", "jpg", "png"];
   FilePickerResult _path;
   File certificateFile;
 
@@ -200,10 +199,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   }
 
   void _click() {
-    if (_isMonqez) {
-      _apply();
+    if (_validateAllFields()){
+      if (_isMonqez) {
+        _apply();
+      } else {
+        _submit();
+      }
     } else {
-      _submit();
+      makeToast("Data is not correct");
     }
   }
 
@@ -211,7 +214,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
-    makeToast("Submitted");
+
     final http.Response response = await http.post(
       '$url/signup/',
       headers: <String, String>{
@@ -233,6 +236,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
 
     if (response.statusCode == 200) {
+      makeToast("Submitted");
       navigateReplacement(_isMonqez ? HelperHomeScreen() : NormalHomeScreen());
     } else {
       makeToast('Failed to submit user.');
@@ -661,7 +665,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       ),
                     ),
                   )),
-              /*SizedBox(height: 5.0),
+              SizedBox(height: 5.0),
               Text(
                 _countryError,
                 style: TextStyle(
@@ -670,7 +674,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 ),
               ),
 
-               */
+
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
@@ -820,7 +824,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       height: 90,
       child: RaisedButton(
         elevation: 5.0,
-        onPressed: _validateAllFields,
+        onPressed: _click,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
