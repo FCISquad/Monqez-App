@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import '../Backend/Authentication.dart';
 import 'LoginScreen.dart';
 
-class HomeScreenMap extends StatefulWidget {
+class HomeScreenMapmmmm extends StatefulWidget {
   @override
   _HomeScreenMapState createState() => _HomeScreenMapState();
 }
-class _HomeScreenMapState extends State<HomeScreenMap> with SingleTickerProviderStateMixin {
+class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProviderStateMixin {
   Animation<double> animation;
   AnimationController controller;
   /*
