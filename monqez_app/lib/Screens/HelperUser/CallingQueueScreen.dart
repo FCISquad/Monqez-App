@@ -6,7 +6,7 @@ class CallingQueueScreen extends StatefulWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ratins',
+      title: 'Ratings',
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
