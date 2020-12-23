@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   @override
@@ -51,7 +49,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 child: Table(children: [
                 TableRow(children: [
                   _card("Add New Admin", "", Icons.person_add_sharp,
-                      ApplicationsScreen()),
+                      AddNewAdminScreen()),
                 ]),
               ]),
             )])));

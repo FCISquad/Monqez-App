@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/AdminUser/ViewApplicationScreen.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 
 class ApplicationsScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           subtitle: Text('Name of the pdf'),
           leading: Text('$index'),
           trailing: Icon(Icons.keyboard_arrow_right),
-          onTap: () => print("Tapped"),
+          onTap: () => navigate(ViewApplicationScreen()),
         );
       },
       separatorBuilder: (context, index) {
@@ -37,4 +38,25 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       },
     );
   }
+
+  void navigate(Widget map) {
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder: (context, animation, animationTime, child) {
+              return SlideTransition(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                    .animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return map;
+            }));
+  }
+
 }

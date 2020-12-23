@@ -55,6 +55,32 @@ Future<bool> signup( TextEditingController _emailController,
 }
 
 
+Future<UserCredential> newAdmin( TextEditingController _emailController,
+    TextEditingController _passwordController ) async {
+  try {
+    var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text);
+    if (result != null) {
+      var token = await FirebaseAuth.instance.currentUser.getIdToken();
+      return result;
+
+    } else {
+      makeToast('Please try later');
+      return null;
+    }
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
+      makeToast('Email already exists!');
+      return null;
+    } else {
+      makeToast(e.code);
+      return null;
+    }
+
+  }
+}
+
+
 
 
 Future<bool> signInWithGoogle() async {
