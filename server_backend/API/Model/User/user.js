@@ -1,9 +1,25 @@
- class User{
+const Address = require("../address");
+const Database = require('../../Database/database');
+
+class User{
     // abstract class definition
-    constructor() {
+    _database = new Database();
+
+    #uid;
+    constructor(userJson ) {
         if (this.constructor == User) {
             throw new Error("Abstract classes can't be instantiated.");
         }
+        this.userID = userJson.id;
+        this.userName = userJson.name;
+        this.userEmail = userJson.email;
+        this.userAddress = new Address(userJson.country , userJson.city , userJson.street , userJson.buildNumber);
+        this.userNationalID = userJson.national_id;
+        this.userPhoneNumber = userJson.phone_number;
+        this.userGender = userJson.gender;
+        this.userDOB = userJson.dob;
+        this.isDisable = userJson.isDisable;
+        this.#uid = userJson.uid;
     }
     setUserId(userID){
         this.userID = userID;
@@ -31,6 +47,18 @@
     }
     setIsDisable(isDisable){
         this.isDisable = isDisable;
+    }
+    static getUser(userID){
+        return new Promise( (resolve, reject) => {
+            this.database.getUser(userID)
+                .then( (userJson) =>{
+                    resolve(userJson);
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        } );
+
     }
 }
 

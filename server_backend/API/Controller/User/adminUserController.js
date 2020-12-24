@@ -6,3 +6,5 @@ class AdminUserController{
     banAccount(userObject){}
     downloadCertificate(){}
 }
+
+module.exports = AdminUserController;

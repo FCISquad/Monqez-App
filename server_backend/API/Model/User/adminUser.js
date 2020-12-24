@@ -1,3 +1,5 @@
+const User = require("./user");
+
 class Admin extends User{
     addAdmin(userObject){}
     addInjury(injuryObject){}
@@ -6,3 +8,5 @@ class Admin extends User{
     banAccount(userObject){}
     downloadCertificate(){}
 }
+
+module.exports = Admin;
