@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
@@ -5,6 +6,7 @@ import 'dart:typed_data';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class ViewApplicationScreen extends StatefulWidget {
   @override
@@ -63,7 +65,8 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                       child: Icon(Icons.email, size: 14 , color: color,),
                                     ),
                                     TextSpan(
-                                        text: " hussienashraf99@gmail.com\n",
+                                      recognizer: new TapGestureRecognizer()..onTap = () => _launchMail("hussienashraf99@gmail.com"),
+                                      text: " hussienashraf99@gmail.com\n",
                                         style: TextStyle(
                                             color: color,
                                             fontSize: 14,
@@ -75,7 +78,8 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                       child: Icon(Icons.phone, size: 14, color: color),
                                     ),
                                     TextSpan(
-                                        text: " 01016395068\n",
+                                      recognizer: new TapGestureRecognizer()..onTap = () => _launchCaller("01016395068"),
+                                      text: " 01016395068\n",
                                         style: TextStyle(
                                             color: color,
                                             fontSize: 14,
@@ -216,4 +220,27 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
 
     setState(() {});
   }
+
+  _launchCaller(String number) async {
+    String url = "tel:$number";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+  _launchMail(String mail) async {
+    final Uri params = Uri(
+      scheme: 'mailto',
+      path: mail,
+    );
+    String  url = params.toString();
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      print( 'Could not launch $url');
+    }
+  }
+
+
 }
