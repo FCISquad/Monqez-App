@@ -8,6 +8,9 @@ class HelperUser extends User{
         this.rates = [];
         this.longitude = 0.0;
         this.latitude  = 0.0;
+
+        this.certificate = userJson.certificate;
+        this.certificateName = userJson.certificateName
     }
     setIsApproval(isApproval){
         this.isApproval = isApproval;
@@ -23,9 +26,9 @@ class HelperUser extends User{
     }
 
     submitApplication(){
-        this.#database.createUserPromise(this)
+        User._database.createUser(this)
             .then( () => {
-                this.#database.changeToMonqez(this);
+                User._database.changeToMonqez(this);
             } )
             .catch((error) => {
 
@@ -33,6 +36,17 @@ class HelperUser extends User{
     }
     setStatus(statusNumber){
         this.status = statusNumber;
+    }
+    getCertificate(userID){
+        return new Promise( (resolve, reject) => {
+            User._database.getCertificate(userID)
+                .then((certificate) => {
+                    resolve(certificate);
+                })
+                .catch( (error) => {
+                    reject(error);
+                } );
+        } );
     }
 }
 

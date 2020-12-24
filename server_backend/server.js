@@ -4,7 +4,7 @@ const port = 8000;
 const localtunnel = require('localtunnel');
 (
     async () => {
-        const tunnel = await localtunnel({port : port , subdomain : "habdcom"});
+        const tunnel = await localtunnel({port : port , subdomain : "monqezapp"});
         console.log(tunnel.url);
     }
 )();

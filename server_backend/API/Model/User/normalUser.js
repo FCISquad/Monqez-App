@@ -23,7 +23,11 @@ class NormalUser extends User{
         this.isBanned = isBanned;
     }
     signUp(){
-        this.#database.createUser(this);
+        User._database.createUser(this)
+            .then(() => {})
+            .catch( (error) => {
+                console.log(error);
+            });
     }
 }
 

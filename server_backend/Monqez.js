@@ -36,7 +36,7 @@ app.get('/find' , (req,res) => {
         })
 })
 
-const signupRoute = require('./API/routes/User/userRoutes');
+const signupRoute = require('./API/Controller/User/userController');
 app.use('/user' , signupRoute);
 
 const signupMonqezRoute = require('./OLD API/routes/authentication/signupMonqez');
