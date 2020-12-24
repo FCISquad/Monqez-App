@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
 import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +17,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
   initState() {
     super.initState();
   }
-
+  Color color = Colors.white;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,9 +26,109 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text("Something"),
+            //CustomCard(),
+            Stack(
+              children: <Widget>[
+                Card(
+                  color: Colors.deepOrangeAccent,
+                  margin: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
+                  child: SizedBox(
+                      height: 130.0,
+                      width: double.infinity,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 30, left: 5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    WidgetSpan(
+                                      child: Icon(Icons.person, size: 14, color: color,),
+                                    ),
+                                    TextSpan(
+                                      text: " Hussien Ashraf\n",
+                                      style: TextStyle(
+                                          color: color,
+                                          fontSize: 14,
+                                          letterSpacing: 1.5,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    WidgetSpan(
+                                      child: Icon(Icons.email, size: 14 , color: color,),
+                                    ),
+                                    TextSpan(
+                                        text: " hussienashraf99@gmail.com\n",
+                                        style: TextStyle(
+                                            color: color,
+                                            fontSize: 14,
+                                            letterSpacing: 1.5,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                    ),
+                                    WidgetSpan(
+                                      child: Icon(Icons.phone, size: 14, color: color),
+                                    ),
+                                    TextSpan(
+                                        text: " 01016395068\n",
+                                        style: TextStyle(
+                                            color: color,
+                                            fontSize: 14,
+                                            letterSpacing: 1.5,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                    ),
+                                    WidgetSpan(
+                                      child: Icon(Icons.accessibility_outlined, size: 14, color: color),
+                                    ),
+                                    TextSpan(
+                                        text: " male\n",
+                                        style: TextStyle(
+                                            color: color,
+                                            fontSize: 14,
+                                            letterSpacing: 1.5,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                    ),
+                                    WidgetSpan(
+                                      child: Icon(Icons.calendar_today, size: 14, color: color,),
+                                    ),
+                                    TextSpan(
+                                        text: " 4/8/1999\n",
+                                        style: TextStyle(
+                                            color: color,
+                                            fontSize: 14,
+                                            letterSpacing: 1.5,
+                                            fontWeight: FontWeight.bold
+                                        ),
+                                    ),
+                                  ],
+                                ),
+                              )
+
+                            ),
+                          ],
+                        ),
+                      )),
+                ),
+                Positioned(
+                  top: .0,
+                  left: .0,
+                  right: .0,
+                  child: Center(
+                    child: CircleAvatar(
+                      radius: 30.0,
+                      child: Text("MA"),
+                    ),
+                  ),
+                )
+              ],
+            ),
             if (path != null)
               Container(
                 height: 300.0,
@@ -103,7 +201,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
 
   Future<Uint8List> fetchPost() async {
     final response = await http.get(
-        'https://learn-eu-central-1-prod-fleet01-xythos.content.blackboardcdn.com/5f773d6e67638/808851?X-Blackboard-Expiration=1608768000000&X-Blackboard-Signature=tT8oRX2SO2YaZHAd5d7uLPXiCAHrysl4z3Za7%2FmtWgU%3D&X-Blackboard-Client-Id=306828&response-cache-control=private%2C%20max-age%3D21600&response-content-disposition=inline%3B%20filename%2A%3DUTF-8%27%27Assignment%25203%2520-%2520Fuzzy%2520Logic.pdf&response-content-type=application%2Fpdf&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20201223T180000Z&X-Amz-SignedHeaders=host&X-Amz-Expires=21600&X-Amz-Credential=AKIAZH6WM4PL5M5HI5WH%2F20201223%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Signature=4e757c31c3960960b86375e8f1dc5e5ae072ad95bb60766c67e51fc5cbe46047');
+    'http://www.pdf995.com/samples/pdf.pdf');
     final responseJson = response.bodyBytes;
 
     return responseJson;
@@ -118,6 +216,4 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
 
     setState(() {});
   }
-
-
 }
