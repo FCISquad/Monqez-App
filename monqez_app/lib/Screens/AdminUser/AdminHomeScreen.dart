@@ -1,112 +1,120 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
+import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
+import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   @override
   _AdminHomeScreenState createState() => _AdminHomeScreenState();
 }
-class _AdminHomeScreenState extends State<AdminHomeScreen> with SingleTickerProviderStateMixin {
-  Animation<double> animation;
-  AnimationController controller;
-  Widget _buildBtn(String text){
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: ()
-        {
-          logout();
-          Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, animationTime, child) {
-                    return SlideTransition(
-                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).animate(CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.ease,
-                      )),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (context, animation, animationTime) {
-                    return LoginScreen();
-                  }));
-        },
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(text, style: TextStyle(
-            color: Colors.deepOrange,
-            fontSize: 16,
-            fontWeight: FontWeight.bold)),
-      ),
-    );
-  }
 
-  @override
-  void initState() {
-    super.initState();
-
-    controller = new AnimationController(
-        duration: const Duration(milliseconds: 3000), vsync: this);
-    animation = new Tween(begin: 0.0, end: 200.0).animate(controller);
-    animation.addListener(() {
-      setState(() {
-        //The state of the animation has changed
-      });
-    });
-
-    controller.forward();
-  }
+class _AdminHomeScreenState extends State<AdminHomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
-                vertical: 70.0,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
+        appBar: AppBar(
+          title: Text('Monqez - Admin'),
+        ),
+        backgroundColor: Colors.white,
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                      'Admin', style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.bold)),
-                  new Container(
-                    padding: new EdgeInsets.all(32.0),
-                    height: animation.value,
-                    width: animation.value,
-                    child: new Center(
-                      child: new Image(
-                          image: new AssetImage('images/firstaid.png')),
-                    ),
-                  ),
-                  _buildBtn('Logout'),
-                ],
+              Container(
+                padding: const EdgeInsets.only(top: 20),
+                color: Colors.white,
+                child: Table(
+                  children: [
+                    TableRow(
+                      children: [
+                        _card("2", "New Applications", Icons.file_copy,
+                            ApplicationsScreen()),
+                        _card("100", "New Complaints", Icons.thumb_down_sharp,
+                            ComplaintsScreen()),
+                      ],
+                    ),/*
+                    TableRow(
+                      children: [
+                        _card("Add New Admin", "", Icons.person_add_sharp,
+                            ApplicationsScreen()),
+                        Text(""),
+                      ],
+                    ),*/
+                  ],
+                ),
               ),
-            ),
+            Container(
+                padding: const EdgeInsets.only(top: 20),
+                color: Colors.white,
+                child: Table(children: [
+                TableRow(children: [
+                  _card("Add New Admin", "", Icons.person_add_sharp,
+                      AddNewAdminScreen()),
+                ]),
+              ]),
+            )])));
+  }
+
+  Widget _card(String firstText, String secondText, IconData icon, Widget map) {
+    return GestureDetector(
+      onTap: () => navigate(map),
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        elevation: 5,
+        color: Colors.deepOrangeAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(
+            left: 16.0,
+            top: 16,
+            bottom: 24,
+            right: 16,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Align(
+                alignment: Alignment.topRight,
+                child: Icon(icon, size: 20, color: Colors.white70),
+              ),
+              Text(firstText,
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  )),
+              Text(secondText,
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  )),
+            ],
           ),
         ),
       ),
     );
   }
 
+  void navigate(Widget map) {
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            transitionDuration: Duration(milliseconds: 500),
+            transitionsBuilder: (context, animation, animationTime, child) {
+              return SlideTransition(
+                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                    .animate(CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.ease,
+                )),
+                child: child,
+              );
+            },
+            pageBuilder: (context, animation, animationTime) {
+              return map;
+            }));
+  }
 }
