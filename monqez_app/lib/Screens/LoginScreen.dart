@@ -134,16 +134,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future <void> checkUser(var token, var uid) async{
-    final http.Response response2 = await http.post(
-      '$url/checkUser/',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+    final http.Response response2 = await http.get(
+      '$url/user/get/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, String>{
-        'token': token,
-        'uid': uid,
-        'request': "check"
-      }),
     );
     if (response2.statusCode == 200){
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
@@ -151,12 +148,11 @@ class _LoginScreenState extends State<LoginScreen> {
       String sDisabled = parsed['isDisabled'];
       String sFirst = parsed['firstLogin'];
 
-      setState(() {
+      setState((){
         type = int.parse(sType);
         isDisabled = (sDisabled == 'true') ? true: false;
         firstLogin = (sFirst == 'true') ? true: false;
       });
-
     }
     else{
       print(response2.statusCode);

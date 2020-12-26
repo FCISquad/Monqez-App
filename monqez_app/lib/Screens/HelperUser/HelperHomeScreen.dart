@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
+import 'package:monqez_app/Screens/HelperUser/Profile.dart';
+import 'MaterialUI.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Monqez',
       theme: ThemeData(
-        primarySwatch: Colors.deepOrange,
+        primarySwatch: primary,
       ),
       home: HelperHomeScreen(),
       debugShowCheckedModeBanner: false,
@@ -32,40 +34,17 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
   List<String> _statusDropDown;
 
   List<Icon> icons ;
-  ScrollController _callController;
-  List<String> _names;
 
   @override
   void initState() {
     _statusDropDown = <String> ["Available", "Contacting only", "Busy"];
-    _names = <String>['Khaled1', 'Hussien', 'Ehab', 'Hatem'];
     _status = _statusDropDown[0];
     super.initState();
-    //callController.addListener();
   }
-  void navigate(Widget map) {
-     Navigator.push(
-        context,
-        PageRouteBuilder(
-            transitionDuration: Duration(milliseconds: 500),
-            transitionsBuilder: (context, animation, animationTime, child) {
-              return SlideTransition(
-                position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                    .animate(CurvedAnimation(
-                  parent: animation,
-                  curve: Curves.ease,
-                )),
-                child: child,
-              );
-            },
-            pageBuilder: (context, animation, animationTime) {
-              return map;
-            }));
-  }
+
   Widget getCard(String title, String trail, Widget nextScreen, IconData icon, double width) {
     return Card (
-      elevation: 10,
-
+      elevation: 0,
       color: Colors.transparent,
       child: Container(
 
@@ -75,8 +54,8 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15.0),
           ),
-          color: Colors.white,
-          elevation: 10,
+          color: firstColor,
+          elevation: 4,
           child: Column(
 
             mainAxisSize: MainAxisSize.max,
@@ -84,14 +63,14 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
             children: <Widget>[
 
               ListTile(
-                onTap : () => navigate(nextScreen),
+                onTap : () => navigate(nextScreen, context, false),
                 contentPadding: EdgeInsets.fromLTRB(10,10,10,0),
-                title: Icon(icon, size: 70, color: Colors.deepOrangeAccent,),
+                title: Icon(icon, size: 70, color: secondColor,),
               ),
               ListTile(
-                onTap: () => navigate(nextScreen),
-                leading: getTitle(title, 16, Colors.deepOrangeAccent, TextAlign.center),
-                trailing: getTitle(trail, 16, Colors.deepOrangeAccent, TextAlign.center),
+                onTap: () => navigate(nextScreen, context, false),
+                leading: getTitle(title, 16, secondColor, TextAlign.center, true),
+                trailing: getTitle(trail, 16, secondColor, TextAlign.center, true),
               ),
             ],
           ),
@@ -99,42 +78,24 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
       ),
     );
   }
-  Widget getTitle(String title, double size, Color color, TextAlign align){
-    return Text(
-        title,
-        style: TextStyle(
-            color: color,
-            fontSize: size,
-            letterSpacing: 1.5,
-            fontWeight: FontWeight.bold
-        ),
-        textAlign: align,
-    );
-  }
-  Widget getIcon (IconData icon) {
-    return Icon(
-      icon,
-      color: Colors.white,
-      size: 24.0,
-      semanticLabel: 'Text to announce in accessibility modes',
-    );
-  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: secondColor,
       appBar: AppBar(
-        title: getTitle("Monqez", 22.0, Colors.deepOrangeAccent, TextAlign.start),
+        title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
         shadowColor: Colors.black,
-        backgroundColor: Colors.white,
-        iconTheme: IconThemeData(color: Colors.deepOrangeAccent),
-        elevation: 30,
+        backgroundColor: firstColor,
+        iconTheme: IconThemeData(color: secondColor),
+        elevation: 5,
         actions: [
           Padding(
             padding: EdgeInsets.fromLTRB(0,0,0,0),
             child: DropdownButtonHideUnderline(
               child: DropdownButton(
-                dropdownColor: Colors.white,
+                dropdownColor: firstColor,
                 //hint: Text('Status'), // Not necessary for Option 1
                 value: _status,
                 onChanged: (newValue) {
@@ -147,7 +108,7 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
                   return DropdownMenuItem(
                     child: SizedBox(
                       width: 140,
-                      child: getTitle(location, 16, Colors.deepOrangeAccent, TextAlign.end),
+                      child: getTitle(location, 16, secondColor, TextAlign.end, true),
                     ),
                     value: location
                   );
@@ -168,51 +129,51 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        getTitle('Name', 26, Colors.deepOrangeAccent, TextAlign.start),
-                        Icon(Icons.account_circle_rounded, size: 90, color: Colors.deepOrangeAccent),
+                        getTitle('Name', 26, secondColor, TextAlign.start, true),
+                        Icon(Icons.account_circle_rounded, size: 90, color: secondColor),
                       ]
                   )
               ),
               decoration: BoxDecoration(
-                color: Colors.white,
-
+                color: firstColor,
               ),
             ),
 
             Container(
-              color: Colors.deepOrangeAccent,
+              color: secondColor,
               height: (MediaQuery.of(context).size.height),
               child: Column(
                 children: [
                   ListTile(
-                    title: getTitle('My Profile', 18, Colors.white, TextAlign.start),
-                    leading: Icon(Icons.account_circle_rounded, size: 30, color: Colors.white),
+                    title: getTitle('My Profile', 18, firstColor, TextAlign.start, true),
+                    leading: Icon(Icons.account_circle_rounded, size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
+                      navigate(ProfileScreen(), context, false);
                     },
                   ),
                   ListTile(
-                    title: getTitle('Call Queue', 18, Colors.white, TextAlign.start),
-                    leading: Icon(Icons.call, size: 30, color: Colors.white),
+                    title: getTitle('Call Queue', 18, firstColor, TextAlign.start, true),
+                    leading: Icon(Icons.call, size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(CallingQueueScreen());
+                      navigate(CallingQueueScreen(), context, false);
                     },
                   ),
                   ListTile(
-                    title: getTitle('Chat Queue', 18, Colors.white, TextAlign.start),
-                    leading: Icon(Icons.chat, size: 30, color: Colors.white),
+                    title: getTitle('Chat Queue', 18, firstColor, TextAlign.start, true),
+                    leading: Icon(Icons.chat, size: 30, color: firstColor),
                       onTap: () {
                         Navigator.pop(context);
-                        navigate(ChatQueueScreen());
+                        navigate(ChatQueueScreen(), context, false);
                       },
                   ),
                   ListTile(
-                    title: getTitle('My Ratings', 18, Colors.white, TextAlign.start),
-                    leading: Icon(Icons.star_rate, size: 30, color: Colors.white),
+                    title: getTitle('My Ratings', 18, firstColor, TextAlign.start, true),
+                    leading: Icon(Icons.star_rate, size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(HelperRatingsScreen());
+                      navigate(HelperRatingsScreen(), context, false);
                     },
                   )
                 ]
