@@ -44,11 +44,20 @@ class Database{
                         });
                     }
                     else{
-                        resolve({
-                            type: userInfo.val().type,
-                            isDisabled: userInfo.val().disable,
-                            firstLogin: "false"
-                        });
+                        if (userInfo.val().type === "2"){
+                            resolve({
+                                type: userInfo.val().type,
+                                isDisabled: userInfo.val().disable,
+                                firstLogin: userInfo.val().firstLogin
+                            });
+                        }
+                        else{
+                            resolve({
+                                type: userInfo.val().type,
+                                isDisabled: userInfo.val().disable,
+                                firstLogin: "false"
+                            });
+                        }
                     }
                 } )
                 .catch( (error) => {
@@ -66,6 +75,30 @@ class Database{
                 .catch( (error) => {
                     reject(error);
                 });
+        } );
+    }
+
+    addAdmin(userID , databaseJson){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('user/' + userID).set(databaseJson)
+                .then( () =>{
+                    resolve();
+                } )
+                .catch((error) => {
+                    reject(error);
+                });
+        } );
+    }
+
+    setHelperStatus(userID , status){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('monqez/' + userID).update({
+                "status": status
+            }).then( () => {
+                resolve();
+            }).catch( (error) => {
+                reject(error);
+            } );
         } );
     }
 }

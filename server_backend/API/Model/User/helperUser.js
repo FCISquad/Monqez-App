@@ -32,8 +32,16 @@ class HelperUser extends User{
 
             })
     }
-    setStatus(statusNumber){
-        this.status = statusNumber;
+    setStatus(userID , status){
+        return new Promise( (resolve, reject) => {
+            User._database.setHelperStatus(userID , status)
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
     }
     getCertificate(userID){
         return new Promise( (resolve, reject) => {

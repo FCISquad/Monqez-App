@@ -6,7 +6,7 @@ class User{
     static _database = new Database();
 
     #uid;
-    constructor(userJson ) {
+    constructor(userJson) {
         if (this.constructor == User) {
             throw new Error("Abstract classes can't be instantiated.");
         }
