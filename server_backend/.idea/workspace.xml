@@ -19,7 +19,9 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="de9dac36-46f4-4753-881b-06de26d3d064" name="Default Changelist" comment="" />
+    <list default="true" id="de9dac36-46f4-4753-881b-06de26d3d064" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/monqez.js" beforeDir="false" afterPath="$PROJECT_DIR$/monqez.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -81,7 +83,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1609074715127</updated>
-      <workItem from="1609074716700" duration="1636000" />
+      <workItem from="1609074716700" duration="1836000" />
     </task>
     <servers />
   </component>
