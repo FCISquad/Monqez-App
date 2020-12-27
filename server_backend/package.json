@@ -1,5 +1,5 @@
 {
-  "name": "untitled",
+  "name": "monqez",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -16,8 +16,7 @@
     "firebase-admin": "^9.4.2",
     "express-session": "^1.17.1"
   },
-  "devDependencies": {
-    "express-session": "^1.17.1",
-    "firebase-admin": "^9.4.2"
+  "engines": {
+    "node":"14.15.0"
   }
 }
