@@ -1,30 +1,29 @@
+const bodyParser = require('body-parser');
+const session = require("express-session");
 const express = require('express');
 const app = express();
 
-/*
-    Firebase database connection
- */
 const admin = require('firebase-admin');
-const serviceAccount = require('./API/firebase/firebase-Monqez.json');
+const serviceAccount = require('./firebase-Monqez.json');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://monqez-6f9b1.firebaseio.com"
 });
 
-/*
-    Routes Sections
- */
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
 
-const signupRoute = require('./API/routes/authentication/signup')
-app.use('/signup' , signupRoute)
 
-const signupMonqezRoute = require('./API/routes/authentication/signupMonqez')
-app.use('/apply' , signupMonqezRoute)
+const signupRoute = require('./API/Controller/User/userController');
+app.use('/user' , signupRoute);
 
-const UserInformation = require('./API/routes/user/getuser')
-app.use('/checkUser' , UserInformation)
-
-// const certificate = require('./API/routes/user/firstAidCertificate')
-// app.use('/certificate' , certificate)
+//
+// const path = require('./api/code');
+// app.use('/code' , path);
 
 module.exports = app;
