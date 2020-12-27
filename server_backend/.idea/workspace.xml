@@ -20,15 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de9dac36-46f4-4753-881b-06de26d3d064" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/API/Controller/User/adminController.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/API/Controller/User/helperController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Controller/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/userController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Model/User/adminUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/adminUser.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Model/User/helperUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/helperUser.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Model/User/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monqez.js" beforeDir="false" afterPath="$PROJECT_DIR$/monqez.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

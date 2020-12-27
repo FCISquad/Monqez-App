@@ -18,12 +18,12 @@ class Admin extends User{
                 } );
         } );
     }
+    setApproval(helperID){}
+    getApplication(userID){}
     getAllApplicationRequests(){}
     getState(){}
-    getApplication(userID){}
-    addNewAdmin(newUserID){}
+
     addAdditionalInformation(userJson){}
-    setApproval(helperID){}
 }
 
 module.exports = Admin;

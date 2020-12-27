@@ -60,6 +60,10 @@ class User{
         } );
 
     }
+
+    static editAccount(){
+        
+    }
 }
 
 module.exports = User;
