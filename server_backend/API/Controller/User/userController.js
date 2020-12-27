@@ -1,12 +1,13 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const app = express();
+
+
 const helper = require('../../Tools/RequestFunctions');
-const userController = require("../../Old Controller/User/userController");
-const HelperUser = require("../../Model/User/helperUser");
 const NormalUser = require("../../Model/User/normalUser");
+const HelperUser = require("../../Model/User/helperUser");
 const User = require("../../Model/User/user");
 
-router.post('/signup' , (request , response) => {
+app.post('/signup' , (request , response) => {
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
             // Forbidden
@@ -14,32 +15,14 @@ router.post('/signup' , (request , response) => {
         }
         else{
             request.body.userID = userId;
-            let user = new NormalUser(request.body);
-            user.signUp();
+             let user = new NormalUser(request.body);
+            // user.signUp();
             response.sendStatus(200);
         }
     });
 });
 
-router.post('/apply' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
-        if ( userId === null ){
-            // Forbidden
-            response.sendStatus(403);
-        }
-        else{
-            /**
-                    discuss error here , see => submitApplication => user.submitApplication();
-             */
-            request.body.userID = userId;
-            let user = new HelperUser(request.body);
-            user.submitApplication();
-            response.sendStatus(200);
-        }
-    });
-});
-
-router.get( '/get' , (request , response) => {
+app.post('/apply' , (request , response) => {
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
             // Forbidden
@@ -50,7 +33,24 @@ router.get( '/get' , (request , response) => {
              discuss error here , see => submitApplication => user.submitApplication();
              */
             request.body.userID = userId;
-            let user_controller = new userController();
+            let user = new HelperUser(request.body);
+            user.submitApplication();
+            response.sendStatus(200);
+        }
+    });
+});
+
+app.get( '/get' , (request , response) => {
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            /**
+             discuss error here , see => submitApplication => user.submitApplication();
+             */
+            request.body.userID = userId;
             User.getUser(userId)
                 .then( (userJson) => {
                     response.send(userJson);
@@ -61,25 +61,4 @@ router.get( '/get' , (request , response) => {
         }
     });
 } );
-
-// router.get( '/get_certificate' , (request , response) => {
-//     helper.verifyToken(request , (userId) => {
-//         if (userId === null) {
-//             // Forbidden
-//             response.sendStatus(403);
-//         }
-//         else{
-//             request.body.userID = userId;
-//             let helperUser = new HelperUser();
-//             helperUser.getCertificate(userId)
-//                 .then( (certificate) => {
-//                     response.send(certificate);
-//                 } )
-//                 .catch( (error) => {
-//                     response.send(error);
-//                 } );
-//         }
-//     });
-// });
-
-module.exports = router;
+module.exports = app;

@@ -4,7 +4,7 @@ class Database{
         return new Promise( (resolve, reject) => {
             admin.database().ref('user/' + userObject.userID).set({
                 name: userObject.userName,
-                national_id: userObject.userNationalID,
+                national_id: userObject.userNatSionalID,
                 phone: userObject.userPhoneNumber,
                 gender: userObject.userGender,
                 birthdate: userObject.userDOB,

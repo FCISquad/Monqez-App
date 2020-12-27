@@ -1,5 +1,3 @@
-const Database = require('../../Database/database');
-
 const User = require("./user");
 
 class HelperUser extends User{

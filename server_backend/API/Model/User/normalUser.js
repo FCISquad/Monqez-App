@@ -1,6 +1,4 @@
 const User = require("./user");
-const Database = require('../../Database/database');
-const Address = require("../address");
 
 class NormalUser extends User{
     constructor(userJson) {

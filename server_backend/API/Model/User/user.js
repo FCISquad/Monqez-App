@@ -1,5 +1,5 @@
 const Address = require("../address");
-const Database = require('../../Database/database');
+const Database = require('../../database/database');
 
 class User{
     // abstract class definition
@@ -62,4 +62,4 @@ class User{
     }
 }
 
- module.exports = User;
+module.exports = User;

@@ -1,15 +1,13 @@
-const http = require('http');
-const port = 8000;
+const express = require('express');
+const app = express();
 
-const localtunnel = require('localtunnel');
-(
-    async () => {
-        const tunnel = await localtunnel({port : port , subdomain : "monqezapp"});
-        console.log(tunnel.url);
-    }
-)();
+app.use(express.json());
+app.get('/', (req,res) => {
+    res.send('Welcome in Monqez Server');
+});
 
-const app = require('./Monqez');
-const server = http.createServer(app);
+const monqez = require('./monqez');
+app.use('/' , monqez);
 
-server.listen(port);
+const port = process.env.PORT || '5000';
+app.listen(port, () => console.log(`Server started on Port ${port}`));
