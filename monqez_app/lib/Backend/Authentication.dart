@@ -4,8 +4,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
 String url = "https://monqezapp.loca.lt";
 
 
@@ -79,9 +77,6 @@ Future<UserCredential> newAdmin( TextEditingController _emailController,
 
   }
 }
-
-
-
 
 Future<bool> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();

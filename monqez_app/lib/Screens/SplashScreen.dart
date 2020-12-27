@@ -20,14 +20,13 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  Widget map = AdminHomeScreen();
+  Widget map = LoginScreen();
   String uid;
   String token;
   int type;
   bool isDisabled;
   bool firstLogin;
 
-/*
   Future <void> checkUser(var token, var uid) async{
     final http.Response response2 = await http.post(
       '$url/checkUser/',
@@ -92,7 +91,7 @@ class _SplashState extends State<Splash> {
     setState(() {
       map = navigate;
     });
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {

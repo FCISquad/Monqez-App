@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../Backend/Authentication.dart';
+import 'package:http/http.dart' as http;
+
 
 class AddNewAdminScreen extends StatefulWidget {
   @override
@@ -325,7 +330,6 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
             UserCredential result = await newAdmin(_emailController, _passwordController);
             //there could be an error here!!
             if (result != null) {
-              makeToast("Admin Added Successfully!");
               bool isAdmin = await makeAdmin(result);
               if (isAdmin) {
                 Navigator.pushReplacement(
@@ -360,7 +364,28 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
   }
 
   Future<bool> makeAdmin(UserCredential newAdmin) async{
-    newAdmin.user.uid;//hn7tago?
-    return true;
+    var _prefs = await SharedPreferences.getInstance();
+    String token = _prefs.getString("userToken");
+    print(token);
+
+    final http.Response response = await http.post(
+      '$url/admin/add/',
+        headers: <String, String> {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+        body: jsonEncode(<String, String>{
+          'newUserID': newAdmin.user.uid}
+        ));
+    if (response.statusCode == 200){
+      makeToast("Admin Created Successfully!");
+      return true;
+    }
+    else{
+      print(response.statusCode);
+      return false;
+    }
   }
+
 }
