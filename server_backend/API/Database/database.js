@@ -90,6 +90,19 @@ class Database{
         } );
     }
 
+    addAdminAdditionalInformation(userID , databaseJson){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('user/' + userID).update(databaseJson)
+                .then( () =>{
+                    resolve();
+                } )
+                .catch((error) => {
+                    reject(error);
+                });
+        } );
+
+    }
+
     setHelperStatus(userID , status){
         return new Promise( (resolve, reject) => {
             admin.database().ref('monqez/' + userID).update({

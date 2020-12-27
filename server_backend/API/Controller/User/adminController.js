@@ -37,4 +37,23 @@ app.post('/add' , (request , response) => {
     });
 });
 
+app.post('/addAdditionalInformation' , (request , response) => {
+    helper.verifyToken(request , (userID) => {
+        if ( userID === null ){
+            response.sendStatus(403);
+        }
+        else{
+            let admin = new adminModel(request.body);
+            admin.addAdditionalInformation(userID, request.body)
+                .then( () => {
+                    response.sendStatus(200);
+                } )
+                .catch( (error) => {
+                    response.send(error);
+                } );
+        }
+    });
+});
+
+
 module.exports = app;

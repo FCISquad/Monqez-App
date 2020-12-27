@@ -20,9 +20,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="de9dac36-46f4-4753-881b-06de26d3d064" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Backend/Authentication.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Backend/Authentication.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/AdditionalAdminInfoScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/AdditionalAdminInfoScreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/LoginScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/LoginScreen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/adminController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/adminController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Model/User/adminUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/adminUser.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Model/User/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,26 +57,14 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="14.15.0" />
+    <property name="javascript.nodejs.core.library.configured.version" value="14.15.3" />
     <property name="javascript.nodejs.core.library.typings.version" value="14.14.16" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="server.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/server.js" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -89,6 +84,7 @@
       <updated>1609074715127</updated>
       <workItem from="1609074716700" duration="1836000" />
       <workItem from="1609077760097" duration="637000" />
+      <workItem from="1609096181655" duration="8514000" />
     </task>
     <servers />
   </component>
@@ -112,22 +108,26 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="463" y="119" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1609085949363" />
-    <state width="1323" height="196" key="GridCell.Tab.0.bottom" timestamp="1609087086813">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1323" height="212" key="GridCell.Tab.0.bottom" timestamp="1609106993337">
+      <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1323" height="196" key="GridCell.Tab.0.center" timestamp="1609087086813">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1323" height="212" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1609106993337" />
+    <state width="1323" height="212" key="GridCell.Tab.0.center" timestamp="1609106993337">
+      <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1323" height="196" key="GridCell.Tab.0.left" timestamp="1609087086813">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1323" height="212" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1609106993337" />
+    <state width="1323" height="212" key="GridCell.Tab.0.left" timestamp="1609106993337">
+      <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1323" height="196" key="GridCell.Tab.0.right" timestamp="1609087086813">
-      <screen x="0" y="0" width="1366" height="728" />
+    <state width="1323" height="212" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1609106993337" />
+    <state width="1323" height="212" key="GridCell.Tab.0.right" timestamp="1609106993337">
+      <screen x="0" y="0" width="1366" height="738" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
+    <state width="1323" height="212" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1609106993337" />
     <state width="1323" height="291" key="GridCell.Tab.1.bottom" timestamp="1609086813106">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -165,22 +165,15 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/API/Controller/User/adminController.js</url>
-          <line>22</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/API/Controller/User/adminController.js</url>
-          <line>21</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/API/Controller/User/helperController.js</url>
           <line>12</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/API/Model/User/adminUser.js</url>
+          <line>28</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

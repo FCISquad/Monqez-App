@@ -147,12 +147,12 @@ class _LoginScreenState extends State<LoginScreen> {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       String sType = parsed['type'];
       String sDisabled = parsed['isDisabled'];
-      bool sFirst = parsed['firstLogin'];
+      String sFirst = parsed['firstLogin'];
 
       setState((){
         type = int.parse(sType);
         isDisabled = (sDisabled == 'true') ? true: false;
-        firstLogin = (sFirst == true) ? true: false;
+        firstLogin = (sFirst == 'true') ? true: false;
       });
     }
     else{

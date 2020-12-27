@@ -18,12 +18,34 @@ class Admin extends User{
                 } );
         } );
     }
+
     setApproval(helperID){}
     getApplication(userID){}
     getAllApplicationRequests(){}
     getState(){}
 
-    addAdditionalInformation(userJson){}
+    addAdditionalInformation(userID, userObject){
+        return new Promise( (resolve, reject) => {
+            User._database.addAdminAdditionalInformation(userID , {
+                name: userObject.name,
+                national_id: userObject.national_id,
+                phone: userObject.phone,
+                gender: userObject.gender,
+                birthdate: userObject.birthdate,
+                country: userObject.country,
+                city: userObject.city,
+                street: userObject.street,
+                buildNumber: userObject.buildNumber,
+                chronicDiseases: "",
+                firstLogin: "false",
+            }).then( () => {
+                resolve();
+            } ).catch( (error) => {
+                reject(error);
+            } );
+        } );
+
+    }
 }
 
 module.exports = Admin;

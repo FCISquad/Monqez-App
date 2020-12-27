@@ -6,9 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
-import 'LoginScreen.dart';
 import '../Backend/Authentication.dart';
 
 class AdditionalAdminInfoScreen extends StatefulWidget {
@@ -170,10 +170,12 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
     print("Uid: " + uid);
 
     final http.Response response = await http.post(
-      '$url/adminData/',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+        '$url/admin/addAdditionalInformation/',
+        headers: <String, String> {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
       body: jsonEncode(<String, String>{
         'token': token,
         'uid': uid,
@@ -188,12 +190,12 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         'buildNumber': _buildNumberController.text,
       }),
     );
-
-    if (response.statusCode == 200) {
-      makeToast("Please wait while your application is reviewed");
-      logout();
-      navigateReplacement(LoginScreen());
-    } else {
+    if (response.statusCode == 200){
+      makeToast("Information Added Successfully!");
+      navigateReplacement(AdminHomeScreen());
+      return true;
+    }
+    else {
       print(response.statusCode);
       throw Exception('Failed to create user.');
     }
