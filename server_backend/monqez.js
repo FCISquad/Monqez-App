@@ -23,7 +23,7 @@ const signupRoute = require('./API/Controller/User/userController');
 app.use('/user' , signupRoute);
 
 
-const path = require('./api/code');
-app.use('/code' , path);
+// const path = require('./api/code');
+// app.use('/code' , path);
 
 module.exports = app;
