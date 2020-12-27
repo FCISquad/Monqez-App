@@ -6,7 +6,7 @@ app.get('/', (req,res) => {
     res.send('Welcome in Monqez Server');
 });
 
-// const monqez = require('./monqez');
+const monqez = require('./monqez');
 // app.use('/' , monqez);
 
 const port = process.env.PORT || '5000';
