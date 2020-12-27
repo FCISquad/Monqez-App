@@ -15,8 +15,8 @@ app.post('/signup' , (request , response) => {
         }
         else{
             request.body.userID = userId;
-             let user = new NormalUser(request.body);
-            // user.signUp();
+            let user = new NormalUser(request.body);
+            user.signUp();
             response.sendStatus(200);
         }
     });
