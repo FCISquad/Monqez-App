@@ -7,13 +7,6 @@ Color firstColor = Colors.deepOrangeAccent;
 Color secondColor = Colors.white;
 
 
-void makeToast(String text) {
-  Fluttertoast.showToast(
-    msg: text,
-    toastLength: Toast.LENGTH_SHORT,
-    gravity: ToastGravity.BOTTOM,
-  );
-}
 
 void navigate(Widget map, BuildContext context, bool replace) {
   PageRouteBuilder pageRouteBuilder = PageRouteBuilder(

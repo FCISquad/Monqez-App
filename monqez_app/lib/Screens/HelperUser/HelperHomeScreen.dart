@@ -4,7 +4,12 @@ import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/Profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'MaterialUI.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:monqez_app/Backend/Authentication.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -79,6 +84,32 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
     );
   }
 
+  Future<void> changeStatus(newValue) async {
+    var _prefs = await SharedPreferences.getInstance();
+    String token = _prefs.getString("userToken");
+    String uid = _prefs.getString("userID");
+    final http.Response response = await http.post(
+      '$url/helper/setstatus/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, String>{
+        'status': newValue
+      }),
+    );
+
+    print(newValue);
+    print(token);
+
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else {
+      print(response.statusCode);
+      makeToast('Failed to submit user.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +132,7 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
                 onChanged: (newValue) {
                   setState(() {
                     _status = newValue;
-                    print(newValue);
+                    changeStatus(newValue);
                   });
                 },
                 items: _statusDropDown.map((location) {
@@ -215,4 +246,5 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
       ),
     );
   }
+
 }
