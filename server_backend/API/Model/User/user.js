@@ -1,5 +1,5 @@
 const Address = require("../address");
-const Database = require('../../database/database');
+const Database = require('../../Database/database');
 
 class User{
     // abstract class definition
