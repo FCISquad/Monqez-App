@@ -1,7 +1,13 @@
-const http = require('http');
-const port = 8000;
+const express = require('express');
+const app = express();
 
-const app = require('./Monqez');
-const server = http.createServer(app);
+app.use(express.json());
+app.get('/', (req,res) => {
+    res.send('Welcome in Monqez Server');
+});
 
-server.listen(port);
+const monqez = require('./monqez');
+app.use('/' , monqez);
+
+const port = process.env.PORT || '5000';
+app.listen(port, () => console.log(`Server started on Port ${port}`));

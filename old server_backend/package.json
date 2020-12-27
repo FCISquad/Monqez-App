@@ -1,0 +1,25 @@
+{
+  "name": "cls",
+  "version": "1.0.0",
+  "description": "version: (1.0.0)",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "express-session": "^1.17.1",
+    "firebase-admin": "^9.3.0",
+    "nodemon": "^2.0.6"
+  },
+  "dependencies": {
+    "@okta/jwt-verifier": "^1.0.1",
+    "body-parser": "^1.19.0",
+    "es6-interface": "^3.1.4",
+    "express": "^4.17.1",
+    "localtunnel": "^2.0.0"
+  }
+}
