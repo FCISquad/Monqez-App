@@ -33,17 +33,40 @@ class Admin extends User{
         } );
     }
 
-    getApplicationQueue(){
-        return new Promise( ((resolve, reject) => {
-            User._database.getApplicationQueue().then(
-                (queue) => {
-                    resolve (queue);
-                }
-            ).catch((error) => {
-                reject(error);
-            });
-        }));
-    }
+    // getApplicationQueue(){
+    //     return new Promise( (resolve, _) => {
+    //         User._database.getApplicationQueue( async function (snapShot){
+    //             let obj = {
+    //                 table: []
+    //             }
+    //             await snapShot.forEach( function (snap){
+    //                 User._database.temp(snap.key , function (name){
+    //                     obj.table.push({
+    //                        "name": name,
+    //                        "date": snap.val(),
+    //                        "uid": snap.key
+    //                     });
+    //                 })
+    //             }).then(() => {
+    //                 console.log(obj.table);
+    //                 resolve(JSON.stringify(obj.table));
+    //             });
+    //
+    //         })
+    //     } );
+    //
+    //
+    //
+    //     // return new Promise( ((resolve, reject) => {
+    //     //     User._database.getApplicationQueue().then(
+    //     //         (queue) => {
+    //     //             resolve (queue);
+    //     //         }
+    //     //     ).catch((error) => {
+    //     //         reject(error);
+    //     //     });
+    //     // }));
+    // }
 
     addAdditionalInformation(userID, userObject){
         return new Promise( (resolve, reject) => {
@@ -65,7 +88,6 @@ class Admin extends User{
                 reject(error);
             } );
         } );
-
     }
 }
 

@@ -23,10 +23,10 @@ class HelperUser extends User{
         this.latitude = latitude;
     }
 
-    submitApplication(){
+    submitApplication(subDate){
         User._database.createUser(this)
             .then( () => {
-                User._database.changeToMonqez(this);
+                User._database.changeToMonqez(this , subDate);
             } )
             .catch((error) => {
 

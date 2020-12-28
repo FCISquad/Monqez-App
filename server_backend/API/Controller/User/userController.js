@@ -34,7 +34,7 @@ app.post('/apply' , (request , response) => {
              */
             request.body.userID = userId;
             let user = new HelperUser(request.body);
-            user.submitApplication();
+            user.submitApplication(request.body.submissionDate);
             response.sendStatus(200);
         }
     });
