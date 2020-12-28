@@ -126,8 +126,6 @@ class Database{
     }
 
     editAccount(userID, userInfo) {
-        console.log("UserID: " + userID);
-        console.log("name: " + userInfo.name);
         return new Promise( (resolve, reject) => {
             admin.database().ref('user/' + userID).update({
                 name: userInfo.name,
