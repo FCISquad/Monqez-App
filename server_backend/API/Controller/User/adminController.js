@@ -6,19 +6,6 @@ const adminModel = require('../../Model/User/adminUser');
 
 // url/admin/add
 app.post('/add' , (request , response) => {
-    // console.log(request.body);
-    //
-    // request.body.userID = request.body.newUserID;
-    // let admin = new adminModel(request.body);
-    // admin.addAdmin(request.body.newUserID)
-    //     .then( () => {
-    //         response.sendStatus(200);
-    //     } )
-    //     .catch( (error) => {
-    //         response.status(error.code).send(error);
-    //     } );
-
-
     helper.verifyToken(request , (userID) => {
         if ( userID === null ){
             response.sendStatus(403);
@@ -35,6 +22,11 @@ app.post('/add' , (request , response) => {
                 } );
         }
     });
+});
+
+app.post('/feteiha', (request , response) => {
+    let admin = new adminModel(request.body);
+    admin.getApplicationQueue();
 });
 
 app.post('/addAdditionalInformation' , (request , response) => {

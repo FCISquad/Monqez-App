@@ -29,6 +29,18 @@ class Database{
             "type": "1",
             "disable": "true"
         }).then( () => {} );
+
+    }
+
+    getApplicationQueue() {
+    admin.database().ref('applicationQueue/').orderByChild("date").once("value", function(snapshot) {
+        console.log(snapshot.numChildren());
+        snapshot.forEach(snap => {
+            const issue = snap.val();
+            // More code but we don't need to see it here
+            console.log(issue);
+        });
+    }).then(() => {});
     }
 
     getUser(userID){

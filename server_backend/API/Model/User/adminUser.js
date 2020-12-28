@@ -24,6 +24,10 @@ class Admin extends User{
     getAllApplicationRequests(){}
     getState(){}
 
+    getApplicationQueue(){
+        User._database.getApplicationQueue();
+    }
+
     addAdditionalInformation(userID, userObject){
         return new Promise( (resolve, reject) => {
             User._database.addAdminAdditionalInformation(userID , {
