@@ -33,15 +33,15 @@ class Database{
     }
 
     getApplicationQueue() {
-        console.log("Hererere");
+        console.log("Here");
+        //let self = this;
+        let obj = {
+            table: []
+        };
         return new Promise((resolve, reject) => {
-            admin.database().ref('applicationQueue/').orderByChild("date").once("value", function(snapshot) {
-                let obj = {
-                    table: []
-                };
+             admin.database().ref('applicationQueue/').orderByChild("date").on('value', function (snapshot) {
                 snapshot.forEach(snap => {
-                    admin.database().ref('user/' + snap.key).once("value", function (userdata) {
-                        console.log("In loop");
+                    admin.database().ref('user/').child(snap.key).once('value', function (userdata) {
                         obj.table.push(
                             {
                                 uid: snap.key,
@@ -49,18 +49,23 @@ class Database{
                                 name: userdata.val().name
                             }
                         );
+                        return JSON.stringify(obj.table);
+                    }).then((json) => {
+                        resolve(json);
+                    }).catch((error) => {
+                        reject(error);
                     });
                 });
-                console.log("out json: " + JSON.stringify(obj.table));
-                return JSON.stringify(obj.table);
-            }).then((json) => {
-                console.log("in json: " + json);
-                resolve(json);
+            }).then((snapshot) => {
+                console.log("in json: " + snapshot);
+                resolve(snapshot);
             }).catch( (error) => {
+                console.log("error: " + error);
                 reject(error);
             });
         });
     }
+
 
     getState() { //to be continued
         return new Promise(((resolve, reject) => {

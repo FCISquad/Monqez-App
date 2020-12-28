@@ -259,7 +259,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'street': _streetController.text,
         'buildNumber': _buildNumberController.text,
         'certificate': base64Image,
-        'certificateName': _fileName
+        'certificateName': _fileName,
+        'submissionDate': DateTime.now().toString()
       }),
     );
 
