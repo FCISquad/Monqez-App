@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 
 
-String url = "https://monqezapp.loca.lt";
+String url = "https://monqez2.loca.lt";
 
 
 final FirebaseAuth _auth = FirebaseAuth.instance;

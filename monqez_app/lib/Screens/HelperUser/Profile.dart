@@ -1,6 +1,7 @@
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'MaterialUI.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -9,8 +10,24 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-
+enum ScreenState {
+  Viewing,
+  Editing,
+}
 class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _phoneController = TextEditingController();
+  TextEditingController _nationalIDController = TextEditingController();
+  TextEditingController _genderController = TextEditingController();
+  TextEditingController _countryController = TextEditingController();
+  TextEditingController _cityController = TextEditingController();
+  TextEditingController _streetController = TextEditingController();
+  TextEditingController _buildNumberController = TextEditingController();
+
+  String gender = HelperHomeScreenState.user.gender;
+
+  ScreenState state = ScreenState.Viewing;
+
   bool _isLoading = true;
 
   @override
@@ -18,16 +35,16 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     super.initState();
     _isLoading = false;
   }
-  Widget _buildField(String title, String value) {
+  Widget _buildField(String title, String value, TextEditingController textController, double width) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        getTitle(title, 16, firstColor, TextAlign.center, true),
+        getTitle(title, 16, getMainColor(), TextAlign.center, true),
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: firstColor,
+            color: getMainColor(),
             borderRadius: BorderRadius.circular(10.0),
             boxShadow: [
               BoxShadow(
@@ -38,13 +55,15 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             ],
           ),
           height: 50.0,
+          width: width,
           child: TextField(
+            controller: textController,
             keyboardType: TextInputType.name,
-            enabled: false,
+            enabled: state == ScreenState.Editing,
             //controller: _nameController,
             //onChanged: _validateFullName,
             style: TextStyle(
-              color: firstColor,
+              color: secondColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -64,6 +83,96 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
         SizedBox(height: 5.0),
       ],
     );
+  }
+
+  Future<void> save() async {
+    print(_nameController == null);
+    if (_nameController.text.isNotEmpty)        HelperHomeScreenState.user.name = _nameController.text;
+    if (_nationalIDController.text.isNotEmpty)  HelperHomeScreenState.user.nationaID = _nationalIDController.text;
+    if (_phoneController.text.isNotEmpty)       HelperHomeScreenState.user.phone = _phoneController.text;
+    if (_countryController.text.isNotEmpty)     HelperHomeScreenState.user.country = _countryController.text;
+    if (_cityController.text.isNotEmpty)        HelperHomeScreenState.user.city = _cityController.text;
+    if (_streetController.text.isNotEmpty)      HelperHomeScreenState.user.street = _streetController.text;
+    if (_buildNumberController.text.isNotEmpty) HelperHomeScreenState.user.buildNumber = _buildNumberController.text;
+    if (gender.isNotEmpty)                      HelperHomeScreenState.user.gender = gender;
+
+    bool success = await HelperHomeScreenState.user.saveUser();
+    if ( success ) {
+      state = ScreenState.Viewing;
+      setState(() {});
+    }
+  }
+
+  void edit() {
+    state = ScreenState.Editing;
+    setState((){});
+  }
+
+  Widget _buildSubmitBtn() {
+    return Container(
+      //padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: MediaQuery.of(context).size.width / 2,
+      height: 45,
+      child: RaisedButton(
+        elevation: 5.0,
+        onPressed: () {
+          state == ScreenState.Editing ? save() : edit();
+        },
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        color: firstColor,
+        child: Text(
+          getButtonText(),
+          style: TextStyle(
+            color: secondColor,
+            letterSpacing: 1,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+  Color getMainColor() {
+    return state == ScreenState.Editing ? firstColor : Colors.grey;
+  }
+
+  String getButtonText() {
+    return state == ScreenState.Editing ? "Save" : "Edit";
+  }
+
+  Widget addRadioButton(int btnValue, String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Radio(
+          activeColor: Colors.blue,
+          focusColor: Colors.blue,
+          value: title,
+          groupValue: gender,
+          onChanged: (value) {
+            setState(() {
+              gender = value;
+            });
+          },
+        ),
+        Text(
+          title,
+          style: TextStyle(
+              color: firstColor, fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+      ],
+    );
+  }
+
+  Widget _addRadioGroup() {
+      return Row(
+          children: <Widget>[
+            addRadioButton(1, "Male"),
+            addRadioButton(2, "Female"),
+          ],
+      );
   }
   @override
   Widget build(BuildContext context) {
@@ -111,7 +220,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                             ),
                             radius: 100,
                             backgroundColor: Colors.transparent,
-                            borderColor: firstColor,
+                            borderColor: getMainColor(),
                             elevation: 5.0,
                             cacheImage: true,
                             onTap: () {
@@ -124,26 +233,50 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                             height: 205,
                             width: 205,
                             alignment: Alignment.bottomRight,
-                            child: getIcon(Icons.add_a_photo, 26, firstColor)
+                            child: getIcon(Icons.add_a_photo, 26, getMainColor())
                           ),
                         )
                       ]
                     ),
                   ),
                   SizedBox(height: 10.0),
-                  _buildField("Name", "Khaled Ezzat"),
+                  _buildField("Name", HelperHomeScreenState.user.name, _nameController, MediaQuery.of(context).size.width),
                   SizedBox(height: 20.0),
-                  _buildField("Phone Number", "01276016539"),
-                  //_buildPhoneNumberTF(),
+                  _buildField("National ID", HelperHomeScreenState.user.nationaID, _nationalIDController, MediaQuery.of(context).size.width),
                   SizedBox(height: 20.0),
-                  _buildField("National ID", "299013115118146"),
+                  _buildField("Phone Number", HelperHomeScreenState.user.phone, _phoneController, MediaQuery.of(context).size.width),
                   //_buildIDNumberTF(),
-                  //_buildDatePicker(context),
+
+
                   SizedBox(height: 15.0),
-                  //_buildAddress(),
-                  _buildField("Gender", "Male"),
-                  //Visibility(visible: _isMonqez, child: _buildCertificateTF()),
-                  //_buildSubmitBtn()
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildField("Country", HelperHomeScreenState.user.country, _countryController, (MediaQuery.of(context).size.width-30)/2),
+                      _buildField("City", HelperHomeScreenState.user.city, _cityController, (MediaQuery.of(context).size.width-30)/2)
+                    ],
+                  ),
+                  SizedBox(height: 15.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _buildField("Street", HelperHomeScreenState.user.street, _streetController, (MediaQuery.of(context).size.width-30)/2),
+                      _buildField("Build Number", HelperHomeScreenState.user.buildNumber, _buildNumberController, (MediaQuery.of(context).size.width-30)/2)
+                    ],
+                  ),
+                  SizedBox(height: 15.0),
+                  Visibility(
+                      visible: state == ScreenState.Viewing,
+                      child: _buildField("Gender", HelperHomeScreenState.user.gender, _genderController, MediaQuery.of(context).size.width)
+                  ),
+
+                  Visibility(
+                    visible: state == ScreenState.Editing,
+                    child: _addRadioGroup(),
+                  ),
+                  SizedBox(height: 20.0),
+                  _buildSubmitBtn()
                 ]
               ),
             ),
@@ -152,4 +285,5 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       ),
     );
   }
+
 }

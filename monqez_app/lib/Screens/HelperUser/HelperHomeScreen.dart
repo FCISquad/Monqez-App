@@ -4,12 +4,13 @@ import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/Profile.dart';
+import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'MaterialUI.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
-
+import 'package:monqez_app/Screens/Model/User.dart';
 
 void main() {
   runApp(MyApp());
@@ -23,25 +24,42 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: primary,
       ),
-      home: HelperHomeScreen(),
+      home: HelperHomeScreen(""),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
+// ignore: must_be_immutable
 class HelperHomeScreen extends StatefulWidget {
+  String token;
+  HelperHomeScreen(String token) {
+    this.token = token;
+  }
   @override
-  _HelperHomeScreenState createState() => _HelperHomeScreenState();
+  HelperHomeScreenState createState() => HelperHomeScreenState(token);
 }
 
-class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerProviderStateMixin {
+class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerProviderStateMixin {
+  static User user;
   String _status;
   List<String> _statusDropDown;
-
   List<Icon> icons ;
+  bool _isLoading = true;
+
+  HelperHomeScreenState(String token) {
+    Future.delayed(Duration.zero, ()
+    async {
+      user = new User(token);
+      await user.getUser();
+      _isLoading = false;
+      setState(() {});
+    });
+  }
+
 
   @override
-  void initState() {
+  void initState()  {
     _statusDropDown = <String> ["Available", "Contacting only", "Busy"];
     _status = _statusDropDown[0];
     super.initState();
@@ -87,7 +105,6 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
   Future<void> changeStatus(newValue) async {
     var _prefs = await SharedPreferences.getInstance();
     String token = _prefs.getString("userToken");
-    String uid = _prefs.getString("userID");
     final http.Response response = await http.post(
       '$url/helper/setstatus/',
       headers: <String, String> {
@@ -113,7 +130,22 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (_isLoading) {
+      return Scaffold (
+        backgroundColor: secondColor,
+        body: Container(
+          height: double.infinity,
+          alignment: Alignment.center,
+          child: SizedBox(
+            height: 100,
+            width: 100,
+            child: CircularProgressIndicator(
+                backgroundColor: secondColor, strokeWidth: 5, valueColor: new AlwaysStoppedAnimation<Color>(firstColor)
+            )
+          )
+        )
+      );
+    } else return Scaffold(
       backgroundColor: secondColor,
       appBar: AppBar(
         title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
@@ -160,7 +192,7 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
                   child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        getTitle('Name', 26, secondColor, TextAlign.start, true),
+                        getTitle(user.name, 26, secondColor, TextAlign.start, true),
                         Icon(Icons.account_circle_rounded, size: 90, color: secondColor),
                       ]
                   )
@@ -172,7 +204,7 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
 
             Container(
               color: secondColor,
-              height: (MediaQuery.of(context).size.height),
+              height: (MediaQuery.of(context).size.height)-200,
               child: Column(
                 children: [
                   ListTile(
@@ -206,6 +238,27 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
                       Navigator.pop(context);
                       navigate(HelperRatingsScreen(), context, false);
                     },
+                  ),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: 40,
+                        width: 120,
+                        child: RaisedButton(
+                          elevation: 5.0,
+                          onPressed: () {
+                            logout();
+                            navigate(LoginScreen(), context, true);
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          color: firstColor,
+                          child: getTitle("Logout", 18, secondColor, TextAlign.start, true)
+                        ),
+                      ),
+                    ),
                   )
                 ]
               ),
@@ -246,5 +299,6 @@ class _HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPr
       ),
     );
   }
+
 
 }

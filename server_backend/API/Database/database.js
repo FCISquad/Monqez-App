@@ -66,6 +66,29 @@ class Database{
         } )
     }
 
+    getProfile(userID) {
+        return new Promise(((resolve, reject) => {
+            admin.database().ref( 'user/' + userID )
+                .once("value")
+                .then( (userInfo) => {
+                    resolve({
+                        name: userInfo.val().name,
+                        national_id: userInfo.val().national_id,
+                        phone: userInfo.val().phone,
+                        birthdate: userInfo.val().birthdate,
+                        country: userInfo.val().country,
+                        city: userInfo.val().city,
+                        street: userInfo.val().street,
+                        buildNumber: userInfo.val().buildNumber,
+                        gender: userInfo.val().gender
+                    });
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        }));
+    }
+
     getCertificate(userID){
         return new Promise( (resolve, reject) => {
             admin.database().ref('monqez/' + userID).once("value")
@@ -94,6 +117,28 @@ class Database{
         return new Promise( (resolve, reject) => {
             admin.database().ref('monqez/' + userID).update({
                 "status": status
+            }).then( () => {
+                resolve();
+            }).catch( (error) => {
+                reject(error);
+            } );
+        } );
+    }
+
+    editAccount(userID, userInfo) {
+        console.log("UserID: " + userID);
+        console.log("name: " + userInfo.name);
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('user/' + userID).update({
+                name: userInfo.name,
+                national_id: userInfo.national_id,
+                phone: userInfo.phone,
+                birthdate: userInfo.birthdate,
+                country: userInfo.country,
+                city: userInfo.city,
+                street: userInfo.street,
+                buildNumber: userInfo.buildNumber,
+                gender: userInfo.gender
             }).then( () => {
                 resolve();
             }).catch( (error) => {

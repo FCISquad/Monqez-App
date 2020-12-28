@@ -28,16 +28,13 @@ class _SplashState extends State<Splash> {
 
 
   Future <void> checkUser(var token, var uid) async{
-    final http.Response response2 = await http.post(
-      '$url/checkUser/',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+    final http.Response response2 = await http.get(
+      '$url/user/get/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, String>{
-        'token': token,
-        'uid': uid,
-        'request': "check"
-      }),
     );
     if (response2.statusCode == 200){
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
@@ -81,7 +78,7 @@ class _SplashState extends State<Splash> {
           navigate = NormalHomeScreen();
         }
         else if (type == 1) {
-          navigate = HelperHomeScreen();
+          navigate = HelperHomeScreen(token);
         }
         else if (type == 2) {
           navigate = AdminHomeScreen();
@@ -97,7 +94,7 @@ class _SplashState extends State<Splash> {
   Widget build(BuildContext context) {
     redirect();
     return SplashScreen(
-      seconds: 3,
+      seconds: 5,
       navigateAfterSeconds: map,
       backgroundColor: Colors.deepOrangeAccent,
       title: Text('Monqez',

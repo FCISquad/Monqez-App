@@ -227,7 +227,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
-      navigateReplacement(_isMonqez ? HelperHomeScreen() : NormalHomeScreen());
+      navigateReplacement(_isMonqez ? HelperHomeScreen(token) : NormalHomeScreen());
     } else {
       print(response.statusCode);
       makeToast('Failed to submit user.');
@@ -728,13 +728,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             fontWeight: FontWeight.bold,
           )
           ),
-          visible: !_addressError.isEmpty,
+          visible: _addressError.isNotEmpty,
         )
       ],
     );
   }
 
   void _openCamera(BuildContext context) async {
+    // ignore: deprecated_member_use
     var picture = await ImagePicker.pickImage(source: ImageSource.camera);
     this.setState(() {
       imageFile = picture;

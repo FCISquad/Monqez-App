@@ -337,7 +337,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 navigateReplacement(NormalHomeScreen());
               }
               else if (type == 1){
-                navigateReplacement(HelperHomeScreen());
+                navigateReplacement(HelperHomeScreen(token));
               }
               else if (type == 2){
                 navigateReplacement(AdminHomeScreen());
@@ -417,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
               navigateReplacement(NormalHomeScreen());
             }
             else if (type == 1){
-              navigateReplacement(HelperHomeScreen());
+              navigateReplacement(HelperHomeScreen(token));
             }
             else if (type == 2){
               navigateReplacement(AdminHomeScreen());

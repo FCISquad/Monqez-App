@@ -73,4 +73,43 @@ app.get( '/get' , (request , response) => {
         }
     });
 } );
+
+app.get( '/getprofile' , (request , response) => {
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            User.getProfile(userId)
+                .then( (userJson) => {
+                    response.send(userJson);
+                } )
+                .catch( (error) => {
+                    console.log(error);
+                    response.send(error);
+                } );
+        }
+    });
+} );
+
+app.post( '/edit' , (request , response) => {
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            User.editAccount(userId, request.body)
+                .then( (userJson) => {
+                    response.send(userJson);
+                } )
+                .catch( (error) => {
+                    console.log(error);
+                    response.send(error);
+                } );
+        }
+    });
+} );
+
 module.exports = app;
