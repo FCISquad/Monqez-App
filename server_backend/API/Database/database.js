@@ -33,14 +33,48 @@ class Database{
     }
 
     getApplicationQueue() {
-    admin.database().ref('applicationQueue/').orderByChild("date").once("value", function(snapshot) {
-        console.log(snapshot.numChildren());
-        snapshot.forEach(snap => {
-            const issue = snap.val();
-            // More code but we don't need to see it here
-            console.log(issue);
+        console.log("Hererere");
+        return new Promise((resolve, reject) => {
+            admin.database().ref('applicationQueue/').orderByChild("date").once("value", function(snapshot) {
+                let obj = {
+                    table: []
+                };
+                snapshot.forEach(snap => {
+                    admin.database().ref('user/' + snap.key).once("value", function (userdata) {
+                        console.log("In loop");
+                        obj.table.push(
+                            {
+                                uid: snap.key,
+                                date: snap.val().date,
+                                name: userdata.val().name
+                            }
+                        );
+                    });
+                });
+                console.log("out json: " + JSON.stringify(obj.table));
+                return JSON.stringify(obj.table);
+            }).then((json) => {
+                console.log("in json: " + json);
+                resolve(json);
+            }).catch( (error) => {
+                reject(error);
+            });
         });
-    }).then(() => {});
+    }
+
+    getState() { //to be continued
+        return new Promise(((resolve, reject) => {
+            admin.database().ref( 'applicationQueue/' )
+                .once("value")
+                .then( (snapshot) => {
+                    resolve({
+                        snapshot: snapshot.numChildren()
+                    });
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        }));
     }
 
     getUser(userID){

@@ -22,10 +22,27 @@ class Admin extends User{
     setApproval(helperID){}
     getApplication(userID){}
     getAllApplicationRequests(){}
-    getState(){}
+
+    getState(){
+        return new Promise( (resolve, reject) => {
+            User._database.getState().then( (stateJSON) => {
+                resolve(stateJSON);
+            } ).catch( (error) => {
+                reject(error);
+            } );
+        } );
+    }
 
     getApplicationQueue(){
-        User._database.getApplicationQueue();
+        return new Promise( ((resolve, reject) => {
+            User._database.getApplicationQueue().then(
+                (queue) => {
+                    resolve (queue);
+                }
+            ).catch((error) => {
+                reject(error);
+            });
+        }));
     }
 
     addAdditionalInformation(userID, userObject){

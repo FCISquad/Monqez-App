@@ -24,9 +24,41 @@ app.post('/add' , (request , response) => {
     });
 });
 
-app.post('/feteiha', (request , response) => {
+app.post('/get_state', (request , response) => {
+    helper.verifyToken(request, (userID) => {
+        if (userID === null) {
+            response.sendStatus(403);
+        } else {
+            let admin = new adminModel(request.body);
+            admin.getState().then((stateJson) => {
+                response.send(stateJson);
+            }).catch((error) => {
+                response.send(error);
+            });
+        }
+    });
+});
+
+app.post('/get_application_queue', (request , response) => {
     let admin = new adminModel(request.body);
-    admin.getApplicationQueue();
+    admin.getApplicationQueue().then((queue) => {
+        response.send(queue);
+    }).catch((error) => {
+        response.send(error);
+    });
+
+    // helper.verifyToken(request, (userID) => {
+    //     if (userID === null) {
+    //         response.sendStatus(403);
+    //     } else {
+    //         let admin = new adminModel(request.body);
+    //         admin.getApplicationQueue().then((queue) => {
+    //             response.send(queue);
+    //         }).catch((error) => {
+    //             response.send(error);
+    //         });
+    //     }
+    // });
 });
 
 app.post('/addAdditionalInformation' , (request , response) => {
