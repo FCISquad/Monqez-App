@@ -21,11 +21,9 @@
   <component name="ChangeListManager">
     <list default="true" id="de9dac36-46f4-4753-881b-06de26d3d064" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Controller/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/adminController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/adminController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Model/User/adminUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/adminUser.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Model/User/helperUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/helperUser.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,6 +88,7 @@
       <workItem from="1609112836703" duration="1836000" />
       <workItem from="1609164910014" duration="4258000" />
       <workItem from="1609171771255" duration="6383000" />
+      <workItem from="1609180535452" duration="2639000" />
     </task>
     <servers />
   </component>
@@ -117,25 +116,25 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="463" y="119" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1609085949363" />
-    <state width="1169" height="234" key="GridCell.Tab.0.bottom" timestamp="1609178226606">
+    <state width="1323" height="229" key="GridCell.Tab.0.bottom" timestamp="1609183195266">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1169" height="234" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1609178226606" />
+    <state width="1323" height="229" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1609183195266" />
     <state width="1877" height="389" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1609171011987" />
-    <state width="1169" height="234" key="GridCell.Tab.0.center" timestamp="1609178226606">
+    <state width="1323" height="229" key="GridCell.Tab.0.center" timestamp="1609183195266">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1169" height="234" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1609178226606" />
+    <state width="1323" height="229" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1609183195266" />
     <state width="1877" height="389" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1609171011986" />
-    <state width="1169" height="234" key="GridCell.Tab.0.left" timestamp="1609178226606">
+    <state width="1323" height="229" key="GridCell.Tab.0.left" timestamp="1609183195265">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1169" height="234" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1609178226606" />
+    <state width="1323" height="229" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1609183195265" />
     <state width="1877" height="389" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1609171011986" />
-    <state width="1169" height="234" key="GridCell.Tab.0.right" timestamp="1609178226606">
+    <state width="1323" height="229" key="GridCell.Tab.0.right" timestamp="1609183195266">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
-    <state width="1169" height="234" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1609178226606" />
+    <state width="1323" height="229" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1609183195266" />
     <state width="1877" height="389" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1609171011986" />
     <state width="1169" height="234" key="GridCell.Tab.1.bottom" timestamp="1609178226607">
       <screen x="0" y="0" width="1366" height="728" />
@@ -181,18 +180,22 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="339" y="162" key="run.anything.popup/0.0.1366.728@0.0.1366.728" timestamp="1609173143800" />
+    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1609182273748">
+      <screen x="0" y="0" width="1366" height="728" />
+    </state>
+    <state x="346" y="49" width="672" height="678" key="search.everywhere.popup/0.0.1366.728@0.0.1366.728" timestamp="1609182273748" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/API/Controller/User/adminController.js</url>
-          <line>65</line>
+          <line>87</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/API/Controller/User/adminController.js</url>
-          <line>64</line>
+          <line>86</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -202,15 +205,9 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/API/Model/User/adminUser.js</url>
-          <line>37</line>
+          <line>35</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/API/Model/User/adminUser.js</url>
-          <line>41</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="16" />
+          <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -1,5 +1,4 @@
 const admin  = require('firebase-admin')
-const admin2 = require('firebase-admin')
 
 class Database{
     createUser(userObject){
@@ -35,112 +34,26 @@ class Database{
             "date": subDate
         }).then( () => {} );
     }
-    /*
-                                        let obj = {
-                                table: []
-                            };
-
-                            snapShot.forEach(snap => {
-                                admin.database().ref('user/' + snap.key)
-                                    .once("value" , (userData) => {
-                                        obj.table.push({"name" : userData.val().name});
-                                    })
-                                    .then((userData) => {
-                                        obj.table.push({"name" : userData.val().name});
-                                    });
-                            });
-                            resolve(JSON.stringify(obj.table));
-                        })
-
-
-     */
-
-    /*
-
-              refCart.child(user_id).on("value", function(snapshot) {
-
-              snapshot.forEach(function(childSnapshot) {
-                var item_id = childSnapshot.name();
-                var qty = childSnapshot.val();
-
-                    refMenu.child(item_id).once("value", function(snapshot) {
-                      var item = snapshot.val()
-                      console.log(item.name +' '+ item.price)
-                    });
-
-             });
-
-            });
-
-     */
-
 
     getApplicationQueue(callback) {
         admin.database().ref('applicationQueue/').orderByChild("date")
             .once("value" , function (snapShot){
-                callback(snapShot);
+                admin.database().ref('user/').once("value" , function (tableJson){
+                      let table = [];
+                      snapShot.forEach(function (snap){
+                          // console.log(tableJson.child("/" + snap.key).val());
+                         table.push({
+                             "name": tableJson.child("/" + snap.key).val().name,
+                             "date": snap.val().date,
+                             "uid": snap.key
+                         }) ;
+                      });
+                      console.log(table);
+                      callback(JSON.stringify(table));
+                }).then(()=>{});
             })
             .then( () => {} );
-
-
-        // return new Promise((resolve, reject) => {
-        //     let obj = {
-        //         table: []
-        //     };
-        //     admin.database().ref('applicationQueue/').orderByChild("date")
-        //         .on("value" , function (snapShot){
-        //            snapShot.forEach(function (child){
-        //
-        //                admin2.database().ref('user/' + child.key)
-        //                    .once("value" , function (data){
-        //                        obj.table.push({
-        //                           "name": data.val().name,
-        //                           "date": child.val(),
-        //                           "uid": child.key
-        //                        });
-        //                    })
-        //                    .then( () => {} );
-        //            });
-        //         });
-        //     // resolve(JSON.stringify(obj.table));
-        //     // console.log(obj.table);
-        // });
     }
-    async temp(userID , callback) {
-        await admin.database().ref('user/' + userID).once("value" , function (userData){
-            callback(userData.val().name);
-        });
-    }
-
-    // getApplicationQueue() {
-    //     console.log("Hererere");
-    //     return new Promise((resolve, reject) => {
-    //         admin.database().ref('applicationQueue/').orderByChild("date").once("value", function(snapshot) {
-    //             let obj = {
-    //                 table: []
-    //             };
-    //             snapshot.forEach(snap => {
-    //                 admin.database().ref('user/' + snap.key).once("value", function (userdata) {
-    //                     console.log("In loop");
-    //                     obj.table.push(
-    //                         {
-    //                             uid: snap.key,
-    //                             date: snap.val().date,
-    //                             name: userdata.val().name
-    //                         }
-    //                     );
-    //                 });
-    //             });
-    //             console.log("out json: " + JSON.stringify(obj.table));
-    //             return JSON.stringify(obj.table);
-    //         }).then((json) => {
-    //             console.log("in json: " + json);
-    //             resolve(json);
-    //         }).catch( (error) => {
-    //             reject(error);
-    //         });
-    //     });
-    // }
 
     getState() { //to be continued
         return new Promise(((resolve, reject) => {
@@ -190,6 +103,16 @@ class Database{
                     reject(error);
                 } )
         } )
+    }
+
+    getApplication(userID , callback){
+        admin.database().ref('user/' + userID).once("value" , function (userData){
+            admin.database().ref('monqez/').once("value" , function (monqez){
+                let json = userData.val();
+                json.certificate = monqez.child(userID).val().certificate;
+                callback(json);
+            }).then(()=>{});
+        }).then(()=>{});
     }
 
     getProfile(userID) {
