@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:monqez_app/Screens/AdditionalAdminInfoScreen.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
@@ -328,7 +329,12 @@ class _LoginScreenState extends State<LoginScreen> {
             }
             else if (firstLogin){
               saveUserToken(token, userCredential.user.uid);
-              navigateReplacement(SecondSignupScreen());
+              if (type == 2){
+                navigateReplacement(AdditionalAdminInfoScreen());
+              }
+              else{
+                navigateReplacement(SecondSignupScreen());
+              }
             }
             else{
               saveUserToken(token, userCredential.user.uid);

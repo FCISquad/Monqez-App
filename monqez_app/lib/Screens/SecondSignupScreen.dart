@@ -227,7 +227,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
-      navigateReplacement(_isMonqez ? HelperHomeScreen(token) : NormalHomeScreen());
+      navigateReplacement(NormalHomeScreen());
+
     } else {
       print(response.statusCode);
       makeToast('Failed to submit user.');

@@ -26,7 +26,6 @@ class _SplashState extends State<Splash> {
   bool isDisabled;
   bool firstLogin;
 
-
   Future <void> checkUser(var token, var uid) async{
     final http.Response response2 = await http.get(
       '$url/user/get/',
@@ -92,7 +91,7 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    redirect();
+    //redirect();
     return SplashScreen(
       seconds: 5,
       navigateAfterSeconds: map,

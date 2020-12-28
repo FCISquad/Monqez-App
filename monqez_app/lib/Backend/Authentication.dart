@@ -4,10 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
-
-String url = "https://monqez2.loca.lt";
-
+String url = "https://monqezapp.loca.lt";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -55,7 +52,30 @@ Future<bool> signup( TextEditingController _emailController,
 }
 
 
+Future<UserCredential> newAdmin( TextEditingController _emailController,
+    TextEditingController _passwordController ) async {
+  try {
+    var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text);
+    if (result != null) {
+      var token = await FirebaseAuth.instance.currentUser.getIdToken();
+      return result;
 
+    } else {
+      makeToast('Please try later');
+      return null;
+    }
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
+      makeToast('Email already exists!');
+      return null;
+    } else {
+      makeToast(e.code);
+      return null;
+    }
+
+  }
+}
 
 Future<bool> signInWithGoogle() async {
   final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
