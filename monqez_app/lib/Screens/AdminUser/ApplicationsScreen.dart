@@ -30,7 +30,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
           subtitle: Text('Name of the pdf'),
           leading: Text('$index'),
           trailing: Icon(Icons.keyboard_arrow_right),
-          onTap: () => navigate(ViewApplicationScreen()),
+         // onTap: () => navigate(ViewApplicationScreen()),
         );
       },
       separatorBuilder: (context, index) {

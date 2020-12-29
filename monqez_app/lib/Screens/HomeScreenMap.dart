@@ -9,15 +9,15 @@ import 'package:search_map_place/search_map_place.dart';
 
 
 import 'LoginScreen.dart';
-void main() => runApp(HomeScreenMapmmmm());
+
 class HomeScreenMapmmmm extends StatefulWidget {
   @override
   _HomeScreenMapState createState() => _HomeScreenMapState();
 }
 class Item {
-  const Item(this.name,this.icon);
+  const Item(this.name);
   final String name;
-  final Icon icon;
+
 }
 class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProviderStateMixin {
   Animation<double> animation;
@@ -38,16 +38,16 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   Item _selectedSeviirty;
-  String _character;
   String _radioValue  ;
+  var _nameController = TextEditingController();
+
   List<Item> users = <Item>[
-    const Item('Android',Icon(Icons.android,color:  const Color(0xFF167F67),)),
-    const Item('Flutter',Icon(Icons.flag,color:  const Color(0xFF167F67),)),
-    const Item('ReactNative',Icon(Icons.format_indent_decrease,color:  const Color(0xFF167F67),)),
-    const Item('iOS',Icon(Icons.mobile_screen_share,color:  const Color(0xFF167F67),)),
+    const Item('Very dangerous'),
+    const Item('Dangerous'),
+    const Item('Normal'),
   ];
 
-  static final CameraPosition _position1 = CameraPosition(
+    static CameraPosition _position1 = CameraPosition(
     bearing: 192.833,
     target: LatLng(45.531563, -122.677433),
     tilt: 59.440,
@@ -58,13 +58,20 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
-
-  _onMapCreated(GoogleMapController controller) {
+  _onMapCreated(GoogleMapController controller) async {
     _controller.complete(controller);
+    setState(() {
+      _position1 = CameraPosition(
+          bearing: 192.833,
+          target: LatLng(37.0503, -95.7111),
+          tilt: 59.440,
+          zoom: 11.0);
+    });
+    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
+    print(_position1.target) ;
   }
-
   _onCameraMove(CameraPosition position) {
-    _lastMapPosition = position.target;
+    _lastMapPosition = _position1.target;
   }
   _showMaterialDialog() {
     showDialog(
@@ -89,38 +96,37 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
                             style: TextStyle(fontWeight: FontWeight.bold , fontSize: 20),
                           )) ,
                           SizedBox(height: 20),
-                          Container(
-                            child :Row(
-                              children: [
-                                Text("Severity  ") ,
-                                DropdownButton<Item>(
-                                  hint: Text("Select item"),
-                                  value: _selectedSeviirty,
-                                  onChanged: (Item value) {
-                                    setState(() {
-                                      _selectedSeviirty = value;
-                                      print(_selectedSeviirty.name) ;
-                                    });
-                                  },
-                                  items: users.map((Item user) {
-                                    return  DropdownMenuItem<Item>(
-                                      value: user,
-                                      child: Row(
-                                        children: <Widget>[
-                                          user.icon,
-                                          SizedBox(width: 10,),
-                                          Text(
-                                            user.name,
-                                            style:  TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Container(
+                          //   child :Row(
+                          //     children: [
+                          //       Text("Severity  ") ,
+                          //       DropdownButton<Item>(
+                          //         hint: Text("Select item"),
+                          //         value: _selectedSeviirty,
+                          //         onChanged: (Item value) {
+                          //           setState(() {
+                          //             _selectedSeviirty = value;
+                          //             print(_selectedSeviirty.name) ;
+                          //           });
+                          //         },
+                          //         items: users.map((Item user) {
+                          //           return  DropdownMenuItem<Item>(
+                          //             value: user,
+                          //             child: Row(
+                          //               children: <Widget>[
+                          //                 SizedBox(width: 10,),
+                          //                 Text(
+                          //                   user.name,
+                          //                   style:  TextStyle(color: Colors.black),
+                          //                 ),
+                          //               ],
+                          //             ),
+                          //           );
+                          //         }).toList(),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
 
                           Container(
                             child: Row(
@@ -199,17 +205,22 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
           : MapType.normal;
     });
   }
-  getCurrentUserLocation() async {
+  _getCurrentUserLocation() async {
     Position _newPosition;
     _newPosition = await Geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
       _newUserPosition = _newPosition;
+      _position1 = CameraPosition(
+          bearing: 192.833,
+          target: LatLng( _newUserPosition.latitude, _newUserPosition.longitude),
+          tilt: 59.440,
+          zoom: 11.0);
     });
-  }
 
+  }
   _onAddMarkerButtonPressed() async {
-    await getCurrentUserLocation();
+    await _getCurrentUserLocation();
     setState(() {
       _markers.add(
         Marker(
@@ -226,8 +237,9 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
     });
   }
 
-  Widget button(Function function, IconData icon) {
+  Widget button(Function function, IconData icon, String hero) {
     return FloatingActionButton(
+      heroTag: hero,
       onPressed: function,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       backgroundColor: Colors.blue,
@@ -295,108 +307,74 @@ class _HomeScreenMapState extends State<HomeScreenMapmmmm> with SingleTickerProv
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
-                vertical: 70.0,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                      'Monqez', style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 48,
-                      letterSpacing: 1.5,
-                      fontWeight: FontWeight.bold)),
-                  new Container(
-                    padding: new EdgeInsets.all(32.0),
-                    height: animation.value,
-                    width: animation.value,
-                    child: new Center(
-                      child: new Image(
-                          image: new AssetImage('images/firstaid.png')),
-                    ),
-                  ),
-                  //_buildBtn('Logout'),
-                  GoogleMap(
-                    onMapCreated: _onMapCreated,
-                    initialCameraPosition: CameraPosition(
-                      target: _center,
-                      zoom: 11.0,
-                    ),
-                    mapType: _currentMapType,
-                    markers: _markers,
-                    onCameraMove: _onCameraMove,
-                  ),
-                  SizedBox(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    child: SearchMapPlaceWidget(
-                      hasClearButton: true,
-                      placeType: PlaceType.address,
-                      placeholder: "Enter the location",
-                      apiKey: 'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo',
-                      onSelected: (Place place) async {
-                        Geolocation geoLocation = await place.geolocation;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child:SizedBox(
-                        width: 200,
-                        height: 50,
-                        child: RaisedButton(
-                          onPressed: (){
-                            _showMaterialDialog() ;
-                          },
-                          child: Text('Get Help!'),
-                          color: Colors.deepOrange,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Column(
-                        children: <Widget>[
-                          button(_onMapTypeButtonPressed, Icons.map),
-                          SizedBox(
-                            height: 16.0,
-                          ),
-                          button(_onAddMarkerButtonPressed, Icons.add_location),
-                          SizedBox(
-                            height: 16.0,
-                          ),
-                          button(_goToPosition1, Icons.location_searching),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                ],
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blue,
+        ),
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: _position1,
+              mapType: _currentMapType,
+              markers: _markers,
+              onCameraMove: _onCameraMove,
+            ),
+            SizedBox(
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
+              child: SearchMapPlaceWidget(
+                hasClearButton: true,
+                placeType: PlaceType.address,
+                placeholder: "Enter the location",
+                apiKey: 'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo',
+                onSelected: (Place place) async {
+                  Geolocation geoLocation = await place.geolocation;
+                },
               ),
             ),
-          ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SizedBox(
+                  width: 200,
+                  height: 50,
+                  child: RaisedButton(
+                    onPressed: () {
+                      _showMaterialDialog();
+                    },
+                    child: Text('Get Help!'),
+                    color: Colors.deepOrange,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Column(
+                  children: <Widget>[
+                    button(_onMapTypeButtonPressed, Icons.map, 'map'),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    button(_onAddMarkerButtonPressed, Icons.add_location, 'marker'),
+                    SizedBox(
+                      height: 16.0,
+                    ),
+                    button(_goToPosition1, Icons.location_searching, 'position'),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-
 }

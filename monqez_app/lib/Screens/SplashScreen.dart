@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:monqez_app/Screens/HomeScreenMap.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 
 import '../Backend/Authentication.dart';
@@ -20,7 +21,7 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
-  Widget map = AdminHomeScreen();
+  Widget map = HomeScreenMapmmmm();
   String uid;
   String token;
   int type;
