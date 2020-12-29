@@ -216,6 +216,12 @@ class Database{
             })
             .then(() => {});
         admin.database().ref('applicationQueue/' + applicationJSON.userID).remove().then(() => {});
+        if ( applicationJSON.result === 'true' ){
+            admin.database().ref('user/' + applicationJSON.userID).update({
+                "disable": "false"
+            })
+                .then(() => {});
+        }
     }
 }
 
