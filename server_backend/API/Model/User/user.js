@@ -6,7 +6,7 @@ class User{
     static _database = new Database();
 
     #uid;
-    constructor(userJson ) {
+    constructor(userJson) {
         if (this.constructor == User) {
             throw new Error("Abstract classes can't be instantiated.");
         }
@@ -59,6 +59,29 @@ class User{
                 } )
         } );
 
+    }
+
+    static getProfile(userID) {
+        return new Promise( ((resolve, reject) => {
+            User._database.getProfile(userID)
+                .then( (userJson) =>{
+                    resolve(userJson);
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        }));
+    }
+    static editAccount(userID, userData){
+        return new Promise( (resolve, reject) => {
+            User._database.editAccount(userID , userData)
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
     }
 }
 

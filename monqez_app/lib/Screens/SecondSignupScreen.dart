@@ -9,7 +9,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
@@ -206,17 +205,17 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     print("Uid: " + uid);
 
     final http.Response response = await http.post(
-      '$url/signup/',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+      '$url/user/signup',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'token': token,
-        'uid': uid,
         'name': _nameController.text,
         'national_id': _idController.text,
-        'phone': _phoneController.text,
-        'birthdate': selectedDate.toString(),
+        'phone_number': _phoneController.text,
+        'dob': selectedDate.toString(),
         'gender': gender,
         'country': _countryController.text,
         'city': _cityController.text,
@@ -227,8 +226,10 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
-      navigateReplacement(_isMonqez ? HelperHomeScreen() : NormalHomeScreen());
+      navigateReplacement(NormalHomeScreen());
+
     } else {
+      print(response.statusCode);
       makeToast('Failed to submit user.');
     }
   }
@@ -240,24 +241,25 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
     String base64Image = base64Encode(certificateFile.readAsBytesSync());
     final http.Response response = await http.post(
-      '$url/apply/',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+      '$url/user/apply/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'token': token,
-        'uid': uid,
         'name': _nameController.text,
         'national_id': _idController.text,
-        'phone': _phoneController.text,
-        'birthdate': selectedDate.toString(),
+        'phone_number': _phoneController.text,
+        'dob': selectedDate.toString(),
         'gender': gender,
         'country': _countryController.text,
         'city': _cityController.text,
         'street': _streetController.text,
         'buildNumber': _buildNumberController.text,
         'certificate': base64Image,
-        'certificateName': _fileName
+        'certificateName': _fileName,
+        'submissionDate': DateTime.now().toString()
       }),
     );
 
@@ -727,13 +729,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             fontWeight: FontWeight.bold,
           )
           ),
-          visible: !_addressError.isEmpty,
+          visible: _addressError.isNotEmpty,
         )
       ],
     );
   }
 
   void _openCamera(BuildContext context) async {
+    // ignore: deprecated_member_use
     var picture = await ImagePicker.pickImage(source: ImageSource.camera);
     this.setState(() {
       imageFile = picture;

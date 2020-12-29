@@ -23,17 +23,25 @@ class HelperUser extends User{
         this.latitude = latitude;
     }
 
-    submitApplication(){
+    submitApplication(subDate){
         User._database.createUser(this)
             .then( () => {
-                User._database.changeToMonqez(this);
+                User._database.changeToMonqez(this , subDate);
             } )
             .catch((error) => {
 
             })
     }
-    setStatus(statusNumber){
-        this.status = statusNumber;
+    setStatus(userID , status){
+        return new Promise( (resolve, reject) => {
+            User._database.setHelperStatus(userID , status)
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
     }
     getCertificate(userID){
         return new Promise( (resolve, reject) => {

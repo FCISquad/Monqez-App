@@ -19,7 +19,13 @@ app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
 
-const signupRoute = require('./API/Controller/User/userController');
-app.use('/user' , signupRoute);
+const userRoute = require('./API/Controller/User/userController');
+app.use('/user' , userRoute);
+
+const adminRoute = require('./API/Controller/User/adminController');
+app.use('/admin' , adminRoute);
+
+const helperRoute = require('./API/Controller/User/helperController');
+app.use('/helper' , helperRoute);
 
 module.exports = app;
