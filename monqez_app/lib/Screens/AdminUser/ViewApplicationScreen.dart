@@ -1,10 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
-import 'package:monqez_app/Screens/HelperUser/MaterialUI.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -12,7 +9,6 @@ import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-
 import 'AdminHomeScreen.dart';
 
 // ignore: must_be_immutable
