@@ -19,9 +19,25 @@ class Admin extends User{
         } );
     }
 
-    setApproval(helperID){}
-    getApplication(userID){}
-    getAllApplicationRequests(){}
+    setApproval(helperID){
+
+    }
+    
+    getApplication(userID){
+        return new Promise((resolve, _) => {
+            User._database.getApplication(userID , function (applicationJson){
+                resolve(applicationJson);
+            })
+        });
+    }
+
+    getAllApplicationRequests(){
+        return new Promise( (resolve, _) => {
+            User._database.getApplicationQueue(function (json){
+                resolve(json);
+            });
+        } );
+    }
 
     getState(){
         return new Promise( (resolve, reject) => {
@@ -31,18 +47,6 @@ class Admin extends User{
                 reject(error);
             } );
         } );
-    }
-
-    getApplicationQueue(){
-        return new Promise( ((resolve, reject) => {
-            User._database.getApplicationQueue().then(
-                (queue) => {
-                    resolve (queue);
-                }
-            ).catch((error) => {
-                reject(error);
-            });
-        }));
     }
 
     addAdditionalInformation(userID, userObject){
@@ -65,7 +69,6 @@ class Admin extends User{
                 reject(error);
             } );
         } );
-
     }
 }
 

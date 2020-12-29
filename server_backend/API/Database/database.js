@@ -1,4 +1,5 @@
-const admin = require('firebase-admin')
+const admin  = require('firebase-admin')
+
 class Database{
     createUser(userObject){
         return new Promise( (resolve, reject) => {
@@ -20,7 +21,7 @@ class Database{
         } );
     }
 
-    changeToMonqez(userObject){
+    changeToMonqez(userObject , subDate){
         admin.database().ref('monqez/' + userObject.userID).set({
             certificate: userObject.certificate,
             certificateName: userObject.certificateName
@@ -29,43 +30,30 @@ class Database{
             "type": "1",
             "disable": "true"
         }).then( () => {} );
-
+        admin.database().ref('applicationQueue/' + userObject.userID).set({
+            "date": subDate
+        }).then( () => {} );
     }
 
-    getApplicationQueue() {
-        console.log("Here");
-        //let self = this;
-        let obj = {
-            table: []
-        };
-        return new Promise((resolve, reject) => {
-             admin.database().ref('applicationQueue/').orderByChild("date").on('value', function (snapshot) {
-                snapshot.forEach(snap => {
-                    admin.database().ref('user/').child(snap.key).once('value', function (userdata) {
-                        obj.table.push(
-                            {
-                                uid: snap.key,
-                                date: snap.val().date,
-                                name: userdata.val().name
-                            }
-                        );
-                        return JSON.stringify(obj.table);
-                    }).then((json) => {
-                        resolve(json);
-                    }).catch((error) => {
-                        reject(error);
-                    });
-                });
-            }).then((snapshot) => {
-                console.log("in json: " + snapshot);
-                resolve(snapshot);
-            }).catch( (error) => {
-                console.log("error: " + error);
-                reject(error);
-            });
-        });
+    getApplicationQueue(callback) {
+        admin.database().ref('applicationQueue/').orderByChild("date")
+            .once("value" , function (snapShot){
+                admin.database().ref('user/').once("value" , function (tableJson){
+                      let table = [];
+                      snapShot.forEach(function (snap){
+                          // console.log(tableJson.child("/" + snap.key).val());
+                         table.push({
+                             "name": tableJson.child("/" + snap.key).val().name,
+                             "date": snap.val().date,
+                             "uid": snap.key
+                         }) ;
+                      });
+                      console.log(table);
+                      callback(JSON.stringify(table));
+                }).then(()=>{});
+            })
+            .then( () => {} );
     }
-
 
     getState() { //to be continued
         return new Promise(((resolve, reject) => {
@@ -115,6 +103,16 @@ class Database{
                     reject(error);
                 } )
         } )
+    }
+
+    getApplication(userID , callback){
+        admin.database().ref('user/' + userID).once("value" , function (userData){
+            admin.database().ref('monqez/').once("value" , function (monqez){
+                let json = userData.val();
+                json.certificate = monqez.child(userID).val().certificate;
+                callback(json);
+            }).then(()=>{});
+        }).then(()=>{});
     }
 
     getProfile(userID) {
