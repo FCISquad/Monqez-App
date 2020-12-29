@@ -40,25 +40,25 @@ app.post('/get_state', (request , response) => {
 });
 
 app.post('/get_application' , (request , response) => {
-    let admin = new adminModel(request.body);
-    admin.getApplication(request.body.userID).then((applicationJson) => {
-        response.send(applicationJson);
-    }).catch((error) => {
-        response.send(error);
-    });
-
-    // helper.verifyToken(request, (userID) => {
-    //     if (userID === null) {
-    //         response.sendStatus(403);
-    //     } else {
-    //         let admin = new adminModel(request.body);
-    //         admin.getApplication(request.body.userID).then((applicationJson) => {
-    //             response.send(applicationJson);
-    //         }).catch((error) => {
-    //             response.send(error);
-    //         });
-    //     }
+    // let admin = new adminModel(request.body);
+    // admin.getApplication(request.body.userID).then((applicationJson) => {
+    //     response.send(applicationJson);
+    // }).catch((error) => {
+    //     response.send(error);
     // });
+
+    helper.verifyToken(request, (userID) => {
+        if (userID === null) {
+            response.sendStatus(403);
+        } else {
+            let admin = new adminModel(request.body);
+            admin.getApplication(request.body.userID).then((applicationJson) => {
+                response.send(applicationJson);
+            }).catch((error) => {
+                response.send(error);
+            });
+        }
+    });
 })
 
 app.post('/get_application_queue', (request , response) => {

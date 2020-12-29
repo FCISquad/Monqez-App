@@ -63,17 +63,6 @@
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="server.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/server.js" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -97,6 +86,8 @@
       <workItem from="1609101277773" duration="8135000" />
       <workItem from="1609112836703" duration="1836000" />
       <workItem from="1609164910014" duration="10542000" />
+      <workItem from="1609246817408" duration="3000" />
+      <workItem from="1609247618192" duration="5700000" />
     </task>
     <servers />
   </component>
@@ -124,26 +115,26 @@
       <screen x="0" y="0" width="1366" height="728" />
     </state>
     <state x="463" y="119" key="FileChooserDialogImpl/0.0.1366.728@0.0.1366.728" timestamp="1609085949363" />
-    <state width="1877" height="265" key="GridCell.Tab.0.bottom" timestamp="1609178279032">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom" timestamp="1609254965332">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1877" height="265" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1609178279032" />
-    <state width="1877" height="265" key="GridCell.Tab.0.center" timestamp="1609178279031">
+    <state width="1877" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1609254965332" />
+    <state width="1877" height="285" key="GridCell.Tab.0.center" timestamp="1609254965331">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1877" height="265" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1609178279031" />
-    <state width="1877" height="265" key="GridCell.Tab.0.left" timestamp="1609178279030">
+    <state width="1877" height="285" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1609254965331" />
+    <state width="1877" height="285" key="GridCell.Tab.0.left" timestamp="1609254965331">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1877" height="265" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1609178279030" />
-    <state width="1877" height="265" key="GridCell.Tab.0.right" timestamp="1609178279031">
+    <state width="1877" height="285" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1609254965331" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right" timestamp="1609254965332">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="196" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1609087086813" />
-    <state width="1877" height="265" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1609178279031" />
+    <state width="1877" height="285" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1609254965332" />
     <state width="1877" height="225" key="GridCell.Tab.1.bottom" timestamp="1609175565619">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -190,12 +181,12 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/API/Controller/User/adminController.js</url>
-          <line>65</line>
+          <line>87</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/API/Controller/User/adminController.js</url>
-          <line>64</line>
+          <line>86</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">

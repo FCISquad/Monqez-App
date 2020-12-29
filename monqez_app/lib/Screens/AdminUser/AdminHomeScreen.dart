@@ -2,16 +2,73 @@ import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:monqez_app/Backend/Authentication.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   @override
-  _AdminHomeScreenState createState() => _AdminHomeScreenState();
+  AdminHomeScreenState createState() => AdminHomeScreenState();
 }
 
-class _AdminHomeScreenState extends State<AdminHomeScreen> {
+class AdminHomeScreenState extends State<AdminHomeScreen> {
+  bool isLoading = true;
+  int applicationNumber;
+  static String token;
+  AdminHomeScreenState() {
+    applicationNumber = 0;
+    getToken();
+  }
+
+  Future<void> getState() async{
+    String token = AdminHomeScreenState.token;
+    final http.Response response = await http.post(
+        '$url/admin/get_state/',
+        headers: <String, String> {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+    );
+
+    if (response.statusCode == 200){
+      var parsed = jsonDecode(response.body).cast<String, dynamic>();
+      applicationNumber = parsed['snapshot'];
+      return true;
+    }
+    else{
+      print(response.statusCode);
+      return false;
+    }
+  }
+  Future<void> getToken() async {
+    var _prefs = await SharedPreferences.getInstance();
+    AdminHomeScreenState.token = _prefs.getString("userToken");
+    await getState();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (isLoading) {
+      return Scaffold (
+          backgroundColor: Colors.white,
+          body: Container(
+              height: double.infinity,
+              alignment: Alignment.center,
+              child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(
+                      backgroundColor: Colors.white, strokeWidth: 5, valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent)
+                  )
+              )
+          )
+      );
+    } else return Scaffold(
         appBar: AppBar(
           title: Text('Monqez - Admin'),
         ),
@@ -27,7 +84,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   children: [
                     TableRow(
                       children: [
-                        _card("2", "New Applications", Icons.file_copy,
+                        _card(applicationNumber.toString(), "New Applications", Icons.file_copy,
                             ApplicationsScreen()),
                         _card("100", "New Complaints", Icons.thumb_down_sharp,
                             ComplaintsScreen()),
