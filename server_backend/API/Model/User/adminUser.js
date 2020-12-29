@@ -19,8 +19,8 @@ class Admin extends User{
         } );
     }
 
-    setApproval(helperID){
-
+    setApproval(adminID , applicationJson){
+        User._database.setApproval(adminID , applicationJson);
     }
     
     getApplication(userID){

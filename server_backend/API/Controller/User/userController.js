@@ -41,17 +41,6 @@ app.post('/apply' , (request , response) => {
 });
 
 app.get( '/get' , (request , response) => {
-    // let userId = request.body.userId;
-    // request.body.userID = userId;
-    // User.getUser(userId)
-    //     .then( (userJson) => {
-    //         response.send(userJson);
-    //     } )
-    //     .catch( (error) => {
-    //         response.send(error);
-    //     } );
-
-
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
             // Forbidden

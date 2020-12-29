@@ -206,6 +206,17 @@ class Database{
             } );
         } );
     }
+
+    setApproval(adminID , applicationJSON){
+        admin.database().ref('applicationApproval/' + applicationJSON.userID)
+            .set({
+                "adminUID" : adminID,
+                "date": applicationJSON.date,
+                "result": applicationJSON.result
+            })
+            .then(() => {});
+        admin.database().ref('applicationQueue/' + applicationJSON.userID).remove().then(() => {});
+    }
 }
 
 module.exports = Database;
