@@ -40,35 +40,21 @@ app.post('/get_state', (request , response) => {
 });
 
 app.post('/get_application' , (request , response) => {
-    let admin = new adminModel(request.body);
-    admin.getApplication(request.body.userID).then((applicationJson) => {
-        response.send(applicationJson);
-    }).catch((error) => {
-        response.send(error);
+    helper.verifyToken(request, (userID) => {
+        if (userID === null) {
+            response.sendStatus(403);
+        } else {
+            let admin = new adminModel(request.body);
+            admin.getApplication(request.body.userID).then((applicationJson) => {
+                response.send(applicationJson);
+            }).catch((error) => {
+                response.send(error);
+            });
+        }
     });
-
-    // helper.verifyToken(request, (userID) => {
-    //     if (userID === null) {
-    //         response.sendStatus(403);
-    //     } else {
-    //         let admin = new adminModel(request.body);
-    //         admin.getApplication(request.body.userID).then((applicationJson) => {
-    //             response.send(applicationJson);
-    //         }).catch((error) => {
-    //             response.send(error);
-    //         });
-    //     }
-    // });
 })
 
 app.post('/get_application_queue', (request , response) => {
-    // let admin = new adminModel(request.body);
-    // admin.getAllApplicationRequests().then((queue) => {
-    //     response.send(queue);
-    // }).catch((error) => {
-    //     response.send(error);
-    // });
-
     helper.verifyToken(request, (userID) => {
         if (userID === null) {
             response.sendStatus(403);
@@ -100,6 +86,19 @@ app.post('/addAdditionalInformation' , (request , response) => {
         }
     });
 });
+
+app.post( '/set_approval' , (request , response) => {
+    helper.verifyToken(request , (userID) => {
+        if ( userID === null ){
+            response.sendStatus(403);
+        }
+        else{
+            let admin = new adminModel(request.body);
+            admin.setApproval(userID , request.body);
+            response.sendStatus(200);
+        }
+    });
+} );
 
 
 module.exports = app;
