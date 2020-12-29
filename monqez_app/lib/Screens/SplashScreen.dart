@@ -49,7 +49,7 @@ class _SplashState extends State<Splash> {
       makeToast("Error!");
     }
   }
-  Future<Widget> redirect() async {
+  Future<void> redirect() async {
     await Firebase.initializeApp();
     var _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
@@ -91,7 +91,7 @@ class _SplashState extends State<Splash> {
 
   @override
   Widget build(BuildContext context) {
-    //redirect();
+    redirect();
     return SplashScreen(
       seconds: 5,
       navigateAfterSeconds: map,

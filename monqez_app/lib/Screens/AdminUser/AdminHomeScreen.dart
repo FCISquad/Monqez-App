@@ -35,10 +35,16 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     if (response.statusCode == 200){
       var parsed = jsonDecode(response.body).cast<String, dynamic>();
       applicationNumber = parsed['snapshot'];
+      setState(() {
+        isLoading = false;
+      });
       return true;
     }
     else{
       print(response.statusCode);
+      setState(() {
+        isLoading = false;
+      });
       return false;
     }
   }
@@ -46,9 +52,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     var _prefs = await SharedPreferences.getInstance();
     AdminHomeScreenState.token = _prefs.getString("userToken");
     await getState();
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
@@ -155,8 +158,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  void navigate(Widget map) {
-    Navigator.push(
+  Future<void> navigate(Widget map) async {
+    await Navigator.push(
         context,
         PageRouteBuilder(
             transitionDuration: Duration(milliseconds: 500),
@@ -173,5 +176,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
             pageBuilder: (context, animation, animationTime) {
               return map;
             }));
+    getState();
   }
 }

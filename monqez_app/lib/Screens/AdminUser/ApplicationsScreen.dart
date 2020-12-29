@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ViewApplicationScreen.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -41,6 +39,7 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   getAllApplications() async {
+    isLoading = true;
     String token = AdminHomeScreenState.token;
     final http.Response response = await http.post(
       '$url/admin/get_application_queue/',
@@ -71,8 +70,10 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   _ApplicationsScreenState() {
     getAllApplications();
   }
+
   @override
   Widget build(BuildContext context) {
+
     if (isLoading)
       return Scaffold(
           backgroundColor: Colors.white,
@@ -125,8 +126,8 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     // );
   }
 
-  void navigate(Widget map) {
-    Navigator.push(
+  void navigate(Widget map) async {
+    await Navigator.push(
         context,
         PageRouteBuilder(
             transitionDuration: Duration(milliseconds: 500),
@@ -143,6 +144,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             pageBuilder: (context, animation, animationTime) {
               return map;
             }));
+    getAllApplications();
   }
-
 }

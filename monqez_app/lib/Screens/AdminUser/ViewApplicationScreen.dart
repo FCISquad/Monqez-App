@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
+import 'package:monqez_app/Screens/HelperUser/MaterialUI.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -13,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'AdminHomeScreen.dart';
 
+// ignore: must_be_immutable
 class ViewApplicationScreen extends StatefulWidget {
   String uid;
   ViewApplicationScreen(String uid) {
@@ -88,6 +91,37 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
 
   @override initState() {
     super.initState();
+  }
+
+
+  void setResult(bool isApproved) async{
+    print(isApproved.toString());
+    String token = AdminHomeScreenState.token;
+
+    final http.Response response = await http.post(
+      '$url/admin/set_approval/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, String>{
+        'userID': uid,
+        'date': DateTime.now().toString(),
+        'result': isApproved.toString()
+      }),
+    );
+    if (response.statusCode == 200){
+      makeToast("Successful");
+      Navigator.pop(context);
+      //navigate(ApplicationsScreen(), context, true);
+    }
+    else{
+      print(response.statusCode);
+    }
+    setState(() {
+    });
+
   }
 
   @override
@@ -249,7 +283,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
-                  onPressed: () => {},
+                  onPressed: () => {setResult(true)},
                 heroTag: 'accept',
                   child: Icon(Icons.check, color: Colors.white),
                   backgroundColor: Colors.green
@@ -262,7 +296,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
               alignment: Alignment.bottomLeft,
               widthFactor:0.5 ,
               child: FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () => {setResult(false)},
                 heroTag: 'decline',
                   child: Icon(Icons.close, color: Colors.white,),
                 backgroundColor: Colors.red,
