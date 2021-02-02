@@ -70,6 +70,22 @@ class Database{
         }));
     }
 
+    getMonqezState(userID) { //to be continued
+        console.log("Here")
+        return new Promise( (resolve, reject) => {
+            admin.database().ref( 'monqez/' + userID )
+                .once("value")
+                .then( (userInfo) => {
+                    resolve({
+                        status: userInfo.val().status
+                    })
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        });
+    }
+
     getUser(userID){
         return new Promise( (resolve, reject) => {
             admin.database().ref( 'user/' + userID )

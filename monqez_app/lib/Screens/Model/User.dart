@@ -13,6 +13,7 @@ class User {
   String buildNumber;
   String gender;
   String _token;
+  String status;
 
   User(String token) {
     this._token = token;
@@ -26,7 +27,7 @@ class User {
         'Authorization': 'Bearer $_token',
       },
     );
-    print("AAAAA: " + response2.statusCode.toString());
+
     if (response2.statusCode == 200){
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.name = parsed['name'];
@@ -38,6 +39,7 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
+      await getState();
     }
     else{
       print(response2.statusCode);
@@ -45,6 +47,24 @@ class User {
     }
   }
 
+  getState() async {
+    http.Response response2 = await http.get(
+      '$url/helper/getstate/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $_token',
+      },
+    );
+
+    if (response2.statusCode == 200){
+      var parsed = jsonDecode(response2.body).cast<String, dynamic>();
+      this.status = parsed['status'];
+    }
+    else{
+      print(response2.statusCode);
+    }
+  }
   Future<bool> saveUser() async {
     final http.Response response = await http.post(
       '$url/user/edit',

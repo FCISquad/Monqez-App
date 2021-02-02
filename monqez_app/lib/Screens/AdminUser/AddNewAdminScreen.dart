@@ -363,8 +363,6 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
   }
 
   Future<bool> makeAdmin(UserCredential newAdmin) async{
-
-
     final http.Response response = await http.post(
       '$url/admin/add/',
         headers: <String, String> {
@@ -384,5 +382,4 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
       return false;
     }
   }
-
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
@@ -53,7 +54,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
       user = new User(token);
       await user.getUser();
       _isLoading = false;
-      setState(() {});
+      _status = user.status;
     });
   }
 
@@ -102,7 +103,18 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
     );
   }
 
+  Future<Position> _getCurrentUserLocation() async {
+    Position position;
+    position = await Geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return position;
+  }
+
   Future<void> changeStatus(newValue) async {
+    if (newValue == "Available") {
+      Position p = await _getCurrentUserLocation();
+      print("Position" + p.longitude.toString() + ", " + p.latitude.toString() + "\n");
+    }
     var _prefs = await SharedPreferences.getInstance();
     String token = _prefs.getString("userToken");
     final http.Response response = await http.post(
@@ -117,13 +129,11 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
       }),
     );
 
-    print(newValue);
-    print(token);
+
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
     } else {
-      print(response.statusCode);
       makeToast('Failed to submit user.');
     }
   }
