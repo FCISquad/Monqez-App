@@ -23,10 +23,10 @@ class HelperUser extends User{
         this.latitude = latitude;
     }
 
-    submitApplication(){
+    submitApplication(subDate){
         User._database.createUser(this)
             .then( () => {
-                User._database.changeToMonqez(this);
+                User._database.changeToMonqez(this , subDate);
             } )
             .catch((error) => {
 
@@ -37,6 +37,17 @@ class HelperUser extends User{
             User._database.setHelperStatus(userID , status)
                 .then(() => {
                     resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
+    }
+    getState(userID){
+        return new Promise( (resolve, reject) => {
+            User._database.getMonqezState(userID)
+                .then((status) => {
+                    resolve(status);
                 })
                 .catch((error) => {
                     reject(error);

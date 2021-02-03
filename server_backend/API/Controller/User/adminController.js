@@ -24,9 +24,49 @@ app.post('/add' , (request , response) => {
     });
 });
 
-app.post('/feteiha', (request , response) => {
-    let admin = new adminModel(request.body);
-    admin.getApplicationQueue();
+app.post('/get_state', (request , response) => {
+    helper.verifyToken(request, (userID) => {
+        if (userID === null) {
+            response.sendStatus(403);
+        } else {
+            let admin = new adminModel(request.body);
+            admin.getState().then((stateJson) => {
+                response.send(stateJson);
+            }).catch((error) => {
+                response.send(error);
+            });
+        }
+    });
+});
+
+app.post('/get_application' , (request , response) => {
+    helper.verifyToken(request, (userID) => {
+        if (userID === null) {
+            response.sendStatus(403);
+        } else {
+            let admin = new adminModel(request.body);
+            admin.getApplication(request.body.userID).then((applicationJson) => {
+                response.send(applicationJson);
+            }).catch((error) => {
+                response.send(error);
+            });
+        }
+    });
+})
+
+app.post('/get_application_queue', (request , response) => {
+    helper.verifyToken(request, (userID) => {
+        if (userID === null) {
+            response.sendStatus(403);
+        } else {
+            let admin = new adminModel(request.body);
+            admin.getAllApplicationRequests().then((queue) => {
+                response.send(queue);
+            }).catch((error) => {
+                response.send(error);
+            });
+        }
+    });
 });
 
 app.post('/addAdditionalInformation' , (request , response) => {
@@ -46,6 +86,19 @@ app.post('/addAdditionalInformation' , (request , response) => {
         }
     });
 });
+
+app.post( '/set_approval' , (request , response) => {
+    helper.verifyToken(request , (userID) => {
+        if ( userID === null ){
+            response.sendStatus(403);
+        }
+        else{
+            let admin = new adminModel(request.body);
+            admin.setApproval(userID , request.body);
+            response.sendStatus(200);
+        }
+    });
+} );
 
 
 module.exports = app;

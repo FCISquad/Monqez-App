@@ -4,9 +4,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String url = "https://monqezapp.loca.lt";
-//hussien@ail.com
-//123Aa@@1
+String url = "https://monqezapplication.loca.lt";
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 var _prefs = SharedPreferences.getInstance();

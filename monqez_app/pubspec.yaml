@@ -21,7 +21,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  circular_profile_avatar: ^1.0.8
   fluttertoast: ^7.1.1
+  flutter_rating_bar: ^3.2.0+1
   http: ^0.12.2
   shared_preferences: ^0.5.12+2
   firebase_core: ^0.5.0+1
@@ -32,12 +34,12 @@ dependencies:
   image_picker: ^0.6.7+12
   camera: ^0.5.8+11
   file: ^5.2.1
+  google_maps_flutter: ^0.5.13
+  geolocator: ^6.1.13
+  search_map_place: ^0.3.0
   pdf_viewer_plugin: ^1.1.1
   path_provider: ^1.6.24
   url_launcher: ^5.7.10
-
-
-
 
 
   flutter:

@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
@@ -7,22 +9,135 @@ import 'package:pdf_viewer_plugin/pdf_viewer_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
+import 'AdminHomeScreen.dart';
 
+// ignore: must_be_immutable
 class ViewApplicationScreen extends StatefulWidget {
+  String uid;
+  ViewApplicationScreen(String uid) {
+    this.uid = uid;
+  }
   @override
-  _ViewApplicationScreenState createState() => _ViewApplicationScreenState();
+  _ViewApplicationScreenState createState() => _ViewApplicationScreenState(uid);
 }
 
 class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
+  bool isLoading = true;
+  String uid;
+  Color color = Colors.white;
   String path;
-  @override
-  initState() {
+
+
+  String name;
+  String birthdate;
+  String nationalID;
+  String phone;
+  String gender;
+  String certificate;
+  parseJson(var json) {
+    var singleApplication = jsonDecode(json).cast<String, dynamic>();
+
+    name = singleApplication['name'];
+    birthdate = singleApplication['birthdate'];
+    nationalID = singleApplication['national_id'];
+    phone = singleApplication['phone'];
+    gender = singleApplication['gender'];
+    certificate = singleApplication['certificate'];
+    print(singleApplication['certificate']);
+  
+  }
+
+  Future<void> getApplication() async {
+    String token = AdminHomeScreenState.token;
+
+    final http.Response response = await http.post(
+      '$url/admin/get_application/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, String>{
+        'userID': uid
+      }),
+    );
+    if (response.statusCode == 200){
+      print(response.body);
+      parseJson(response.body);
+      await loadPdf();
+      setState(() {
+        isLoading = false;
+      });
+      return true;
+    }
+    else{
+      print(response.statusCode);
+      setState(() {
+        isLoading = false;
+      });
+      return false;
+    }
+
+  }
+
+  _ViewApplicationScreenState (String uid) {
+    this.uid = uid;
+    getApplication();
+  }
+
+  @override initState() {
     super.initState();
   }
-  Color color = Colors.white;
+
+
+  void setResult(bool isApproved) async{
+    print(isApproved.toString());
+    String token = AdminHomeScreenState.token;
+
+    final http.Response response = await http.post(
+      '$url/admin/set_approval/',
+      headers: <String, String> {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, String>{
+        'userID': uid,
+        'date': DateTime.now().toString(),
+        'result': isApproved.toString()
+      }),
+    );
+    if (response.statusCode == 200){
+      makeToast("Successful");
+      Navigator.pop(context);
+      //navigate(ApplicationsScreen(), context, true);
+    }
+    else{
+      print(response.statusCode);
+    }
+    setState(() {
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if (isLoading) {
+      return Scaffold(
+          backgroundColor: Colors.white,
+          body: Container(
+              height: double.infinity,
+              alignment: Alignment.center,
+              child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(
+                      backgroundColor: Colors.white, strokeWidth: 5, valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent)
+                  )
+              )
+          )
+      );
+    } else return Scaffold(
       appBar: AppBar(
         title: Text('Monqez - View Application'),
       ),
@@ -37,7 +152,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                   color: Colors.deepOrangeAccent,
                   margin: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
                   child: SizedBox(
-                      height: 130.0,
+                      height: 145.0,
                       width: double.infinity,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 30, left: 5),
@@ -53,7 +168,19 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                       child: Icon(Icons.person, size: 14, color: color,),
                                     ),
                                     TextSpan(
-                                      text: " Hussien Ashraf\n",
+                                      text: " $name\n",
+                                      style: TextStyle(
+                                          color: color,
+                                          fontSize: 14,
+                                          letterSpacing: 1.5,
+                                          fontWeight: FontWeight.bold
+                                      ),
+                                    ),
+                                    WidgetSpan(
+                                      child: Icon(Icons.perm_identity, size: 14, color: color,),
+                                    ),
+                                    TextSpan(
+                                      text: " $nationalID\n",
                                       style: TextStyle(
                                           color: color,
                                           fontSize: 14,
@@ -78,8 +205,8 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                       child: Icon(Icons.phone, size: 14, color: color),
                                     ),
                                     TextSpan(
-                                      recognizer: new TapGestureRecognizer()..onTap = () => _launchCaller("01016395068"),
-                                      text: " 01016395068\n",
+                                      recognizer: new TapGestureRecognizer()..onTap = () => _launchCaller("$phone"),
+                                      text: " $phone\n",
                                         style: TextStyle(
                                             color: color,
                                             fontSize: 14,
@@ -91,7 +218,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                       child: Icon(Icons.accessibility_outlined, size: 14, color: color),
                                     ),
                                     TextSpan(
-                                        text: " male\n",
+                                        text: " $gender\n",
                                         style: TextStyle(
                                             color: color,
                                             fontSize: 14,
@@ -103,7 +230,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                       child: Icon(Icons.calendar_today, size: 14, color: color,),
                                     ),
                                     TextSpan(
-                                        text: " 4/8/1999\n",
+                                        text: " $birthdate\n",
                                         style: TextStyle(
                                             color: color,
                                             fontSize: 14,
@@ -135,7 +262,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
             ),
             if (path != null)
               Container(
-                height: 300.0,
+                height: MediaQuery.of(context).size.height - 255,
                 child: PdfView(
                   path: path,
                 ),
@@ -152,7 +279,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: FloatingActionButton(
-                  onPressed: loadPdf,
+                  onPressed: () => {setResult(true)},
                 heroTag: 'accept',
                   child: Icon(Icons.check, color: Colors.white),
                   backgroundColor: Colors.green
@@ -165,7 +292,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
               alignment: Alignment.bottomLeft,
               widthFactor:0.5 ,
               child: FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () => {setResult(false)},
                 heroTag: 'decline',
                   child: Icon(Icons.close, color: Colors.white,),
                 backgroundColor: Colors.red,
@@ -204,14 +331,11 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
   }
 
   Future<Uint8List> fetchPost() async {
-    final response = await http.get(
-    'http://www.pdf995.com/samples/pdf.pdf');
-    final responseJson = response.bodyBytes;
-
-    return responseJson;
+    var bytes2 = base64Decode(certificate.replaceAll('\n', ''));
+    return bytes2;
   }
 
-  void loadPdf() async {
+  Future<void> loadPdf() async {
     await writeCounter(await fetchPost());
     await existsFile();
     path = (await _localFile).path;
@@ -241,6 +365,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       print( 'Could not launch $url');
     }
   }
+
 
 
 }

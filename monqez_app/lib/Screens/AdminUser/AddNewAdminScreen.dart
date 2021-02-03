@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:email_validator/email_validator.dart';
@@ -364,16 +363,12 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
   }
 
   Future<bool> makeAdmin(UserCredential newAdmin) async{
-    var _prefs = await SharedPreferences.getInstance();
-    String token = _prefs.getString("userToken");
-    print(token);
-
     final http.Response response = await http.post(
       '$url/admin/add/',
         headers: <String, String> {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Authorization': 'Bearer $AdminHomeScreenState.token',
     },
         body: jsonEncode(<String, String>{
           'newUserID': newAdmin.user.uid}
@@ -387,5 +382,4 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
       return false;
     }
   }
-
 }
