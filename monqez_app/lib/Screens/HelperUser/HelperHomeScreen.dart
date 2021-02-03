@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
-import 'file:///F:/FlutterApps/GP/monqez_app/lib/Screens/Utils/Profile.dart';
+import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';

@@ -30,10 +30,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
 
   Future<void> getState() async {
     String token = AdminHomeScreenState.token;
-    Future.delayed(Duration.zero, () async {
-      user = new User(token);
-      await user.getUser();
-    });
+    user = new User(token);
+    await user.getUser();
     final http.Response response = await http.post(
       '$url/admin/get_state/',
       headers: <String, String>{
