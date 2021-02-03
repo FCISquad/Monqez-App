@@ -63,7 +63,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
       _status = user.status;
       if (user.status == "Available") {
         startBackgroundProcess();
-        timer = Timer.periodic(Duration(seconds: 5), (Timer t) => sendPosition());
+        timer = Timer.periodic(Duration(seconds: 30), (Timer t) => sendPosition());
       }
     });
   }
