@@ -71,7 +71,6 @@ class Database{
     }
 
     getMonqezState(userID) { //to be continued
-        console.log("Here")
         return new Promise( (resolve, reject) => {
             admin.database().ref( 'monqez/' + userID )
                 .once("value")

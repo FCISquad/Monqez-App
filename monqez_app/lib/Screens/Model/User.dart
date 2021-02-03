@@ -12,19 +12,19 @@ class User {
   String street;
   String buildNumber;
   String gender;
-  String _token;
-  String status;
+  String token;
 
   User(String token) {
-    this._token = token;
+    this.token = token;
   }
   getUser() async{
+
      http.Response response2 = await http.get(
       '$url/user/getprofile/',
       headers: <String, String> {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
+        'Authorization': 'Bearer $token',
       },
     );
 
@@ -44,38 +44,17 @@ class User {
       print(response2.statusCode);
       //makeToast("Error!");
     }
+
   }
 
-  getHelper() async{
-    await getUser();
-    await getState();
-  }
 
-  getState() async {
-    http.Response response2 = await http.get(
-      '$url/helper/getstate/',
-      headers: <String, String> {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
-      },
-    );
-
-    if (response2.statusCode == 200){
-      var parsed = jsonDecode(response2.body).cast<String, dynamic>();
-      this.status = parsed['status'];
-    }
-    else{
-      print(response2.statusCode);
-    }
-  }
   Future<bool> saveUser() async {
     final http.Response response = await http.post(
       '$url/user/edit',
       headers: <String, String> {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
         'name': name,

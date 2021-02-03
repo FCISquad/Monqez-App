@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
+import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +13,7 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:background_location/background_location.dart';
 
 void main() {
   runApp(MyApp());
@@ -42,19 +44,27 @@ class HelperHomeScreen extends StatefulWidget {
 }
 
 class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerProviderStateMixin {
-  static User user;
+  static Helper user;
   String _status;
   List<String> _statusDropDown;
   List<Icon> icons ;
   bool _isLoading = true;
+  Timer timer;
+  double longitude;
+  double latitude;
 
   HelperHomeScreenState(String token) {
     Future.delayed(Duration.zero, ()
     async {
-      user = new User(token);
-      await user.getHelper();
+      user = new Helper(token);
+      await user.getState();
       _isLoading = false;
+      setState(() {});
       _status = user.status;
+      if (user.status == "Available") {
+        startBackgroundProcess();
+        timer = Timer.periodic(Duration(seconds: 5), (Timer t) => sendPosition());
+      }
     });
   }
 
@@ -64,6 +74,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
     _statusDropDown = <String> ["Available", "Contacting only", "Busy"];
     _status = _statusDropDown[0];
     super.initState();
+    timer = null;
   }
 
   Widget getCard(String title, String trail, Widget nextScreen, IconData icon, double width) {
@@ -103,17 +114,42 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
     );
   }
 
-  Future<Position> _getCurrentUserLocation() async {
-    Position position;
-    position = await Geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    return position;
+
+  Future<void> sendPosition() async {
+    if (longitude != null && latitude != null) {
+      print(latitude);
+      print(longitude);
+    }
+  }
+
+  startBackgroundProcess() async {
+    await BackgroundLocation.setAndroidNotification(
+      title: "Monqez is running",
+      message: "Available",
+      icon: "@mipmap/ic_launcher",
+    );
+    await BackgroundLocation.setAndroidConfiguration(1000);
+    await BackgroundLocation.startLocationService();
+    BackgroundLocation.getLocationUpdates((location) {
+      latitude = location.latitude;
+      longitude = location.longitude;
+    });
+  }
+
+
+  stopBackgroundProcess() {
+    BackgroundLocation.stopLocationService();
   }
 
   Future<void> changeStatus(newValue) async {
     if (newValue == "Available") {
-      Position p = await _getCurrentUserLocation();
-      print("Position" + p.longitude.toString() + ", " + p.latitude.toString() + "\n");
+      startBackgroundProcess();
+      timer = Timer.periodic(Duration(seconds: 30), (timer) => sendPosition());
+    } else {
+      if (timer!=null){
+          timer.cancel();
+          stopBackgroundProcess();
+      }
     }
     var _prefs = await SharedPreferences.getInstance();
     String token = _prefs.getString("userToken");
