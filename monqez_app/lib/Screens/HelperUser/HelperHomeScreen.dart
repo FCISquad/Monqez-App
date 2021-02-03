@@ -4,10 +4,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
-import 'package:monqez_app/Screens/HelperUser/Profile.dart';
+import 'file:///F:/FlutterApps/GP/monqez_app/lib/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'MaterialUI.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
@@ -52,7 +52,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
     Future.delayed(Duration.zero, ()
     async {
       user = new User(token);
-      await user.getUser();
+      await user.getHelper();
       _isLoading = false;
       _status = user.status;
     });
@@ -222,7 +222,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
                     leading: Icon(Icons.account_circle_rounded, size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(ProfileScreen(), context, false);
+                      navigate(ProfileScreen(user), context, false);
                     },
                   ),
                   ListTile(

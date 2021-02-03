@@ -74,7 +74,7 @@ class _SplashState extends State<Splash> {
         saveUserToken(token, uid);
         makeToast("Logged in Successfully");
         if (type == 0) {
-          navigate = NormalHomeScreen();
+          navigate = NormalHomeScreen(token);
         }
         else if (type == 1) {
           navigate = HelperHomeScreen(token);

@@ -226,7 +226,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
-      navigateReplacement(NormalHomeScreen());
+      navigateReplacement(NormalHomeScreen(token));
 
     } else {
       print(response.statusCode);
