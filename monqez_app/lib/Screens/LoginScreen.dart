@@ -340,7 +340,7 @@ class _LoginScreenState extends State<LoginScreen> {
               saveUserToken(token, userCredential.user.uid);
               makeToast("Logged in Successfully");
               if (type == 0){
-                navigateReplacement(NormalHomeScreen());
+                navigateReplacement(NormalHomeScreen(token));
               }
               else if (type == 1){
                 navigateReplacement(HelperHomeScreen(token));
@@ -420,7 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
             saveUserToken(token, authResult.user.uid);
             makeToast("Logged in Successfully");
             if (type == 0){
-              navigateReplacement(NormalHomeScreen());
+              navigateReplacement(NormalHomeScreen(token));
             }
             else if (type == 1){
               navigateReplacement(HelperHomeScreen(token));

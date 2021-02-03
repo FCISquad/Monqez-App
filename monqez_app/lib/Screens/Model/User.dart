@@ -39,12 +39,16 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
-      await getState();
     }
     else{
       print(response2.statusCode);
       //makeToast("Error!");
     }
+  }
+
+  getHelper() async{
+    await getUser();
+    await getState();
   }
 
   getState() async {

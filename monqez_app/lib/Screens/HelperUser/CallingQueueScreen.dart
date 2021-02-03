@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'MaterialUI.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 
 class CallingQueueScreen extends StatefulWidget {
   @override
