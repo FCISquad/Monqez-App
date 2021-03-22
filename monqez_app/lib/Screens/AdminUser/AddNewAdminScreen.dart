@@ -363,12 +363,13 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
   }
 
   Future<bool> makeAdmin(UserCredential newAdmin) async{
+    String token = AdminHomeScreenState.token;
     final http.Response response = await http.post(
       '$url/admin/add/',
         headers: <String, String> {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization': 'Bearer $AdminHomeScreenState.token',
+      'Authorization': 'Bearer $token',
     },
         body: jsonEncode(<String, String>{
           'newUserID': newAdmin.user.uid}
