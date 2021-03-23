@@ -1,13 +1,16 @@
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
-import 'MaterialUI.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:monqez_app/Screens/Model/User.dart';
 
 class ProfileScreen extends StatefulWidget {
-
+  User user;
+  ProfileScreen(User user) {
+    this.user = user;
+  }
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  _ProfileScreenState createState() => _ProfileScreenState(user);
 }
 
 enum ScreenState {
@@ -15,6 +18,7 @@ enum ScreenState {
   Editing,
 }
 class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+  User user;
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
   TextEditingController _nationalIDController = TextEditingController();
@@ -24,11 +28,16 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   TextEditingController _streetController = TextEditingController();
   TextEditingController _buildNumberController = TextEditingController();
 
-  String gender = HelperHomeScreenState.user.gender;
+  String gender = "";
 
   ScreenState state = ScreenState.Viewing;
 
   bool _isLoading = true;
+
+  _ProfileScreenState(User user){
+    this.user = user;
+    gender = user.gender;
+  }
 
   @override
   void initState() {
@@ -87,16 +96,16 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   Future<void> save() async {
     print(_nameController == null);
-    if (_nameController.text.isNotEmpty)        HelperHomeScreenState.user.name = _nameController.text;
-    if (_nationalIDController.text.isNotEmpty)  HelperHomeScreenState.user.nationaID = _nationalIDController.text;
-    if (_phoneController.text.isNotEmpty)       HelperHomeScreenState.user.phone = _phoneController.text;
-    if (_countryController.text.isNotEmpty)     HelperHomeScreenState.user.country = _countryController.text;
-    if (_cityController.text.isNotEmpty)        HelperHomeScreenState.user.city = _cityController.text;
-    if (_streetController.text.isNotEmpty)      HelperHomeScreenState.user.street = _streetController.text;
-    if (_buildNumberController.text.isNotEmpty) HelperHomeScreenState.user.buildNumber = _buildNumberController.text;
-    if (gender.isNotEmpty)                      HelperHomeScreenState.user.gender = gender;
+    if (_nameController.text.isNotEmpty)        user.name = _nameController.text;
+    if (_nationalIDController.text.isNotEmpty)  user.nationaID = _nationalIDController.text;
+    if (_phoneController.text.isNotEmpty)       user.phone = _phoneController.text;
+    if (_countryController.text.isNotEmpty)     user.country = _countryController.text;
+    if (_cityController.text.isNotEmpty)        user.city = _cityController.text;
+    if (_streetController.text.isNotEmpty)      user.street = _streetController.text;
+    if (_buildNumberController.text.isNotEmpty) user.buildNumber = _buildNumberController.text;
+    if (gender.isNotEmpty)                      user.gender = gender;
 
-    bool success = await HelperHomeScreenState.user.saveUser();
+    bool success = await user.saveUser();
     if ( success ) {
       state = ScreenState.Viewing;
       setState(() {});
@@ -240,11 +249,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                     ),
                   ),
                   SizedBox(height: 10.0),
-                  _buildField("Name", HelperHomeScreenState.user.name, _nameController, MediaQuery.of(context).size.width),
+                  _buildField("Name", user.name, _nameController, MediaQuery.of(context).size.width),
                   SizedBox(height: 20.0),
-                  _buildField("National ID", HelperHomeScreenState.user.nationaID, _nationalIDController, MediaQuery.of(context).size.width),
+                  _buildField("National ID", user.nationaID, _nationalIDController, MediaQuery.of(context).size.width),
                   SizedBox(height: 20.0),
-                  _buildField("Phone Number", HelperHomeScreenState.user.phone, _phoneController, MediaQuery.of(context).size.width),
+                  _buildField("Phone Number", user.phone, _phoneController, MediaQuery.of(context).size.width),
                   //_buildIDNumberTF(),
 
 
@@ -253,22 +262,22 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildField("Country", HelperHomeScreenState.user.country, _countryController, (MediaQuery.of(context).size.width-30)/2),
-                      _buildField("City", HelperHomeScreenState.user.city, _cityController, (MediaQuery.of(context).size.width-30)/2)
+                      _buildField("Country", user.country, _countryController, (MediaQuery.of(context).size.width-30)/2),
+                      _buildField("City", user.city, _cityController, (MediaQuery.of(context).size.width-30)/2)
                     ],
                   ),
                   SizedBox(height: 15.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildField("Street", HelperHomeScreenState.user.street, _streetController, (MediaQuery.of(context).size.width-30)/2),
-                      _buildField("Build Number", HelperHomeScreenState.user.buildNumber, _buildNumberController, (MediaQuery.of(context).size.width-30)/2)
+                      _buildField("Street", user.street, _streetController, (MediaQuery.of(context).size.width-30)/2),
+                      _buildField("Build Number", user.buildNumber, _buildNumberController, (MediaQuery.of(context).size.width-30)/2)
                     ],
                   ),
                   SizedBox(height: 15.0),
                   Visibility(
                       visible: state == ScreenState.Viewing,
-                      child: _buildField("Gender", HelperHomeScreenState.user.gender, _genderController, MediaQuery.of(context).size.width)
+                      child: _buildField("Gender", user.gender, _genderController, MediaQuery.of(context).size.width)
                   ),
 
                   Visibility(

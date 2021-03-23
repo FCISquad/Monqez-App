@@ -43,6 +43,17 @@ class HelperUser extends User{
                 })
         } );
     }
+    getState(userID){
+        return new Promise( (resolve, reject) => {
+            User._database.getMonqezState(userID)
+                .then((status) => {
+                    resolve(status);
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
+    }
     getCertificate(userID){
         return new Promise( (resolve, reject) => {
             User._database.getCertificate(userID)

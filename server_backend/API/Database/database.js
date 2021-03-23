@@ -70,6 +70,21 @@ class Database{
         }));
     }
 
+    getMonqezState(userID) { //to be continued
+        return new Promise( (resolve, reject) => {
+            admin.database().ref( 'monqez/' + userID )
+                .once("value")
+                .then( (userInfo) => {
+                    resolve({
+                        status: userInfo.val().status
+                    })
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        });
+    }
+
     getUser(userID){
         return new Promise( (resolve, reject) => {
             admin.database().ref( 'user/' + userID )
@@ -222,6 +237,9 @@ class Database{
             })
                 .then(() => {});
         }
+        admin.database().ref('monqez/' + applicationJSON.userID).update( {
+            "status" : "Busy"
+        }) .then(() => {});
     }
 }
 

@@ -565,7 +565,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
+                horizontal: MediaQuery.of(context).size.width*0.1,
                 vertical: 60.0,
               ),
               child: Column(

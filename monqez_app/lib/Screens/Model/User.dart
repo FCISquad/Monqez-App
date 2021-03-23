@@ -12,21 +12,22 @@ class User {
   String street;
   String buildNumber;
   String gender;
-  String _token;
+  String token;
 
   User(String token) {
-    this._token = token;
+    this.token = token;
   }
   getUser() async{
+
      http.Response response2 = await http.get(
       '$url/user/getprofile/',
       headers: <String, String> {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
+        'Authorization': 'Bearer $token',
       },
     );
-    print("AAAAA: " + response2.statusCode.toString());
+
     if (response2.statusCode == 200){
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.name = parsed['name'];
@@ -43,7 +44,9 @@ class User {
       print(response2.statusCode);
       //makeToast("Error!");
     }
+
   }
+
 
   Future<bool> saveUser() async {
     final http.Response response = await http.post(
@@ -51,7 +54,7 @@ class User {
       headers: <String, String> {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
         'name': name,
