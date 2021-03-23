@@ -152,7 +152,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                   color: Colors.deepOrangeAccent,
                   margin: const EdgeInsets.only(top: 30.0, left: 10, right: 10),
                   child: SizedBox(
-                      height: 145.0,
+                      height: 142.0,
                       width: double.infinity,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 30, left: 5),
@@ -290,7 +290,7 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
             padding: EdgeInsets.symmetric(vertical: 0, horizontal: 5),
             child: Align(
               alignment: Alignment.bottomLeft,
-              widthFactor:0.5 ,
+              //widthFactor:0.5 ,
               child: FloatingActionButton(
                   onPressed: () => {setResult(false)},
                 heroTag: 'decline',

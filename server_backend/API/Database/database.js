@@ -237,6 +237,9 @@ class Database{
             })
                 .then(() => {});
         }
+        admin.database().ref('monqez/' + applicationJSON.userID).update( {
+            "status" : "Busy"
+        }) .then(() => {});
     }
 }
 

@@ -294,8 +294,11 @@ class HelperHomeScreenState extends State<HelperHomeScreen> with SingleTickerPro
                         child: RaisedButton(
                           elevation: 5.0,
                           onPressed: () {
-                            timer.cancel();
-                            stopBackgroundProcess();
+
+                            if (user.status == "Available") {
+                              timer.cancel();
+                              stopBackgroundProcess();
+                            }
                             logout();
                             navigate(LoginScreen(), context, true);
                           },
