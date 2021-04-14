@@ -14,26 +14,23 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   bool isLoading = true;
   List<ListTile> applicationsList;
 
-
   void iterateJson(String jsonStr) {
-    applicationsList = <ListTile> [];
+    applicationsList = <ListTile>[];
     List<dynamic> applications = json.decode(jsonStr);
     int counter = 1;
 
     applications.forEach((application) {
-
       var singleApplication = application as Map<String, dynamic>;
       String uid = singleApplication['uid'];
       String name = singleApplication['name'];
       String date = singleApplication['date'];
-      applicationsList.add(
-          ListTile(title: Text('Application from $name'),
-            subtitle: Text("On $date"),
-            leading: Text('$counter'),
-            trailing: Icon(Icons.keyboard_arrow_right),
-            onTap: () => navigate(ViewApplicationScreen(uid)),
-          )
-      );
+      applicationsList.add(ListTile(
+        title: Text('Application from $name'),
+        subtitle: Text("On $date"),
+        leading: Text('$counter'),
+        trailing: Icon(Icons.keyboard_arrow_right),
+        onTap: () => navigate(ViewApplicationScreen(uid)),
+      ));
       counter++;
     });
   }
@@ -42,29 +39,27 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     isLoading = true;
     String token = AdminHomeScreenState.token;
     final http.Response response = await http.post(
-      '$url/admin/get_application_queue/',
-      headers: <String, String> {
+      Uri.parse('$url/admin/get_application_queue/'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
-    if (response.statusCode == 200){
+    if (response.statusCode == 200) {
       print(response.body);
       iterateJson(response.body);
       setState(() {
         isLoading = false;
       });
       return true;
-    }
-    else{
+    } else {
       print(response.statusCode);
       setState(() {
         isLoading = false;
       });
       return false;
     }
-
   }
 
   _ApplicationsScreenState() {
@@ -73,7 +68,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     if (isLoading)
       return Scaffold(
           backgroundColor: Colors.white,
@@ -84,31 +78,29 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
                   height: 100,
                   width: 100,
                   child: CircularProgressIndicator(
-                      backgroundColor: Colors.white, strokeWidth: 5, valueColor: new AlwaysStoppedAnimation<Color>(Colors.deepOrangeAccent)
-                  )
-              )
-          )
-      );
+                      backgroundColor: Colors.white,
+                      strokeWidth: 5,
+                      valueColor: new AlwaysStoppedAnimation<Color>(
+                          Colors.deepOrangeAccent)))));
     else
       return Scaffold(
-        appBar: AppBar(
-          title: Text('Monqez - Applications'),
-        ),
-        body: Container(
-          child: _myListView(context),
-        ));
+          appBar: AppBar(
+            title: Text('Monqez - Applications'),
+          ),
+          body: Container(
+            child: _myListView(context),
+          ));
   }
 
   Widget _myListView(BuildContext context) {
-     return ListView.builder(
+    return ListView.builder(
         scrollDirection: Axis.vertical,
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         itemCount: applicationsList.length,
         itemBuilder: (BuildContext context, int index) {
           return applicationsList[index];
-        }
-    );
+        });
     // return ListView.separated(
     //   itemCount: 100,
     //   itemBuilder: (context, index) {

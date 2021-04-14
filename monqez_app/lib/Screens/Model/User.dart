@@ -17,18 +17,17 @@ class User {
   User(String token) {
     this.token = token;
   }
-  getUser() async{
-
-     http.Response response2 = await http.get(
-      '$url/user/getprofile/',
-      headers: <String, String> {
+  getUser() async {
+    http.Response response2 = await http.get(
+      Uri.parse('$url/user/getprofile/'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
 
-    if (response2.statusCode == 200){
+    if (response2.statusCode == 200) {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.name = parsed['name'];
       this.nationaID = parsed['national_id'];
@@ -39,19 +38,16 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
-    }
-    else{
+    } else {
       print(response2.statusCode);
       //makeToast("Error!");
     }
-
   }
-
 
   Future<bool> saveUser() async {
     final http.Response response = await http.post(
-      '$url/user/edit',
-      headers: <String, String> {
+      Uri.parse('$url/user/edit'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
