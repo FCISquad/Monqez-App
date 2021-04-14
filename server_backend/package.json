@@ -14,7 +14,8 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "firebase-admin": "^9.4.2",
-    "localtunnel": "^2.0.0"
+    "localtunnel": "^2.0.1",
+    "nodemailer": "^6.4.17"
   },
   "engines": {
     "node": "14.15.0"

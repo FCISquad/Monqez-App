@@ -22,4 +22,22 @@ app.post('/setstatus' , (request , response) => {
     })
 });
 
+app.post('/update_location', (request, response) => {
+    let helper = new HelperUser(request.body);
+    helper.updateLocation("03OCEkvTbwMdiBzc7Z8ItOR1ynS2");
+    response.sendStatus(200);
+
+
+    // helper.verifyToken(request, (userID) => {
+    //     if (userID === null){
+    //         response.sendStatus(403);
+    //     }
+    //     else{
+    //         let helper = new HelperUser(request.body);
+    //         helper.updateLocation(userID);
+    //         response.sendStatus(200);
+    //     }
+    // });
+});
+
 module.exports = app;

@@ -1,4 +1,5 @@
-const admin  = require('firebase-admin')
+const admin  = require('firebase-admin');
+const mailer = require('../Tools/nodeMailer');
 
 class Database{
     createUser(userObject){
@@ -110,7 +111,10 @@ class Database{
             admin.database().ref('monqez/').once("value" , function (monqez){
                 let json = userData.val();
                 json.certificate = monqez.child(userID).val().certificate;
-                callback(json);
+                admin.auth().getUser(userID) .then( (userData) => {
+                        json.email = userData.email;
+                        callback(json);
+                } )
             }).then(()=>{});
         }).then(()=>{});
     }
@@ -222,6 +226,21 @@ class Database{
             })
                 .then(() => {});
         }
+
+        admin.auth().getUser(applicationJSON.userID)
+            .then( (userData) => {
+                let mailSubject = 'Monqez Team - Application Approval';
+                let mailBody    = applicationJSON.result;
+                mailer.sendMail(userData.email , mailSubject , mailBody)
+                    .then(()=>{}).catch(()=>{});
+            });
+    }
+
+    updateLocation(userID, longitude, latitude){
+        admin.database().ref('activeMonqez/' + userID).update({
+            "longitude" : longitude,
+            "latitude" : latitude
+        }).then(()=>{});
     }
 }
 
