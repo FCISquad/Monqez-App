@@ -21,7 +21,10 @@
   <component name="ChangeListManager">
     <list default="true" id="de9dac36-46f4-4753-881b-06de26d3d064" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Controller/User/helperController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/helperController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Model/User/normalUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/normalUser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/haversine-geolocation/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/haversine-geolocation/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
@@ -62,8 +65,20 @@
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="show.migrate.to.gradle.popup" value="false" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="server.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/server.js" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -92,7 +107,7 @@
       <workItem from="1612304917217" duration="2581000" />
       <workItem from="1612307793267" duration="2385000" />
       <workItem from="1612367854954" duration="498000" />
-      <workItem from="1618398245225" duration="3735000" />
+      <workItem from="1618398245225" duration="15837000" />
     </task>
     <servers />
   </component>
@@ -112,26 +127,58 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1261" height="209" key="GridCell.Tab.0.bottom" timestamp="1618402615882">
+    <state width="1261" height="251" key="GridCell.Tab.0.bottom" timestamp="1618420926949">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="195" key="GridCell.Tab.0.bottom/0.0.1366.728@0.0.1366.728" timestamp="1612310202731" />
-    <state width="1261" height="209" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1618402615882" />
-    <state width="1261" height="209" key="GridCell.Tab.0.center" timestamp="1618402615882">
+    <state width="1261" height="251" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1618420926949" />
+    <state width="1261" height="251" key="GridCell.Tab.0.center" timestamp="1618420926949">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="195" key="GridCell.Tab.0.center/0.0.1366.728@0.0.1366.728" timestamp="1612310202731" />
-    <state width="1261" height="209" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1618402615882" />
-    <state width="1261" height="209" key="GridCell.Tab.0.left" timestamp="1618402615882">
+    <state width="1261" height="251" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1618420926949" />
+    <state width="1261" height="251" key="GridCell.Tab.0.left" timestamp="1618420926949">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="195" key="GridCell.Tab.0.left/0.0.1366.728@0.0.1366.728" timestamp="1612310202731" />
-    <state width="1261" height="209" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1618402615882" />
-    <state width="1261" height="209" key="GridCell.Tab.0.right" timestamp="1618402615882">
+    <state width="1261" height="251" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1618420926949" />
+    <state width="1261" height="251" key="GridCell.Tab.0.right" timestamp="1618420926949">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="195" key="GridCell.Tab.0.right/0.0.1366.728@0.0.1366.728" timestamp="1612310202731" />
-    <state width="1261" height="209" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1618402615882" />
+    <state width="1261" height="251" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1618420926949" />
+    <state width="1261" height="251" key="GridCell.Tab.1.bottom" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.1.bottom/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.1.center" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.1.center/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.1.left" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.1.left/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.1.right" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.1.right/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.2.bottom" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.2.bottom/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.2.center" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.2.center/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.2.left" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.2.left/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
+    <state width="1261" height="251" key="GridCell.Tab.2.right" timestamp="1618420926950">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state width="1261" height="251" key="GridCell.Tab.2.right/62.0.1304.768@62.0.1304.768" timestamp="1618420926950" />
     <state x="346" y="49" width="672" height="678" key="search.everywhere.popup" timestamp="1612306089875">
       <screen x="0" y="0" width="1366" height="728" />
     </state>
@@ -150,6 +197,12 @@
           <line>213</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/node_modules/spherical-geometry-js/cjs.js</url>
+          <line>39</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

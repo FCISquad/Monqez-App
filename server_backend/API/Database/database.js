@@ -242,6 +242,14 @@ class Database{
             "latitude" : latitude
         }).then(()=>{});
     }
+
+    getAllActiveMonqez(){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('/activeMonqez').once("value" , function (snapshot){
+                resolve(snapshot);
+            }).catch( (error) => {reject(error)} );
+        } );
+    }
 }
 
 module.exports = Database;
