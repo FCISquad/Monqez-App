@@ -22,6 +22,8 @@ environment:
 
 dependencies:
   location: ^4.1.1
+  firebase_messaging: ^9.1.1
+  flutter_local_notifications: ^5.0.0+1
   background_location: ^0.4.3
   circular_profile_avatar: ^1.0.8
   fluttertoast: ^7.1.1
