@@ -75,13 +75,13 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
 
   HelperHomeScreenState(String token) {
     _token = token;
-    print ("The token: "+ token);
-    FirebaseMessaging.instance.getToken().then((fcmToken) {
-      print(fcmToken);
+
+    FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcm_token = fcmToken;
+      await updateRegistrationToken();
     });
 
-    print(_fcm_token);
+
     FirebaseMessaging.instance
         .getInitialMessage()
         .then((RemoteMessage message) {
@@ -119,9 +119,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
           arguments: message.data.keys);
     });
     Future.delayed(Duration.zero, () async {
-      print("Before");
-      await updateRegistrationToken();
-      print("After");
+
       user = new Helper(token);
       await user.getState();
       _isLoading = false;
@@ -137,6 +135,8 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   }
 
   Future<void> updateRegistrationToken() async {
+    print("here ");
+    print(_fcm_token);
     final http.Response response = await http.post(
       Uri.parse('$url/user/update_registration_token/'),
       headers: <String, String>{
@@ -285,8 +285,9 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                   child: CircularProgressIndicator(
                       backgroundColor: secondColor,
                       strokeWidth: 5,
-                      valueColor:
-                          new AlwaysStoppedAnimation<Color>(firstColor)))));
+                      //valueColor:
+                        //  new AlwaysStoppedAnimation<Color>(firstColor)
+                  ))));
     } else
       return Scaffold(
         backgroundColor: secondColor,
