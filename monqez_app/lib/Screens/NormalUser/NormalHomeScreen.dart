@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:search_map_place/search_map_place.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 
@@ -421,7 +420,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
-              ),
+              ),/*
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: SearchMapPlaceWidget(
@@ -433,7 +432,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     Geolocation geoLocation = await place.geolocation;
                   },
                 ),
-              ),
+              ),*/
               Padding(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                 child: Align(

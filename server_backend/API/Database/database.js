@@ -72,7 +72,6 @@ class Database{
     }
 
     getMonqezState(userID) { //to be continued
-        console.log("Here")
         return new Promise( (resolve, reject) => {
             admin.database().ref( 'monqez/' + userID )
                 .once("value")
@@ -255,15 +254,17 @@ class Database{
             })
                 .then(() => {});
         }
-
-        admin.auth().getUser(applicationJSON.userID)
-            .then( (userData) => {
-                let mailSubject = 'Monqez Team - Application Approval';
-                let mailBody    = applicationJSON.result;
-                mailer.sendMail(userData.email , mailSubject , mailBody)
-                    .then(()=>{}).catch(()=>{});
-            });
-    }
+        admin.database().ref('monqez/' + applicationJSON.userID).update( {
+    "status" : "Busy"
+}) .then(() => {});
+admin.auth().getUser(applicationJSON.userID)
+    .then( (userData) => {
+        let mailSubject = 'Monqez Team - Application Approval';
+        let mailBody    = applicationJSON.result;
+        mailer.sendMail(userData.email , mailSubject , mailBody)
+            .then(()=>{}).catch(()=>{});
+    });
+}
 
     updateLocation(userID, longitude, latitude){
         admin.database().ref('activeMonqez/' + userID).update({

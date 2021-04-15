@@ -170,7 +170,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
     print("Uid: " + uid);
 
     final http.Response response = await http.post(
-        '$url/admin/addAdditionalInformation/',
+        Uri.parse('$url/admin/addAdditionalInformation/'),
         headers: <String, String> {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -565,7 +565,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(
-                horizontal: 40.0,
+                horizontal: MediaQuery.of(context).size.width*0.1,
                 vertical: 60.0,
               ),
               child: Column(

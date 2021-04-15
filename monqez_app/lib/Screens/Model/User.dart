@@ -12,23 +12,22 @@ class User {
   String street;
   String buildNumber;
   String gender;
-  String _token;
-  String status;
+  String token;
 
   User(String token) {
-    this._token = token;
+    this.token = token;
   }
-  getUser() async{
-     http.Response response2 = await http.get(
-      '$url/user/getprofile/',
-      headers: <String, String> {
+  getUser() async {
+    http.Response response2 = await http.get(
+      Uri.parse('$url/user/getprofile/'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
+        'Authorization': 'Bearer $token',
       },
     );
 
-    if (response2.statusCode == 200){
+    if (response2.statusCode == 200) {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.name = parsed['name'];
       this.nationaID = parsed['national_id'];
@@ -39,43 +38,19 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
-    }
-    else{
+    } else {
       print(response2.statusCode);
       //makeToast("Error!");
     }
   }
 
-  getHelper() async{
-    await getUser();
-    await getState();
-  }
-
-  getState() async {
-    http.Response response2 = await http.get(
-      '$url/helper/getstate/',
-      headers: <String, String> {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
-      },
-    );
-
-    if (response2.statusCode == 200){
-      var parsed = jsonDecode(response2.body).cast<String, dynamic>();
-      this.status = parsed['status'];
-    }
-    else{
-      print(response2.statusCode);
-    }
-  }
   Future<bool> saveUser() async {
     final http.Response response = await http.post(
-      '$url/user/edit',
-      headers: <String, String> {
+      Uri.parse('$url/user/edit'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
+        'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
         'name': name,

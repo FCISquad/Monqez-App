@@ -33,7 +33,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     user = new User(token);
     await user.getUser();
     final http.Response response = await http.post(
-      '$url/admin/get_state/',
+      Uri.parse('$url/admin/get_state/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -124,7 +124,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                     ListTile(
                         title: getTitle('View Applications', 18, firstColor,
                             TextAlign.start, true),
-                        leading: Icon(Icons.file_copy, size: 30, color: firstColor),
+                        leading:
+                            Icon(Icons.file_copy, size: 30, color: firstColor),
                         onTap: () {
                           //Navigator.pop(context);
                           navigate(ApplicationsScreen(), context, false);
@@ -132,7 +133,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                     ListTile(
                         title: getTitle('View Complaints', 18, firstColor,
                             TextAlign.start, true),
-                        leading: Icon(Icons.thumb_down_sharp, size: 30, color: firstColor),
+                        leading: Icon(Icons.thumb_down_sharp,
+                            size: 30, color: firstColor),
                         onTap: () {
                           //Navigator.pop(context);
                           navigate(ComplaintsScreen(), context, false);
@@ -140,7 +142,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                     ListTile(
                         title: getTitle(
                             'Add Admin', 18, firstColor, TextAlign.start, true),
-                        leading: Icon(Icons.person_add_sharp, size: 30, color: firstColor),
+                        leading: Icon(Icons.person_add_sharp,
+                            size: 30, color: firstColor),
                         onTap: () {
                           // Navigator.pop(context);
                           navigate(AddNewAdminScreen(), context, false);
