@@ -102,7 +102,6 @@ app.post( '/edit' , (request , response) => {
 } );
 
 app.post('/update_registration_token', (request, response)=>{
-    console.log(request.body);
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
             // Forbidden

@@ -22,6 +22,25 @@ app.post('/setstatus' , (request , response) => {
     })
 });
 
+app.get( '/getstate' , (request , response) => {
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            let helper = new HelperUser(request.body);
+            helper.getState(userId).then( (userJson) => {
+                response.send(userJson);
+            } )
+                .catch( (error) => {
+                    response.send(error);
+                } );
+        }
+    });
+} );
+
+
 app.post('/update_location', (request, response) => {
     helper.verifyToken(request, (userID) => {
         if (userID === null){
