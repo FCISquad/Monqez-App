@@ -4,8 +4,8 @@ class HelperUser extends User{
     constructor(userJson) {
         super(userJson);
         this.rates = [];
-        this.longitude = 0.0;
-        this.latitude  = 0.0;
+        this.longitude = userJson.longitude;
+        this.latitude  = userJson.latitude;
 
         this.certificate = userJson.certificate;
         this.certificateName = userJson.certificateName
@@ -64,6 +64,10 @@ class HelperUser extends User{
                     reject(error);
                 } );
         } );
+    }
+
+    updateLocation(userID){
+        User._database.updateLocation(userID, this.longitude, this.latitude);
     }
 }
 
