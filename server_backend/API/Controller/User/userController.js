@@ -101,6 +101,26 @@ app.post( '/edit' , (request , response) => {
     });
 } );
 
+app.post('/update_registration_token', (request, response)=>{
+    console.log(request.body);
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            User.registrationToken(userId, request.body)
+                .then( () => {
+                    response.sendStatus(200);
+                } )
+                .catch( (error) => {
+                    console.log(error);
+                    response.send(error);
+                } );
+        }
+    });
+});
+
 app.post('/request', (request, response) => {
     let user = new NormalUser(request.body);
     user.request("userId", request.body);

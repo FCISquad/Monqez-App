@@ -227,6 +227,19 @@ class Database{
         } );
     }
 
+    registerToken(userID, registrationToken) {
+        return new Promise( (resolve, reject) => {
+            console.log(registrationToken["token"]);
+            admin.database().ref('user/' + userID).update({
+                "token": registrationToken["token"]
+            }).then( () => {
+                resolve();
+            }).catch( (error) => {
+                reject(error);
+            } );
+        } );
+    }
+
     setApproval(adminID , applicationJSON){
         admin.database().ref('applicationApproval/' + applicationJSON.userID)
             .set({
@@ -263,6 +276,14 @@ class Database{
         return new Promise( (resolve, reject) => {
             admin.database().ref('/activeMonqez').once("value" , function (snapshot){
                 resolve(snapshot);
+            }).catch( (error) => {reject(error)} );
+        } );
+    }
+
+    getFCMToken(userID){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('/user/' + userID).once("value" , function (snapshot){
+                resolve(snapshot.val()["token"]);
             }).catch( (error) => {reject(error)} );
         } );
     }

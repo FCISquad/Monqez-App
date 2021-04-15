@@ -1,6 +1,7 @@
 const User = require("./user");
 const sphericalGeometry = require('spherical-geometry-js');
 const {latLng} = require("@google/maps/lib/internal/convert");
+const admin = require('firebase-admin');
 
 const xx = require("@google/maps");
 
@@ -63,8 +64,38 @@ class NormalUser extends User{
             }
 
             console.log(min_three);
+            this.notify_monqez(min_three);
         } );
     }
+     notify_monqez(min_three){
+        min_three = []
+         min_three.push("uyOTYLswAJgGNA2elhnUuAI5e9h2");
+        let registrationTokens = [];
+         for (let i = 0; i < min_three.length; i++){
+             User._database.getFCMToken(min_three[i]).then((token)=>{
+                 registrationTokens.push(token);
+             });
+         }
+
+
+         const message = {
+             data: {score: '850', time: '2:45'},
+             tokens: registrationTokens,
+         }
+
+         admin.messaging().sendMulticast(message)
+             .then((response) => {
+                 if (response.failureCount > 0) {
+                     const failedTokens = [];
+                     response.responses.forEach((resp, idx) => {
+                         if (!resp.success) {
+                             failedTokens.push(registrationTokens[idx]);
+                         }
+                     });
+                     console.log('List of tokens that caused failures: ' + failedTokens);
+                 }
+             });
+     }
 }
 
 module.exports = NormalUser;
