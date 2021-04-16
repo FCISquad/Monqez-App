@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:location/location.dart' as loc;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +14,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:background_location/background_location.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() {
   runApp(MyApp());
@@ -58,68 +56,13 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   double latitude;
   final _samplingPeriod = 5;
   final loc.Location _location = loc.Location();
-  String _fcm_token;
-  String _token;
-
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  final AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
-    importance: Importance.high,
-  );
   String messageTitle = "Empty";
   String notificationAlert = "alert";
 
 
 
   HelperHomeScreenState(String token) {
-    _token = token;
-
-    FirebaseMessaging.instance.getToken().then((fcmToken) async {
-      _fcm_token = fcmToken;
-      await updateRegistrationToken();
-    });
-
-
-    FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage message) {
-      if (message != null) {
-        Navigator.pushNamed(context, '/message',
-            arguments: message.data.keys);
-      }
-    });
-
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
-      if (notification != null && android != null) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                // TODO add a proper drawable resource to android, for now using
-                //      one that already exists in example app.
-                icon: 'launch_background',
-              ),
-            ));
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('A new onMessageOpenedApp event was published!');
-      Navigator.pushNamed(context, '/message',
-          arguments: message.data.keys);
-    });
     Future.delayed(Duration.zero, () async {
-
       user = new Helper(token);
       await user.getState();
       _isLoading = false;
@@ -134,25 +77,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
     });
   }
 
-  Future<void> updateRegistrationToken() async {
-    print("here ");
-    print(_fcm_token);
-    final http.Response response = await http.post(
-      Uri.parse('$url/user/update_registration_token/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $_token',
-      },
-      body: jsonEncode(<String, String>{'token': _fcm_token}),
-    );
 
-    if (response.statusCode == 200) {
-      makeToast("Submitted");
-    } else {
-      makeToast('Failed to submit user.');
-    }
-  }
   @override
   void initState() {
     _statusDropDown = <String>["Available", "Contacting only", "Busy"];
@@ -202,8 +127,11 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   }
 
   Future<void> sendPosition() async {
-    //explicit reference to the Location class
-    //_requestGps();
+    if (!await _location.serviceEnabled()) {
+      setState(() {
+        changeStatus("Busy");
+      });
+    }
     if (longitude != null && latitude != null) {
       print("Latitude: " + latitude.toString());
       print("Longitude: " + longitude.toString());
@@ -229,17 +157,18 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   }
   Future _requestGps() async {
     if (!await _location.serviceEnabled()) {
+      stopBackgroundProcess();
       bool result = await _location.requestService();
       if (result == false){
         setState(() {
-          _status = "Busy";
-          stopBackgroundProcess();
+          changeStatus("Busy");
         });
       }
     }
 
   }
   Future<void> changeStatus(newValue) async {
+    _status = newValue;
     if (newValue == "Available") {
       ///////
       _requestGps();
@@ -285,8 +214,8 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                   child: CircularProgressIndicator(
                       backgroundColor: secondColor,
                       strokeWidth: 5,
-                      //valueColor:
-                        //  new AlwaysStoppedAnimation<Color>(firstColor)
+                      valueColor:
+                          new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else
       return Scaffold(

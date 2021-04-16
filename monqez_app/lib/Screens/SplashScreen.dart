@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'dart:convert';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
@@ -24,6 +25,7 @@ class _SplashState extends State<Splash> {
   int type;
   bool isDisabled;
   bool firstLogin;
+  FirebaseCloudMessaging fcm;
 
   Future<void> checkUser(var token, var uid) async {
     final http.Response response2 = await http.get(
@@ -69,6 +71,7 @@ class _SplashState extends State<Splash> {
       } else {
         saveUserToken(token, uid);
         makeToast("Logged in Successfully");
+        fcm = new FirebaseCloudMessaging(token);
         if (type == 0) {
           _navigate = NormalHomeScreen(token);
         } else if (type == 1) {
@@ -117,6 +120,5 @@ class _SplashState extends State<Splash> {
                             new AlwaysStoppedAnimation<Color>(secondColor))),
               ],
             )));
-
   }
 }
