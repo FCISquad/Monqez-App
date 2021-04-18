@@ -1,4 +1,10 @@
 const User = require("./user");
+const sphericalGeometry = require('spherical-geometry-js');
+const {latLng} = require("@google/maps/lib/internal/convert");
+const admin = require('firebase-admin');
+
+const xx = require("@google/maps");
+
 
 class NormalUser extends User{
     constructor(userJson) {
@@ -27,6 +33,69 @@ class NormalUser extends User{
                 console.log(error);
             });
     }
+
+    request(userID, userJson){
+        User._database.getAllActiveMonqez().then( (activeMonqez) => {
+            let distance = [];
+            let normalUserLocation = [userJson["latitude"], userJson["longitude"]];
+            for ( let uid in activeMonqez.val() ){
+                let longitude   = activeMonqez.val()[uid]["longitude"];
+                let latitude    = activeMonqez.val()[uid]["latitude"];
+
+                let monqezLocation = [latitude, longitude];
+                distance.push({
+                    "distance" : sphericalGeometry.computeDistanceBetween(monqezLocation, normalUserLocation),
+                    "uid" : uid
+                });
+            }
+
+            distance.sort( (a, b) => {
+                if ( a['distance'] == b['distance'] ){
+                    return 0;
+                }
+                return (a['distance'] < b['distance'] ? -1 : 1);
+            });
+            console.log(distance);
+            console.log("------");
+
+            let min_three = []
+            for (let i = 0; i < Math.min(3, distance.length); ++i){
+                min_three.push(distance[i]);
+            }
+
+            console.log(min_three);
+            this.notify_monqez(min_three);
+        } );
+    }
+     notify_monqez(min_three){
+        min_three = []
+         min_three.push("uyOTYLswAJgGNA2elhnUuAI5e9h2");
+        let registrationTokens = [];
+         for (let i = 0; i < min_three.length; i++){
+             User._database.getFCMToken(min_three[i]).then((token)=>{
+                 registrationTokens.push(token);
+             });
+         }
+
+
+         const message = {
+             data: {score: '850', time: '2:45'},
+             tokens: registrationTokens,
+         }
+
+         admin.messaging().sendMulticast(message)
+             .then((response) => {
+                 if (response.failureCount > 0) {
+                     const failedTokens = [];
+                     response.responses.forEach((resp, idx) => {
+                         if (!resp.success) {
+                             failedTokens.push(registrationTokens[idx]);
+                         }
+                     });
+                     console.log('List of tokens that caused failures: ' + failedTokens);
+                 }
+             });
+     }
 }
 
 module.exports = NormalUser;

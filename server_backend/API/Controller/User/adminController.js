@@ -101,4 +101,13 @@ app.post( '/set_approval' , (request , response) => {
 } );
 
 
+const mailer = require('../../Tools/nodeMailer');
+app.post('/test' , (request , response) => {
+    mailer.sendMail('fifteenseven7@gmail.com' , 'mail from monqez' , 'hello world')
+        .then( (info) => {console.log(info)} )
+        .catch( (error) => {console.log(error)} );
+    response.end();
+});
+
+
 module.exports = app;

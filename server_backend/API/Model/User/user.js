@@ -83,6 +83,17 @@ class User{
                 })
         } );
     }
+    static registrationToken(userID, registrationToken){
+        return new Promise( (resolve, reject) => {
+            User._database.registerToken(userID , registrationToken)
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
+    }
 }
 
 module.exports = User;

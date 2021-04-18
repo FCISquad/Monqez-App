@@ -101,4 +101,40 @@ app.post( '/edit' , (request , response) => {
     });
 } );
 
+app.post('/update_registration_token', (request, response)=>{
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            User.registrationToken(userId, request.body)
+                .then( () => {
+                    response.sendStatus(200);
+                } )
+                .catch( (error) => {
+                    console.log(error);
+                    response.send(error);
+                } );
+        }
+    });
+});
+
+app.post('/request', (request, response) => {
+    let user = new NormalUser(request.body);
+    user.request("userId", request.body);
+    response.sendStatus(200);
+
+    // helper.verifyToken(request , (userId) => {
+    //     if ( userId === null ){
+    //         // Forbidden
+    //         response.sendStatus(403);
+    //     }
+    //     else{
+    //        let user = new NormalUser(request.body);
+    //        user.request(userId, request.body);
+    //        response.sendStatus(200);
+    //     }
+    // });
+})
 module.exports = app;
