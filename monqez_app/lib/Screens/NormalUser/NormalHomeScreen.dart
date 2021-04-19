@@ -7,6 +7,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+
 
 import '../LoginScreen.dart';
 
@@ -92,6 +96,23 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
 
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
+  }
+  void _makeRequest () async {
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $user.token',
+      },
+      body: jsonEncode(<String, double>{'latitude' : _newUserPosition.latitude,'longitude':_newUserPosition.longitude}),
+    );
+
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else{
+      makeToast('Failed to submit user.');
+    }
   }
 
   _showMaterialDialog() {
@@ -442,7 +463,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
+                        _makeRequest () ;
                         _showMaterialDialog();
+
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,
