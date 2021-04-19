@@ -98,12 +98,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     _lastMapPosition = _position1.target;
   }
   void _makeRequest () async {
+    String tempToken = user.token;
     final http.Response response = await http.post(
       Uri.parse('$url/user/request/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $user.token',
+        'Authorization': 'Bearer $tempToken',
       },
       body: jsonEncode(<String, double>{'latitude' : _newUserPosition.latitude,'longitude':_newUserPosition.longitude}),
     );

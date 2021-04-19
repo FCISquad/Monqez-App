@@ -22,7 +22,7 @@ class FirebaseCloudMessaging {
     FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
       print("FCM Token: " + _fcmToken);
-      //await updateRegistrationToken();
+      await updateRegistrationToken();
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

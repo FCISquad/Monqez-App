@@ -42,6 +42,7 @@ app.get( '/getstate' , (request , response) => {
 
 
 app.post('/update_location', (request, response) => {
+
     helper.verifyToken(request, (userID) => {
         if (userID === null){
             response.sendStatus(403);

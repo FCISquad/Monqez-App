@@ -55,46 +55,55 @@ class NormalUser extends User{
                 }
                 return (a['distance'] < b['distance'] ? -1 : 1);
             });
-            console.log(distance);
-            console.log("------");
 
             let min_three = []
             for (let i = 0; i < Math.min(3, distance.length); ++i){
-                min_three.push(distance[i]);
+                min_three.push(distance[i]["uid"]);
             }
 
-            console.log(min_three);
             this.notify_monqez(min_three);
         } );
     }
      notify_monqez(min_three){
-        min_three = []
-         min_three.push("uyOTYLswAJgGNA2elhnUuAI5e9h2");
-        let registrationTokens = [];
          for (let i = 0; i < min_three.length; i++){
              User._database.getFCMToken(min_three[i]).then((token)=>{
+                 let registrationTokens = [];
                  registrationTokens.push(token);
-             });
-         }
 
-
-         const message = {
-             data: {score: '850', time: '2:45'},
-             tokens: registrationTokens,
-         }
-
-         admin.messaging().sendMulticast(message)
-             .then((response) => {
-                 if (response.failureCount > 0) {
-                     const failedTokens = [];
-                     response.responses.forEach((resp, idx) => {
-                         if (!resp.success) {
-                             failedTokens.push(registrationTokens[idx]);
-                         }
-                     });
-                     console.log('List of tokens that caused failures: ' + failedTokens);
+                 const message = {
+                     data: {score: '850', time: '2:45'},
+                     tokens: registrationTokens,
                  }
+
+
+                 console.log(message);
+                 const payload = {
+                     notification: {
+                         title: 'Urgent action needed!',
+                         body: 'Urgent action is needed to prevent your account from being disabled!'
+                     }
+                 };
+
+                // Set the message as high priority and have it expire after 24 hours.
+                 const options = {
+                     priority: 'high',
+                     timeToLive: 60 * 60
+                 };
+
+                 admin.messaging().sendToDevice(registrationTokens, payload, options)
+                     .then(function(response) {
+                         // See the MessagingDevicesResponse reference documentation for
+                         // the contents of response.
+                         console.log('Successfully sent message:', response);
+                     })
+                     .catch(function(error) {
+                         console.log('Error sending message:', error);
+                     });
              });
+         }
+
+
+
      }
 }
 
