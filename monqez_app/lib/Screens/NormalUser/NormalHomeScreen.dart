@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,8 +10,6 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-
 
 import '../LoginScreen.dart';
 
@@ -36,6 +35,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
+  List<String> bodyMap;
 
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
@@ -99,9 +99,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
   }
-  void _makeRequest () async {
+
+  void _makeRequest() async {
     await _getCurrentUserLocation();
-    String tempToken = user.token ;
+    String tempToken = user.token;
     final http.Response response = await http.post(
       Uri.parse('$url/user/request/'),
       headers: <String, String>{
@@ -109,18 +110,72 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-      body: jsonEncode(<String, double>{'latitude' : _newUserPosition.latitude,'longitude':_newUserPosition.longitude}),
+      body: jsonEncode(<String, double>{
+        'latitude': _newUserPosition.latitude,
+        'longitude': _newUserPosition.longitude
+      }),
     );
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
-    } else{
+    } else {
       makeToast('Failed to submit user.');
     }
   }
 
-  void _sendAditionalInformation () async{
-    String tempToken = user.token ;
+  void _showAvatar() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: Container(
+                height: 550,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(12.0, 24.0, 12.0, 24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                          child: Text(
+                        "Additional details",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
+                      SizedBox(height: 20),
+                      SizedBox(
+                          height: 400,
+                          child: BodyMap()
+                      ),
+                      SizedBox(
+                        width: 200,
+                        child: RaisedButton(
+                          onPressed: () {
+                            bodyMap = BodyMap.getSelected();
+                            print(bodyMap);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "Submit",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Colors.deepOrange,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  void _sendAditionalInformation() async {
+    String tempToken = user.token;
     final http.Response response = await http.post(
       Uri.parse('$url/user/request/'),
       headers: <String, String>{
@@ -128,12 +183,15 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-      body: jsonEncode(<String, String>{'Adress' : _detailedAddress.toString(),'Aditional Notes':_aditionalNotes.toString()}),
+      body: jsonEncode(<String, String>{
+        'Adress': _detailedAddress.toString(),
+        'Aditional Notes': _aditionalNotes.toString()
+      }),
     );
 
     if (response.statusCode == 200) {
       makeToast("Submitted");
-    } else{
+    } else {
       makeToast('Failed to submit user.');
     }
   }
@@ -225,31 +283,50 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Your detailed address ?'),
-                            controller: _detailedAddress,
+                        controller: _detailedAddress,
                       ),
                       TextField(
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Notes for your coming monqez ?'),
-                            controller: _aditionalNotes,
+                        controller: _aditionalNotes,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Align(
                           alignment: Alignment.center,
-                          child: SizedBox(
-                            width: 200,
-                            child: RaisedButton(
-                              onPressed: () {
-                                _sendAditionalInformation();
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "Submit",
-                                style: TextStyle(color: Colors.white),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    _showAvatar();
+                                    //Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "Show Avatar",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
                               ),
-                              color: Colors.deepOrange,
-                            ),
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    print(_selectedSeviirty);
+                                    print(_radioValue);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "Submit",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -359,7 +436,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   @override
   void initState() {
     super.initState();
-
+    bodyMap = [];
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
     animation = new Tween(begin: 0.0, end: 200.0).animate(controller);
@@ -465,7 +542,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
-              ),/*
+              ),
+              /*
               SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: SearchMapPlaceWidget(
@@ -487,9 +565,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
-                        _makeRequest () ;
+                        //_makeRequest () ;
                         _showMaterialDialog();
-
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,

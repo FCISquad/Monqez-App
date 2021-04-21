@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  assorted_layout_widgets: ^4.0.7
   location: ^4.1.1
   firebase_messaging: ^9.1.1
   flutter_local_notifications: ^5.0.0+1
@@ -74,6 +75,20 @@ flutter:
     - images/facebook.png
     - images/google.jpg
     - images/firstaid.png
+    - images/BodyMap/armL.png
+    - images/BodyMap/armR.png
+    - images/BodyMap/chest.png
+    - images/BodyMap/footL.png
+    - images/BodyMap/footR.png
+    - images/BodyMap/handL.png
+    - images/BodyMap/handR.png
+    - images/BodyMap/head.png
+    - images/BodyMap/legL.png
+    - images/BodyMap/legR.png
+    - images/BodyMap/neck.png
+    - images/BodyMap/shoulderL.png
+    - images/BodyMap/shoulderR.png
+    - images/BodyMap/stomach.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
