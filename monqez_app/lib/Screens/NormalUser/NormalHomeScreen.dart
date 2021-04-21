@@ -34,6 +34,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   static User user;
   List<Icon> icons;
   bool _isLoading = true;
+  var _detailedAddress = TextEditingController();
+  var _aditionalNotes = TextEditingController();
 
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
@@ -98,14 +100,35 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     _lastMapPosition = _position1.target;
   }
   void _makeRequest () async {
+    await _getCurrentUserLocation();
+    String tempToken = user.token ;
     final http.Response response = await http.post(
       Uri.parse('$url/user/request/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Authorization': 'Bearer $user.token',
+        'Authorization': 'Bearer $tempToken',
       },
       body: jsonEncode(<String, double>{'latitude' : _newUserPosition.latitude,'longitude':_newUserPosition.longitude}),
+    );
+
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else{
+      makeToast('Failed to submit user.');
+    }
+  }
+
+  void _sendAditionalInformation () async{
+    String tempToken = user.token ;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+      body: jsonEncode(<String, String>{'Adress' : _detailedAddress.toString(),'Aditional Notes':_aditionalNotes.toString()}),
     );
 
     if (response.statusCode == 200) {
@@ -202,11 +225,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Your detailed address ?'),
+                            controller: _detailedAddress,
                       ),
                       TextField(
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Notes for your coming monqez ?'),
+                            controller: _aditionalNotes,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
@@ -216,8 +241,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             width: 200,
                             child: RaisedButton(
                               onPressed: () {
-                                print(_selectedSeviirty);
-                                print(_radioValue);
+                                _sendAditionalInformation();
                                 Navigator.of(context).pop();
                               },
                               child: Text(
