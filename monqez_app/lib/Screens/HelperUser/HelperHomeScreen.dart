@@ -59,15 +59,15 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   String messageTitle = "Empty";
   String notificationAlert = "alert";
 
-
-
   HelperHomeScreenState(String token) {
-    Future.delayed(Duration.zero, () async {
+    Future.delayed(Duration(seconds: 1), () async {
       user = new Helper(token);
       await user.getState();
       _isLoading = false;
-      setState(() {});
       _status = user.status;
+      if (mounted) {
+        setState(() {});
+      }
       if (user.status == "Available") {
         _requestGps();
         startBackgroundProcess();
@@ -76,7 +76,6 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
       }
     });
   }
-
 
   @override
   void initState() {
@@ -133,8 +132,26 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
       });
     }
     if (longitude != null && latitude != null) {
-      print("Latitude: " + latitude.toString());
-      print("Longitude: " + longitude.toString());
+
+      String tempToken = user.token;
+      final http.Response response = await http.post(
+        Uri.parse('$url/helper/update_location/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $tempToken',
+        },
+        body: jsonEncode(<String, double>{
+          'latitude':  latitude,
+          'longitude': longitude
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        makeToast("Submitted");
+      } else {
+        makeToast('Failed to submit user.');
+      }
     }
   }
 
@@ -155,18 +172,19 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   stopBackgroundProcess() {
     BackgroundLocation.stopLocationService();
   }
+
   Future _requestGps() async {
     if (!await _location.serviceEnabled()) {
       stopBackgroundProcess();
       bool result = await _location.requestService();
-      if (result == false){
+      if (result == false) {
         setState(() {
           changeStatus("Busy");
         });
       }
     }
-
   }
+
   Future<void> changeStatus(newValue) async {
     _status = newValue;
     if (newValue == "Available") {
@@ -214,8 +232,8 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                   child: CircularProgressIndicator(
                       backgroundColor: secondColor,
                       strokeWidth: 5,
-                      valueColor:
-                          new AlwaysStoppedAnimation<Color>(firstColor)
+                  //    valueColor:
+                    //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else
       return Scaffold(

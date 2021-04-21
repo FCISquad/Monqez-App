@@ -26,7 +26,6 @@ class Helper extends User {
     } else {
       print(response2.statusCode);
     }
-
     print("Helper: " + name + ", " + status);
   }
 }

@@ -300,7 +300,7 @@ class Database {
 
     getFCMToken(userID) {
         return new Promise((resolve, reject) => {
-            admin.database().ref('/user/' + userID).once("value", function (snapshot) {
+            admin.database().ref('user/' + userID).once("value", function (snapshot) {
                 resolve(snapshot.val()["token"]);
             }).catch((error) => {
                 reject(error)

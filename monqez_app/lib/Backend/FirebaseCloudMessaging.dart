@@ -6,31 +6,41 @@ import 'dart:convert';
 import 'dart:async';
 
 class FirebaseCloudMessaging {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
     'This channel is used for important notifications.', // description
-    importance: Importance.high,
   );
+  AndroidInitializationSettings initializationSettingsAndroid;
+  InitializationSettings initializationSettings;
   String _fcmToken;
   String _token;
 
   FirebaseCloudMessaging(String token) {
     _token = token;
+    initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
+
+    initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid
+    );
+
+    flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+    );
+
     FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
-      print("FCM Token: " + _fcmToken);
-      //await updateRegistrationToken();
+      await updateRegistrationToken();
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
       if (notification != null && android != null) {
+        print ("Received notification");
         flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
+            0,
             notification.title,
             notification.body,
             NotificationDetails(
@@ -38,6 +48,9 @@ class FirebaseCloudMessaging {
                 channel.id,
                 channel.name,
                 channel.description,
+                importance: Importance.max,
+                priority: Priority.high,
+                enableVibration: true,
                 icon: 'launch_background',
               ),
             ));
@@ -45,9 +58,8 @@ class FirebaseCloudMessaging {
     });
   }
 
+
   Future<void> updateRegistrationToken() async {
-    print("here ");
-    print(_fcmToken);
     final http.Response response = await http.post(
       Uri.parse('$url/user/update_registration_token/'),
       headers: <String, String>{
