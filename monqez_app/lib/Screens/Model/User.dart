@@ -1,10 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 
 class User {
   String name;
-  String nationaID;
+  String nationalID;
   String phone;
   String birthdate;
   String country;
@@ -13,9 +14,11 @@ class User {
   String buildNumber;
   String gender;
   String token;
+  FirebaseCloudMessaging fcm;
 
   User(String token) {
     this.token = token;
+    fcm = new FirebaseCloudMessaging(token);
   }
   getUser() async {
     http.Response response2 = await http.get(
@@ -30,7 +33,7 @@ class User {
     if (response2.statusCode == 200) {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.name = parsed['name'];
-      this.nationaID = parsed['national_id'];
+      this.nationalID = parsed['national_id'];
       this.phone = parsed['phone'];
       this.birthdate = parsed['birthdate'];
       this.country = parsed['country'];
@@ -54,7 +57,7 @@ class User {
       },
       body: jsonEncode(<String, String>{
         'name': name,
-        'national_id': nationaID,
+        'national_id': nationalID,
         'phone': phone,
         'birthdate': birthdate,
         'gender': gender,

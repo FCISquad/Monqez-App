@@ -97,7 +97,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   Future<void> save() async {
     print(_nameController == null);
     if (_nameController.text.isNotEmpty)        user.name = _nameController.text;
-    if (_nationalIDController.text.isNotEmpty)  user.nationaID = _nationalIDController.text;
+    if (_nationalIDController.text.isNotEmpty)  user.nationalID = _nationalIDController.text;
     if (_phoneController.text.isNotEmpty)       user.phone = _phoneController.text;
     if (_countryController.text.isNotEmpty)     user.country = _countryController.text;
     if (_cityController.text.isNotEmpty)        user.city = _cityController.text;
@@ -251,7 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                   SizedBox(height: 10.0),
                   _buildField("Name", user.name, _nameController, MediaQuery.of(context).size.width),
                   SizedBox(height: 20.0),
-                  _buildField("National ID", user.nationaID, _nationalIDController, MediaQuery.of(context).size.width),
+                  _buildField("National ID", user.nationalID, _nationalIDController, MediaQuery.of(context).size.width),
                   SizedBox(height: 20.0),
                   _buildField("Phone Number", user.phone, _phoneController, MediaQuery.of(context).size.width),
                   //_buildIDNumberTF(),

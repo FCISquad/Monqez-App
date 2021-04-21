@@ -60,12 +60,14 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
   String notificationAlert = "alert";
 
   HelperHomeScreenState(String token) {
-    Future.delayed(Duration.zero, () async {
+    Future.delayed(Duration(seconds: 1), () async {
       user = new Helper(token);
       await user.getState();
       _isLoading = false;
-      setState(() {});
       _status = user.status;
+      if (mounted) {
+        setState(() {});
+      }
       if (user.status == "Available") {
         _requestGps();
         startBackgroundProcess();
@@ -230,8 +232,9 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                   child: CircularProgressIndicator(
                       backgroundColor: secondColor,
                       strokeWidth: 5,
-                      valueColor:
-                          new AlwaysStoppedAnimation<Color>(firstColor)))));
+                  //    valueColor:
+                    //      new AlwaysStoppedAnimation<Color>(firstColor)
+                  ))));
     } else
       return Scaffold(
         backgroundColor: secondColor,

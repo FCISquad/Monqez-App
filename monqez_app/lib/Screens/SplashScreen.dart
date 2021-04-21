@@ -25,7 +25,6 @@ class _SplashState extends State<Splash> {
   int type;
   bool isDisabled;
   bool firstLogin;
-  FirebaseCloudMessaging fcm;
 
   Future<void> checkUser(var token, var uid) async {
     final http.Response response2 = await http.get(
@@ -71,7 +70,6 @@ class _SplashState extends State<Splash> {
       } else {
         saveUserToken(token, uid);
         makeToast("Logged in Successfully");
-        fcm = new FirebaseCloudMessaging(token);
         if (type == 0) {
           _navigate = NormalHomeScreen(token);
         } else if (type == 1) {
