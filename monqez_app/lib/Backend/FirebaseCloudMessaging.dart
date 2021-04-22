@@ -4,6 +4,11 @@ import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
+import 'package:get/get.dart';
+
+import '../main.dart';
 
 class FirebaseCloudMessaging {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -17,6 +22,20 @@ class FirebaseCloudMessaging {
   String _fcmToken;
   String _token;
 
+  Future onSelectNotification(String payload) async {
+    if (payload != null) {
+      debugPrint('Notification payload: $payload');
+      print("HERE!!");
+    }
+    await Get.to(HelperRequestNotificationScreen());
+    /*
+    await Navigator.push(null,
+        new MaterialPageRoute(builder: (context) => new HelperRequestNotificationScreen()));
+*/
+
+  }
+
+
   FirebaseCloudMessaging(String token) {
     _token = token;
     initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
@@ -27,12 +46,15 @@ class FirebaseCloudMessaging {
 
     flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
+      onSelectNotification: onSelectNotification
     );
 
     FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
       await updateRegistrationToken();
     });
+
+
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
@@ -52,6 +74,8 @@ class FirebaseCloudMessaging {
                 priority: Priority.high,
                 enableVibration: true,
                 icon: 'launch_background',
+
+
 
               ),
             ));
