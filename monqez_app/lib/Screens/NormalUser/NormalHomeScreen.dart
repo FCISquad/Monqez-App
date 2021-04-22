@@ -9,6 +9,7 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 
 
@@ -128,7 +129,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-      body: jsonEncode(<String, String>{'Adress' : _detailedAddress.toString(),'Aditional Notes':_aditionalNotes.toString()}),
+      body: jsonEncode(<String, String>{'Adress' : _detailedAddress.value.toString(),'Aditional Notes':_aditionalNotes.value.toString()}),
     );
 
     if (response.statusCode == 200) {
@@ -260,6 +261,46 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             );
           });
         });
+  }
+  PolylinePoints polylinePoints;
+
+  List<LatLng> polylineCoordinates = [];
+
+
+  Map<PolylineId, Polyline> polylines = {};
+  _createPolylines(Position start, Position destination) async {
+
+    polylinePoints = PolylinePoints();
+
+    // Generating the list of coordinates to be used for
+    // drawing the polylines
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo', // Google Maps API Key
+      PointLatLng(start.latitude, start.longitude),
+      PointLatLng(destination.latitude, destination.longitude),
+      travelMode: TravelMode.transit,
+    );
+
+    // Adding the coordinates to the list
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    // Defining an ID
+    PolylineId id = PolylineId('poly');
+
+    // Initializing Polyline
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+
+    // Adding the polyline to the map
+    polylines[id] = polyline;
   }
 
   _onMapTypeButtonPressed() {
@@ -465,6 +506,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
+                polylines: Set<Polyline>.of(polylines.values),
               ),/*
               SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -487,6 +529,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
+                        //_createPolylines();
                         _makeRequest () ;
                         _showMaterialDialog();
 
