@@ -52,6 +52,7 @@ class FirebaseCloudMessaging {
                 priority: Priority.high,
                 enableVibration: true,
                 icon: 'launch_background',
+
               ),
             ));
       }
