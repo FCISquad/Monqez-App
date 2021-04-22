@@ -19,7 +19,13 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="" />
+    <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/helperController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/helperController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Model/User/normalUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/normalUser.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,7 +52,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="14.15.3" />
+    <property name="javascript.nodejs.core.library.configured.version" value="14.15.0" />
     <property name="javascript.nodejs.core.library.typings.version" value="14.14.41" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -103,6 +109,7 @@
       <workItem from="1619038120394" duration="1613000" />
       <workItem from="1619043384993" duration="614000" />
       <workItem from="1619053181647" duration="174000" />
+      <workItem from="1619129320263" duration="3798000" />
     </task>
     <servers />
   </component>
@@ -122,26 +129,30 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1877" height="425" key="GridCell.Tab.0.bottom" timestamp="1619043388322">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="369" key="GridCell.Tab.0.bottom" timestamp="1619134001451">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="182" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1618500365798" />
     <state width="1877" height="425" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1619043388322" />
-    <state width="1877" height="425" key="GridCell.Tab.0.center" timestamp="1619043388322">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="369" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1619134001451" />
+    <state width="1261" height="369" key="GridCell.Tab.0.center" timestamp="1619134001451">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="182" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1618500365798" />
     <state width="1877" height="425" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1619043388322" />
-    <state width="1877" height="425" key="GridCell.Tab.0.left" timestamp="1619043388321">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="369" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1619134001451" />
+    <state width="1261" height="369" key="GridCell.Tab.0.left" timestamp="1619134001451">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="182" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1618500365798" />
     <state width="1877" height="425" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1619043388321" />
-    <state width="1877" height="425" key="GridCell.Tab.0.right" timestamp="1619043388322">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="369" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1619134001451" />
+    <state width="1261" height="369" key="GridCell.Tab.0.right" timestamp="1619134001451">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="182" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1618500365798" />
     <state width="1877" height="425" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1619043388322" />
+    <state width="1261" height="369" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1619134001451" />
     <state width="1877" height="511" key="GridCell.Tab.1.bottom" timestamp="1618871401905">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -182,6 +193,11 @@
           <url>file://$PROJECT_DIR$/API/Tools/RequestFunctions.js</url>
           <line>18</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/API/Model/User/normalUser.js</url>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
