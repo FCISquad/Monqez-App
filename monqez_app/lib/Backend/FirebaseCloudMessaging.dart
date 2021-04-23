@@ -27,8 +27,13 @@ class FirebaseCloudMessaging {
       debugPrint('Notification payload: $payload');
       print("HERE!!");
     }
-    await Get.to(HelperRequestNotificationScreen());
-    /*
+    print ("Why?") ;
+   // Get.offAll(HelperRequestNotificationScreen());
+    print("WHY?!");
+    Future.delayed(const Duration(milliseconds: 400));
+    navigatorKey.currentState.pushNamed('notification');
+   // await  navigatorKey.currentState.push(MaterialPageRoute(builder: (context) =>HelperRequestNotificationScreen()));
+/*
     await Navigator.push(null,
         new MaterialPageRoute(builder: (context) => new HelperRequestNotificationScreen()));
 */

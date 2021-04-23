@@ -15,24 +15,6 @@ import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:background_location/background_location.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Monqez',
-      theme: ThemeData(
-        primarySwatch: primary,
-      ),
-      home: HelperHomeScreen(""),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 // ignore: must_be_immutable
 class HelperHomeScreen extends StatefulWidget {
   String token;

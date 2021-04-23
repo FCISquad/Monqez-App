@@ -8,24 +8,6 @@ import '../Backend/Authentication.dart';
 
 import 'package:http/http.dart' as http;
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Monqez',
-      theme: ThemeData(
-        primarySwatch: primary,
-      ),
-      home: HelperRequestNotificationScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class HelperRequestNotificationScreen extends StatefulWidget {
   @override
   HelperRequestNotificationScreenState createState() =>
