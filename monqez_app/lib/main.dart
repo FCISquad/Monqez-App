@@ -5,13 +5,12 @@ import 'Screens/SplashScreen.dart';
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
 
-void main() {
+main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
 
-  var _initialRoute = '/';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +19,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.deepOrange,
       ),
       //home: Splash(),
-     // initialRoute: _initialRoute,
       onGenerateRoute: onGenerateRoute,
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
@@ -34,10 +32,6 @@ class MyApp extends StatelessWidget {
   }
 
   Route onGenerateRoute(RouteSettings settings) {
-    /*Navigator.push(null,
-        new MaterialPageRoute(builder: (context) => new HelperRequestNotificationScreen()));
-
-     */
     return MaterialPageRoute(builder: (context)=>HelperRequestNotificationScreen());
   }
 

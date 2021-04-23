@@ -4,10 +4,6 @@ import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
-import 'package:get/get.dart';
-
 import '../main.dart';
 
 class FirebaseCloudMessaging {
@@ -23,21 +19,13 @@ class FirebaseCloudMessaging {
   String _token;
 
   Future onSelectNotification(String payload) async {
+    /*
     if (payload != null) {
       debugPrint('Notification payload: $payload');
       print("HERE!!");
     }
-    print ("Why?") ;
-   // Get.offAll(HelperRequestNotificationScreen());
-    print("WHY?!");
-    Future.delayed(const Duration(milliseconds: 400));
+     */
     navigatorKey.currentState.pushNamed('notification');
-   // await  navigatorKey.currentState.push(MaterialPageRoute(builder: (context) =>HelperRequestNotificationScreen()));
-/*
-    await Navigator.push(null,
-        new MaterialPageRoute(builder: (context) => new HelperRequestNotificationScreen()));
-*/
-
   }
 
 
@@ -59,7 +47,10 @@ class FirebaseCloudMessaging {
       await updateRegistrationToken();
     });
 
-
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      navigatorKey.currentState.pushNamed('notification');
+    });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
