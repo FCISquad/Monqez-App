@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -35,7 +34,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
-  List<String> bodyMap;
+  int bodyMap;
 
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
@@ -141,25 +140,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Additional details",
+                        "Injuries",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      SizedBox(
-                          height: 400,
-                          child: BodyMap()
-                      ),
+                      SizedBox(height: 400, child: BodyMap()),
                       SizedBox(
                         width: 200,
                         child: RaisedButton(
                           onPressed: () {
                             bodyMap = BodyMap.getSelected();
-                            print(bodyMap);
                             Navigator.of(context).pop();
                           },
                           child: Text(
-                            "Submit",
+                            "Done",
                             style: TextStyle(color: Colors.white),
                           ),
                           color: Colors.deepOrange,
@@ -436,7 +431,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   @override
   void initState() {
     super.initState();
-    bodyMap = [];
+    bodyMap = 0;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
     animation = new Tween(begin: 0.0, end: 200.0).animate(controller);
