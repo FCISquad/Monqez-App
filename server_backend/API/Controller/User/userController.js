@@ -137,4 +137,23 @@ app.post('/request', (request, response) => {
         }
     });
 })
+
+app.post('/request_information', (request, response) => {
+
+    // let user = new NormalUser(request.body);
+    // user.request_additional("ehabfawzy", request.body);
+    // response.sendStatus(200);
+
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            let user = new NormalUser(request.body);
+            user.request_additional(userId, request.body);
+            response.sendStatus(200);
+        }
+    });
+})
 module.exports = app;

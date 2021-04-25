@@ -328,6 +328,18 @@ class Database {
             .then( () => {} ) ;
     }
 
+    insertRequestAdditional(uid, request) {
+        console.log(request);
+        admin.database().ref('requests/' + uid).limitToLast(1).once('value')
+            .then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
+                    .update(request)
+                    .then( () => {} ) ;
+                    //console.log(childSnapshot.key);
+                });
+            });
+    }
     getRequests(userID){
         return new Promise((resolve, reject) => {
             admin.database().ref('requests/' + userID).once("value", function (snapshot) {
