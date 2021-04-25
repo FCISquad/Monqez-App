@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:search_map_place/search_map_place.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import '../LoginScreen.dart';
 
@@ -31,6 +33,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   static User user;
   List<Icon> icons;
   bool _isLoading = true;
+  var _detailedAddress = TextEditingController();
+  var _aditionalNotes = TextEditingController();
+  int bodyMap;
 
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
@@ -57,7 +62,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   Item _selectedSeviirty;
-  String _radioValue;
+  bool _radioValue;
   var _nameController = TextEditingController();
 
   List<Item> users = <Item>[
@@ -94,6 +99,103 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
   }
+  void _sendAdditionalInformation() async {
+    String tempToken = user.token;
+    Map<String, dynamic> body = {
+      'additionalInfo':{
+        'Address': _detailedAddress.text,
+        'Additional Notes': _aditionalNotes.text
+      },
+      'avatarBody':bodyMap.toString(),
+      'forMe':_radioValue.toString()
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/request_information/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+  void _makeRequest() async {
+    await _getCurrentUserLocation();
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+      body: jsonEncode(<String, double>{
+        'latitude': _newUserPosition.latitude,
+        'longitude': _newUserPosition.longitude
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+
+  void _showAvatar() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: Container(
+                height: 550,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(12.0, 24.0, 12.0, 24.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                          child: Text(
+                        "Injuries",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
+                      SizedBox(height: 20),
+                      SizedBox(height: 400, child: BodyMap()),
+                      SizedBox(
+                        width: 200,
+                        child: RaisedButton(
+                          onPressed: () {
+                            bodyMap = BodyMap.getSelected();
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "Done",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          color: Colors.deepOrange,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+
 
   _showMaterialDialog() {
     showDialog(
@@ -155,7 +257,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           children: [
                             Text("For Me"),
                             Radio(
-                              value: 'For Me',
+                              value: true,
                               groupValue: _radioValue,
                               onChanged: (value) {
                                 setState(() {
@@ -166,7 +268,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             ),
                             Text("For Other"),
                             Radio(
-                              value: 'For Other',
+                              value: false,
                               groupValue: _radioValue,
                               onChanged: (value) {
                                 setState(() {
@@ -182,30 +284,49 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Your detailed address ?'),
+                        controller: _detailedAddress,
                       ),
                       TextField(
                         decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: 'Notes for your coming monqez ?'),
+                        controller: _aditionalNotes,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Align(
                           alignment: Alignment.center,
-                          child: SizedBox(
-                            width: 200,
-                            child: RaisedButton(
-                              onPressed: () {
-                                print(_selectedSeviirty);
-                                print(_radioValue);
-                                Navigator.of(context).pop();
-                              },
-                              child: Text(
-                                "Submit",
-                                style: TextStyle(color: Colors.white),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    _showAvatar();
+                                    //Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "Show Avatar",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
                               ),
-                              color: Colors.deepOrange,
-                            ),
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    _sendAdditionalInformation();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    "Submit",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       )
@@ -216,6 +337,46 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             );
           });
         });
+  }
+  PolylinePoints polylinePoints;
+
+  List<LatLng> polylineCoordinates = [];
+
+
+  Map<PolylineId, Polyline> polylines = {};
+  _createPolylines(Position start, Position destination) async {
+
+    polylinePoints = PolylinePoints();
+
+    // Generating the list of coordinates to be used for
+    // drawing the polylines
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo', // Google Maps API Key
+      PointLatLng(start.latitude, start.longitude),
+      PointLatLng(destination.latitude, destination.longitude),
+      travelMode: TravelMode.transit,
+    );
+
+    // Adding the coordinates to the list
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    // Defining an ID
+    PolylineId id = PolylineId('poly');
+
+    // Initializing Polyline
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+
+    // Adding the polyline to the map
+    polylines[id] = polyline;
   }
 
   _onMapTypeButtonPressed() {
@@ -315,7 +476,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   @override
   void initState() {
     super.initState();
-
+    bodyMap = 0;
+    _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
     animation = new Tween(begin: 0.0, end: 200.0).animate(controller);
@@ -421,8 +583,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
+				polylines: Set<Polyline>.of(polylines.values),
               ),
-              SizedBox(
+              /*SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: SearchMapPlaceWidget(
                   hasClearButton: true,
@@ -433,7 +596,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     Geolocation geoLocation = await place.geolocation;
                   },
                 ),
-              ),
+              ),*/
               Padding(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                 child: Align(
@@ -443,6 +606,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
+
+                        //_createPolylines();
+                        _makeRequest () ;
+
                         _showMaterialDialog();
                       },
                       child: Text('Get Help!'),

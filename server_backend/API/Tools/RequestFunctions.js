@@ -17,10 +17,10 @@ module.exports = {
 
     verifyToken(requestJson , callback){
         const bearerHeader = requestJson.headers['authorization'];
+
         if (bearerHeader) {
             const bearer = bearerHeader.split(' ');
             const bearerToken = bearer[1];
-
             admin.auth().verifyIdToken(bearerToken).then((decodedToken) => {
                 callback(decodedToken.uid);
             }).catch((error) => {

@@ -29,20 +29,20 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _cityController = TextEditingController();
   var _streetController = TextEditingController();
   var _buildNumberController = TextEditingController();
-  var _certificateController = TextEditingController() ;
+  var _certificateController = TextEditingController();
   var token;
   var uid;
   String _fullNameError = '';
   String _phoneNumberError = '';
   String _nationalIdError = '';
   String _addressError = '';
-  String _certificateError = '' ;
+  String _certificateError = '';
 
   bool _correctFullName = false;
   bool _correctPhoneNumber = false;
   bool _correctNationalId = false;
   bool _correctAddress = false;
-  bool _correctCertificate = false ;
+  bool _correctCertificate = false;
 
   String gender;
   DateTime selectedDate = DateTime.now();
@@ -61,28 +61,31 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       gravity: ToastGravity.BOTTOM,
     );
   }
-  bool _validateAllFields(){
-    if(_correctFullName && _correctPhoneNumber && _correctNationalId && _correctAddress &&((_isMonqez && _correctCertificate)|| !_isMonqez)){
-      return true ;
-    }
-    else{
-      return false ;
+
+  bool _validateAllFields() {
+    if (_correctFullName &&
+        _correctPhoneNumber &&
+        _correctNationalId &&
+        _correctAddress &&
+        ((_isMonqez && _correctCertificate) || !_isMonqez)) {
+      return true;
+    } else {
+      return false;
     }
   }
+
   void _validateCertificate(String text) {
     setState(() {
-      if (_isMonqez){
-        print(_fileName) ;
-        if (_fileName == "File Path" ) {
+      if (_isMonqez) {
+        print(_fileName);
+        if (_fileName == "File Path") {
           _certificateError = "You must enter your certificate";
           _correctCertificate = false;
-        }
-        else{
+        } else {
           _correctCertificate = true;
           _certificateError = "";
         }
       }
-
     });
     return;
   }
@@ -119,24 +122,21 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   void _validateNationalId(String text) {
     setState(() {
       if (text.isEmpty) {
-        _nationalIdError =
-            "National ID number is required";
+        _nationalIdError = "National ID number is required";
         _correctNationalId = false;
-      }
-      else if (text.length != 14 ){
-        _nationalIdError =
-        "National ID number is incorrect";
+      } else if (text.length != 14) {
+        _nationalIdError = "National ID number is incorrect";
         _correctNationalId = false;
-      }
-      else {
+      } else {
         _nationalIdError = "";
         _correctNationalId = true;
       }
     });
     return;
   }
+
   Widget getTitle(String text) {
-    return  Text(
+    return Text(
       text,
       style: TextStyle(
         color: Colors.white,
@@ -145,9 +145,13 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       ),
     );
   }
+
   void _validateAddress(String text) {
     setState(() {
-      if (_cityController.text.isEmpty || _streetController.text.isEmpty || _buildNumberController.text.isEmpty || _countryController.text.isEmpty) {
+      if (_cityController.text.isEmpty ||
+          _streetController.text.isEmpty ||
+          _buildNumberController.text.isEmpty ||
+          _countryController.text.isEmpty) {
         _addressError = "Please enter your address correctly";
         _correctAddress = false;
       } else {
@@ -157,7 +161,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     });
     return;
   }
-
 
   void navigateReplacement(Widget map) {
     Navigator.pushReplacement(
@@ -188,7 +191,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   }
 
   void _click() {
-    if (_validateAllFields()){
+    if (_validateAllFields()) {
       if (_isMonqez) {
         _apply();
       } else {
@@ -205,8 +208,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     print("Uid: " + uid);
 
     final http.Response response = await http.post(
-      '$url/user/signup',
-      headers: <String, String> {
+      Uri.parse('$url/user/signup'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
@@ -227,7 +230,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     if (response.statusCode == 200) {
       makeToast("Submitted");
       navigateReplacement(NormalHomeScreen(token));
-
     } else {
       print(response.statusCode);
       makeToast('Failed to submit user.');
@@ -241,8 +243,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
     String base64Image = base64Encode(certificateFile.readAsBytesSync());
     final http.Response response = await http.post(
-      '$url/user/apply/',
-      headers: <String, String> {
+      Uri.parse('$url/user/apply/'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
@@ -276,6 +278,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   void _uploadCertificate() async {
     try {
       _path = (await FilePicker.platform.pickFiles());
+
       /*
         type: FileType.any,
         allowMultiple: false,
@@ -288,11 +291,13 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     } catch (ex) {
       makeToast(ex);
     }
+
     if (!mounted) return;
     setState(() {
       certificateFile = File(_path.files.single.path);
       _fileName = certificateFile.path.split("/").last;
     });
+    _validateCertificate(_fileName);
   }
 
   ///ERRORS HERE
@@ -378,7 +383,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             _fullNameError,
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          visible:  _fullNameError.isNotEmpty,
+          visible: _fullNameError.isNotEmpty,
         ),
       ],
     );
@@ -524,7 +529,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           decoration: kBoxDecorationStyle,
           height: 50.0,
           child: TextFormField(
-            controller: _certificateController ,
+            controller: _certificateController,
             onChanged: _validateCertificate,
             readOnly: true,
             style: TextStyle(
@@ -696,7 +701,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       ),
                     ),
                   )),
-
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
@@ -722,13 +726,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         ),
         SizedBox(height: 10.0),
         Visibility(
-          child: Text(
-          _addressError,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          )
-          ),
+          child: Text(_addressError,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              )),
           visible: _addressError.isNotEmpty,
         )
       ],
@@ -737,10 +739,10 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
   void _openCamera(BuildContext context) async {
     // ignore: deprecated_member_use
-    var picture = await ImagePicker.pickImage(source: ImageSource.camera);
+    /*var picture = await ImagePicker.pickImage(source: ImageSource.camera);
     this.setState(() {
       imageFile = picture;
-    });
+    });*/
     //Navigator.of(context).pop();
   }
 
@@ -834,7 +836,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width*0.1,
+                horizontal: MediaQuery.of(context).size.width * 0.1,
                 vertical: 60.0,
               ),
               child: Column(
@@ -861,18 +863,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   SizedBox(height: 10.0),
                   _buildAddress(),
                   SizedBox(height: 20.0),
-                  
                   SizedBox(
-                    width: double.infinity,
-                    height: 20,
-                    child: getTitle("Gender")
-                  ),
-                  Row(
-                    children: <Widget>[
-                      addRadioButton(1, "Male"),
-                      addRadioButton(2, "Female"),
-                    ]
-                  ),
+                      width: double.infinity,
+                      height: 20,
+                      child: getTitle("Gender")),
+                  Row(children: <Widget>[
+                    addRadioButton(1, "Male"),
+                    addRadioButton(2, "Female"),
+                  ]),
                   SizedBox(height: 10.0),
                   _buildCheckBox(),
                   SizedBox(height: 10.0),

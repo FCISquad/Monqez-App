@@ -212,7 +212,8 @@ class _SignupScreenState extends State<SignupScreen> {
           child: TextFormField(
             controller: _passwordController,
             obscureText: !_showPassword,
-            onChanged: _validatePassword,
+            onChanged: (String val) =>
+                {_validatePassword(val), _validateconfirmPassword(_confirmPasswordController.text)},
             style: TextStyle(
               color: Colors.deepOrange,
               fontFamily: 'OpenSans',
@@ -330,8 +331,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 MaterialPageRoute(builder: (context) => SecondSignupScreen()),
               );
             }
-          }
-          else {
+          } else {
             makeToast("Enter all fields correctly");
           }
         },

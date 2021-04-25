@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
 import 'Screens/SplashScreen.dart';
 
-void main() {
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+
+
+main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -13,10 +18,24 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      home: Splash(),
+      //home: Splash(),
+      onGenerateRoute: onGenerateRoute,
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/': (context) => Splash(),
+        'notification': (context)=> HelperRequestNotificationScreen()
+      },
+
+
     );
   }
+
+  Route onGenerateRoute(RouteSettings settings) {
+    return MaterialPageRoute(builder: (context)=>HelperRequestNotificationScreen());
+  }
+
+
 }
 
 

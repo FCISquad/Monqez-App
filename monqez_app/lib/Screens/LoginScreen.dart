@@ -16,7 +16,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'SignupScreen.dart';
 import 'package:http/http.dart' as http;
 
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -26,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   int type = -1;
   bool isDisabled;
   bool firstLogin;
-
 
   bool _showPassword = false;
   var _emailController = TextEditingController();
@@ -55,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
               return map;
             }));
   }
+
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp();
@@ -134,28 +133,27 @@ class _LoginScreenState extends State<LoginScreen> {
     return;
   }
 
-  Future <void> checkUser(var token, var uid) async{
+  Future<void> checkUser(var token, var uid) async {
     final http.Response response2 = await http.get(
-      '$url/user/get/',
-      headers: <String, String> {
+      Uri.parse('$url/user/get/'),
+      headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
-    if (response2.statusCode == 200){
+    if (response2.statusCode == 200) {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       String sType = parsed['type'];
       String sDisabled = parsed['isDisabled'];
       String sFirst = parsed['firstLogin'];
 
-      setState((){
+      setState(() {
         type = int.parse(sType);
-        isDisabled = (sDisabled == 'true') ? true: false;
-        firstLogin = (sFirst == 'true') ? true: false;
+        isDisabled = (sDisabled == 'true') ? true : false;
+        firstLogin = (sFirst == 'true') ? true : false;
       });
-    }
-    else{
+    } else {
       print(response2.statusCode);
       makeToast("Error!");
     }
@@ -302,10 +300,11 @@ class _LoginScreenState extends State<LoginScreen> {
           try {
             userCredential = await FirebaseAuth.instance
                 .signInWithEmailAndPassword(
-                email: _emailController.text, password: _passwordController.text);
+                    email: _emailController.text,
+                    password: _passwordController.text);
 
             token = await FirebaseAuth.instance.currentUser.getIdToken();
-            result =  true;
+            result = true;
           } on FirebaseAuthException catch (e) {
             if (e.code == 'user-not-found') {
               makeToast('Email not found!');
@@ -321,37 +320,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
           if (result) {
             await checkUser(token, userCredential.user.uid);
-            if (isDisabled){
+            if (isDisabled) {
               if (type == 0)
                 makeToast("Account is banned!");
               else if (type == 1)
                 makeToast("Please wait while your application is reviewed");
-            }
-            else if (firstLogin){
+            } else if (firstLogin) {
               saveUserToken(token, userCredential.user.uid);
-              if (type == 2){
+              if (type == 2) {
                 navigateReplacement(AdditionalAdminInfoScreen());
-              }
-              else{
+              } else {
                 navigateReplacement(SecondSignupScreen());
               }
-            }
-            else{
+            } else {
               saveUserToken(token, userCredential.user.uid);
               makeToast("Logged in Successfully");
-              if (type == 0){
+              if (type == 0) {
                 navigateReplacement(NormalHomeScreen(token));
-              }
-              else if (type == 1){
+              } else if (type == 1) {
                 navigateReplacement(HelperHomeScreen(token));
-              }
-              else if (type == 2){
+              } else if (type == 2) {
                 navigateReplacement(AdminHomeScreen());
               }
             }
           }
         },
-
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -374,9 +367,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return GestureDetector(
       onTap: () async {
         bool result;
-        final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+        final GoogleSignInAccount googleSignInAccount =
+            await googleSignIn.signIn();
         final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
+            await googleSignInAccount.authentication;
 
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleSignInAuthentication.accessToken,
@@ -387,7 +381,7 @@ class _LoginScreenState extends State<LoginScreen> {
         UserCredential authResult;
         try {
           authResult =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+              await FirebaseAuth.instance.signInWithCredential(credential);
           final User user = authResult.user;
 
           if (user != null) {
@@ -403,33 +397,27 @@ class _LoginScreenState extends State<LoginScreen> {
           makeToast(e.code);
           result = false;
         }
-        if (result){
+        if (result) {
           await checkUser(token, authResult.user.uid);
-          if (isDisabled){
+          if (isDisabled) {
             if (type == 0)
               makeToast("Account is banned!");
             else if (type == 1)
               makeToast("Please wait while your application is reviewed");
-          }
-          else if (firstLogin){
+          } else if (firstLogin) {
             saveUserToken(token, authResult.user.uid);
             navigateReplacement(SecondSignupScreen());
-
-          }
-          else{
+          } else {
             saveUserToken(token, authResult.user.uid);
             makeToast("Logged in Successfully");
-            if (type == 0){
+            if (type == 0) {
               navigateReplacement(NormalHomeScreen(token));
-            }
-            else if (type == 1){
+            } else if (type == 1) {
               navigateReplacement(HelperHomeScreen(token));
-            }
-            else if (type == 2){
+            } else if (type == 2) {
               navigateReplacement(AdminHomeScreen());
             }
           }
-
         }
       },
       child: Container(

@@ -170,7 +170,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
     print("Uid: " + uid);
 
     final http.Response response = await http.post(
-        '$url/admin/addAdditionalInformation/',
+        Uri.parse('$url/admin/addAdditionalInformation/'),
         headers: <String, String> {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
