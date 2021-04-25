@@ -99,7 +99,27 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
   }
+  void _sendAditionalInformation() async {
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+      body: jsonEncode(<String, String>{
+        'Address': _detailedAddress.value.toString(),
+        'Additional Notes': _aditionalNotes.value.toString()
+      }),
+    );
 
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
   void _makeRequest() async {
     await _getCurrentUserLocation();
     String tempToken = user.token;
@@ -170,27 +190,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-  void _sendAditionalInformation() async {
-    String tempToken = user.token;
-    final http.Response response = await http.post(
-      Uri.parse('$url/user/request/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $tempToken',
-      },
-      body: jsonEncode(<String, String>{
-        'Adress': _detailedAddress.toString(),
-        'Aditional Notes': _aditionalNotes.toString()
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      makeToast("Submitted");
-    } else {
-      makeToast('Failed to submit user.');
-    }
-  }
 
   _showMaterialDialog() {
     showDialog(
