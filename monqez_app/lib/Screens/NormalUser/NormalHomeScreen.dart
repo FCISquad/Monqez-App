@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -10,6 +9,7 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import '../LoginScreen.dart';
 
@@ -35,7 +35,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
-  List<String> bodyMap;
+  int bodyMap;
 
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
@@ -141,25 +141,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Additional details",
+                        "Injuries",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      SizedBox(
-                          height: 400,
-                          child: BodyMap()
-                      ),
+                      SizedBox(height: 400, child: BodyMap()),
                       SizedBox(
                         width: 200,
                         child: RaisedButton(
                           onPressed: () {
                             bodyMap = BodyMap.getSelected();
-                            print(bodyMap);
                             Navigator.of(context).pop();
                           },
                           child: Text(
-                            "Submit",
+                            "Done",
                             style: TextStyle(color: Colors.white),
                           ),
                           color: Colors.deepOrange,
@@ -338,6 +334,46 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
+  PolylinePoints polylinePoints;
+
+  List<LatLng> polylineCoordinates = [];
+
+
+  Map<PolylineId, Polyline> polylines = {};
+  _createPolylines(Position start, Position destination) async {
+
+    polylinePoints = PolylinePoints();
+
+    // Generating the list of coordinates to be used for
+    // drawing the polylines
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo', // Google Maps API Key
+      PointLatLng(start.latitude, start.longitude),
+      PointLatLng(destination.latitude, destination.longitude),
+      travelMode: TravelMode.transit,
+    );
+
+    // Adding the coordinates to the list
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    // Defining an ID
+    PolylineId id = PolylineId('poly');
+
+    // Initializing Polyline
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+
+    // Adding the polyline to the map
+    polylines[id] = polyline;
+  }
 
   _onMapTypeButtonPressed() {
     setState(() {
@@ -436,7 +472,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   @override
   void initState() {
     super.initState();
-    bodyMap = [];
+    bodyMap = 0;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
     animation = new Tween(begin: 0.0, end: 200.0).animate(controller);
@@ -542,9 +578,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
+				polylines: Set<Polyline>.of(polylines.values),
               ),
-              /*
-              SizedBox(
+              /*SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: SearchMapPlaceWidget(
                   hasClearButton: true,
@@ -565,7 +601,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
-                        //_makeRequest () ;
+
+                        //_createPolylines();
+                        _makeRequest () ;
+
                         _showMaterialDialog();
                       },
                       child: Text('Get Help!'),

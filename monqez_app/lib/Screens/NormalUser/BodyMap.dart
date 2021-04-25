@@ -25,18 +25,39 @@ class BodyMap extends StatefulWidget {
   static var injury = {'head':false, 'neck':false, 'chest':false, 'shoulderR':false, 'shoulderL':false, 'armR':false, 'armL':false,
   'handR':false, 'handL':false, 'stomach':false, 'legR':false, 'legL':false, 'footR':false, 'footL':false};
 
+  static _BodyMapState _bodyMapState;
   final ValueChanged<bool> onChange = null;
-  @override
-  _BodyMapState createState() => _BodyMapState();
 
-  static List<String> getSelected() {
+  @override
+  _BodyMapState createState() {
+    return _bodyMapState = new _BodyMapState();
+  }
+
+  static void setSelected(int selected) {
+    var s = selected.toRadixString(2);
+    print(s);
+    _bodyMapState.setSelected(s);
+  }
+
+  static int getSelected() {
+    List<int> binary = [];
     List<String> selected = [];
     for (String key in BodyMap.injury.keys) {
       if(BodyMap.injury[key] == true) {
         selected.add(key);
+        binary.add(1);
       }
+      else
+        binary.add(0);
     }
-    return selected;
+    print(selected);
+    int result = 0;
+    for (var digit in binary) {
+      result <<= 1;
+      result |= digit;
+    }
+    print(result);
+    return result;
   }
 }
 
@@ -207,6 +228,19 @@ class _BodyMapState extends State<BodyMap> {
     ));
   }
 
+  void setSelected(String s) {
+    for (String key in BodyMap.injury.keys) {
+      BodyMap.injury[key] = false ;
+    }
+    for (int i=0 ; i<s.length ; i++)
+      // True  1 don't'
+      // False 1 change
+      // True  0 change
+      // False 0 change
+      if (BodyMap.injury.values.elementAt(i) != (s[i] == "1")){
+        _changeColor(BodyMap.injury.keys.elementAt(i));
+      }
+  }
   void _changeColor(var key){
     BodyMap.injury[key] = !BodyMap.injury[key];
     if (mounted) {
