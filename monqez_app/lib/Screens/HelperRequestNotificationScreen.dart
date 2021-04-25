@@ -5,6 +5,7 @@ import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Backend/Authentication.dart';
+import 'package:monqez_app/Screens/HelperUser/RequestScreen.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -26,7 +27,7 @@ class HelperRequestNotificationScreenState
     token = _prefs.getString("userToken");
 
     final http.Response response = await http.post(
-      Uri.parse('$url/monqez/request'),
+      Uri.parse('$url/helper/request_response'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -87,7 +88,7 @@ class HelperRequestNotificationScreenState
                           primary: Colors.green, shape: CircleBorder()),
                       onPressed: () => {
                         setResult(true),
-                        navigate(HelperHomeScreen(token), context, true)
+                        navigate(RequestScreen(), context, true)
                       },
                     ),
                     new ElevatedButton(
