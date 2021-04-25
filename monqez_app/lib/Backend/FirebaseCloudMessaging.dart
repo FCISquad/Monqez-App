@@ -4,6 +4,7 @@ import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import '../main.dart';
 
 class FirebaseCloudMessaging {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -17,6 +18,17 @@ class FirebaseCloudMessaging {
   String _fcmToken;
   String _token;
 
+  Future onSelectNotification(String payload) async {
+    /*
+    if (payload != null) {
+      debugPrint('Notification payload: $payload');
+      print("HERE!!");
+    }
+     */
+    navigatorKey.currentState.pushNamed('notification');
+  }
+
+
   FirebaseCloudMessaging(String token) {
     _token = token;
     initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
@@ -27,11 +39,17 @@ class FirebaseCloudMessaging {
 
     flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
+      onSelectNotification: onSelectNotification
     );
 
     FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
       await updateRegistrationToken();
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print('A new onMessageOpenedApp event was published!');
+      navigatorKey.currentState.pushNamed('notification');
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -52,6 +70,9 @@ class FirebaseCloudMessaging {
                 priority: Priority.high,
                 enableVibration: true,
                 icon: 'launch_background',
+
+
+
               ),
             ));
       }

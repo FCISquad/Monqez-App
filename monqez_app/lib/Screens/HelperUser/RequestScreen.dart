@@ -15,12 +15,12 @@ import '../LoginScreen.dart';
 
 
 
-class RequestSreeen extends StatefulWidget {
+class RequestScreen extends StatefulWidget {
 
   @override
-  _RequestSreeenState createState() => _RequestSreeenState();
+  _RequestScreenState createState() => _RequestScreenState();
 }
-class _RequestSreeenState extends State<RequestSreeen>  with SingleTickerProviderStateMixin{
+class _RequestScreenState extends State<RequestScreen>  with SingleTickerProviderStateMixin{
 
   static User user;
   Completer<GoogleMapController> _controller = Completer();

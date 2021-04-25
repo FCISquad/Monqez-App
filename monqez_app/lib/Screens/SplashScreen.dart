@@ -1,6 +1,7 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
 import 'dart:convert';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
@@ -55,32 +56,46 @@ class _SplashState extends State<Splash> {
     token = _prefs.getString("userToken");
     uid = _prefs.getString("userID");
     Widget _navigate;
-    if (token == null) {
-      _navigate = LoginScreen();
-    } else {
-      await checkUser(token, uid);
-      if (isDisabled) {
-        if (type == 0)
-          makeToast("Account is banned!");
-        else if (type == 1)
-          makeToast("Please wait while your application is reviewed");
-      } else if (firstLogin) {
-        saveUserToken(token, uid);
-        _navigate = SecondSignupScreen();
+
+    bool enter = true;
+    await FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) {
+        enter = false;
+        _navigate = HelperRequestNotificationScreen();
+      }
+    });
+
+
+   if (enter) {
+      if (token == null) {
+        _navigate = LoginScreen();
       } else {
-        saveUserToken(token, uid);
-        makeToast("Logged in Successfully");
-        if (type == 0) {
-          _navigate = NormalHomeScreen(token);
-        } else if (type == 1) {
-          _navigate = HelperHomeScreen(token);
-        } else if (type == 2) {
-          _navigate = AdminHomeScreen();
+        await checkUser(token, uid);
+        if (isDisabled) {
+          if (type == 0)
+            makeToast("Account is banned!");
+          else if (type == 1)
+            makeToast("Please wait while your application is reviewed");
+        } else if (firstLogin) {
+          saveUserToken(token, uid);
+          _navigate = SecondSignupScreen();
+        } else {
+          saveUserToken(token, uid);
+          makeToast("Logged in Successfully");
+          if (type == 0) {
+            _navigate = NormalHomeScreen(token);
+          } else if (type == 1) {
+            _navigate = HelperHomeScreen(token);
+          } else if (type == 2) {
+            _navigate = AdminHomeScreen();
+          }
         }
       }
     }
-    map = _navigate;
-    navigate(map, context, true);
+      map = _navigate;
+      navigate(map, context, true);
   }
 
   @override
