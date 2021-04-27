@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
@@ -15,6 +17,7 @@ class HelperRequestNotificationScreen extends StatefulWidget {
 class HelperRequestNotificationScreenState
     extends State<HelperRequestNotificationScreen> {
 
+  static String requestID;
   var _prefs;
   String token;
 
@@ -29,6 +32,9 @@ class HelperRequestNotificationScreenState
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
+        body: jsonEncode(<String, String>{
+          "uid": requestID
+        })
     );
     if (response.statusCode == 200) {
       makeToast("Successful");

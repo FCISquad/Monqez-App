@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../main.dart';
@@ -47,12 +48,16 @@ class FirebaseCloudMessaging {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
+      /*
       var data = message.data;
       String requestID;
       if (data != null){
         requestID = data['userId'];
+        HelperRequestNotificationScreenState.requestID = requestID;
         print("Request ID: "+ requestID);
       }
+      
+       */
       navigatorKey.currentState.pushNamed('notification');
     });
 
@@ -61,6 +66,11 @@ class FirebaseCloudMessaging {
       AndroidNotification android = message.notification?.android;
       var data = message.data;
       String requestID;
+      if (data != null){
+        requestID = data['userId'];
+        HelperRequestNotificationScreenState.requestID = requestID;
+        print("Request ID: "+ requestID);
+      }
       if (data != null){
         requestID = data['userId'];
       }
