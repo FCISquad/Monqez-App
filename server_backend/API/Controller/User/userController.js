@@ -155,5 +155,6 @@ app.post('/request_information', (request, response) => {
             response.sendStatus(200);
         }
     });
-})
+});
+
 module.exports = app;

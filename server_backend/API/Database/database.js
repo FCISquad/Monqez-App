@@ -349,6 +349,19 @@ class Database {
             });
         });
     }
+
+    requestDecline(monqezId, userJson){
+        admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
+            .then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "rejected")
+                        .push(
+                            monqezId
+                        )
+                        .then( () => {} ) ;
+                });
+            });
+    }
 }
 
 module.exports = Database;

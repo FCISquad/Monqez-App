@@ -65,4 +65,23 @@ app.post('/update_location', (request, response) => {
     });
 });
 
+app.post('/decline_request', (request, response) => {
+    // let user = new HelperUser(request.body);
+    // user.requestDecline("monqez-ehab1", request.body);
+    // response.sendStatus(200);
+
+    helper.verifyToken(request , (monqezId) => {
+        if ( monqezId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.requestDecline(monqezId, request.body);
+            response.sendStatus(200);
+        }
+    });
+});
+
+
 module.exports = app;
