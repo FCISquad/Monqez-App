@@ -69,6 +69,13 @@ class HelperUser extends User{
     updateLocation(userID){
         User._database.updateLocation(userID, this.longitude, this.latitude);
     }
+
+    requestDecline(monqezId, userJson){
+        User._database.requestDecline(monqezId, userJson);
+    }
+    requestAccept(monqezId, userJson){
+        User._database.requestAccept(monqezId, userJson);
+    }
 }
 
 module.exports = HelperUser;

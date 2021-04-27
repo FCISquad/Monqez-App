@@ -122,7 +122,7 @@ app.post('/update_registration_token', (request, response)=>{
 
 app.post('/request', (request, response) => {
     // let user = new NormalUser(request.body);
-    // user.request("ehabfawzy", request.body);
+    // user.request("ehabzzz", request.body);
     // response.sendStatus(200);
 
     helper.verifyToken(request , (userId) => {
@@ -155,5 +155,6 @@ app.post('/request_information', (request, response) => {
             response.sendStatus(200);
         }
     });
-})
+});
+
 module.exports = app;
