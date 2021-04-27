@@ -95,8 +95,8 @@ class NormalUser extends User {
                     },
                     data : {
                         userId: min_three[0],
-                        latitude: min_three[1],
-                        longitude: min_three[2]
+                        latitude: min_three[1].toString(),
+                        longitude: min_three[2].toString()
                     }
                 };
 
