@@ -19,12 +19,10 @@ class FirebaseCloudMessaging {
   String _token;
 
   Future onSelectNotification(String payload) async {
-    /*
     if (payload != null) {
-      debugPrint('Notification payload: $payload');
+      print('Notification payload: $payload');
       print("HERE!!");
     }
-     */
     navigatorKey.currentState.pushNamed('notification');
   }
 
@@ -49,12 +47,24 @@ class FirebaseCloudMessaging {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
+      var data = message.data;
+      String requestID;
+      if (data != null){
+        requestID = data['userId'];
+        print("Request ID: "+ requestID);
+      }
       navigatorKey.currentState.pushNamed('notification');
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
+      var data = message.data;
+      String requestID;
+      if (data != null){
+        requestID = data['userId'];
+      }
+
       if (notification != null && android != null) {
         print ("Received notification");
         flutterLocalNotificationsPlugin.show(
