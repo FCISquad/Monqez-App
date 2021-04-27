@@ -68,6 +68,13 @@ class HelperRequestNotificationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            leading: new IconButton(
+                icon: new Icon(Icons.arrow_back),
+                onPressed: (){
+                  decline();
+                  Navigator.pop(context,true);
+                }
+            ),
             title: getTitle(
                 "Monqez - Helper", 22.0, secondColor, TextAlign.start, true),
             shadowColor: Colors.black,

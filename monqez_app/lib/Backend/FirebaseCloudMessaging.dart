@@ -32,6 +32,7 @@ void firebaseMessagingBackground() async {
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Background notification");
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   RemoteNotification notification = message.notification;
@@ -76,6 +77,7 @@ class FirebaseCloudMessaging {
 
     FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
+      print("FCM:" + fcmToken);
       await updateRegistrationToken();
     });
 
@@ -89,7 +91,7 @@ class FirebaseCloudMessaging {
         HelperRequestNotificationScreenState.requestID = requestID;
         print("Request ID: "+ requestID);
       }
-      
+
        */
       navigatorKey.currentState.pushNamed('notification');
     });
@@ -107,7 +109,7 @@ class FirebaseCloudMessaging {
       if (data != null){
         requestID = data['userId'];
       }
-
+      print("Foreground notification");
       if (notification != null && android != null) {
         print ("Received notification");
         onSelectNotification(requestID);
