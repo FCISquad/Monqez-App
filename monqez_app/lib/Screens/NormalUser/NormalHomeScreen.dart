@@ -316,7 +316,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(user.token), context, true);
+                                    navigate(InstructionsScreen(user.token), context, false);
                                   },
                                   child: Text(
                                     "Submit",

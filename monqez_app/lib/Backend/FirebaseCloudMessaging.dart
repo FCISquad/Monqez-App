@@ -69,9 +69,9 @@ class FirebaseCloudMessaging {
       if (data != null){
         requestID = data['userId'];
         HelperRequestNotificationScreenState.requestID = requestID;
-        HelperRequestNotificationScreenState.longitude = data['longitude'];
-        HelperRequestNotificationScreenState.latitude = data['latitude'];
-        print("Request ID: "+ requestID);
+        HelperRequestNotificationScreenState.longitude = double.parse(data['longitude']) ;
+        HelperRequestNotificationScreenState.latitude = double.parse(data['latitude']);
+        //print("Request ID: "+ requestID);
       }
       if (data != null){
         requestID = data['userId'];
