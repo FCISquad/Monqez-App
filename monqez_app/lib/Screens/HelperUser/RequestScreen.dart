@@ -16,12 +16,22 @@ import '../LoginScreen.dart';
 
 
 class RequestScreen extends StatefulWidget {
+  double reqLong;
+  double reqLat;
+  RequestScreen(double longitude, double latitude){
+    this.reqLong = longitude;
+    this.reqLat = latitude;
+  }
 
   @override
-  _RequestScreenState createState() => _RequestScreenState();
+  _RequestScreenState createState() => _RequestScreenState(reqLong, reqLat);
 }
 class _RequestScreenState extends State<RequestScreen>  with SingleTickerProviderStateMixin{
-
+  double reqLong, reqLat;
+  _RequestScreenState(double reqLong, double reqLat){
+    this.reqLat = reqLat;
+    this.reqLong = reqLong;
+  }
   static User user;
   Completer<GoogleMapController> _controller = Completer();
   static CameraPosition _position1 = CameraPosition(

@@ -18,6 +18,8 @@ class HelperRequestNotificationScreenState
     extends State<HelperRequestNotificationScreen> {
 
   static String requestID;
+  static double longitude;
+  static double latitude;
   var _prefs;
   String token;
 
@@ -44,10 +46,10 @@ class HelperRequestNotificationScreenState
     setState(() {});
   }
 
-  void accept() async {
+  Future<int> accept() async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
-
+    int returned = 0;
     final http.Response response = await http.post(
       Uri.parse('$url/helper/accept_request'),
       headers: <String, String>{
@@ -55,13 +57,21 @@ class HelperRequestNotificationScreenState
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
+        body: jsonEncode(<String, String>{
+      "uid": requestID
+    })
     );
     if (response.statusCode == 200) {
       makeToast("Successful");
-    } else {
+    } else if (response.statusCode == 444){
+      makeToast("Someone already accepted the request!");
+      returned = 444;
+    }
+    else {
       print(response.statusCode);
     }
     setState(() {});
+    return returned;
   }
 
   @override
@@ -107,9 +117,13 @@ class HelperRequestNotificationScreenState
                       child: Icon(Icons.check, size: 60.0),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.green, shape: CircleBorder()),
-                      onPressed: () => {
-                        accept(),
-                        navigate(RequestScreen(), context, true)
+                      onPressed: () async {
+                        int result = await accept();
+                        if (result == 0){
+                        navigate(RequestScreen(longitude, latitude), context, true);}
+                        else{
+                          navigate(HelperHomeScreen(token), context, true); ///nfs error l t7t?
+                        }
                       },
                     ),
                     new ElevatedButton(
