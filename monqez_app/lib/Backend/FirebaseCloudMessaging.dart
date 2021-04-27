@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
@@ -7,15 +8,52 @@ import 'dart:convert';
 import 'dart:async';
 import '../main.dart';
 
-class FirebaseCloudMessaging {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  final AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'high_importance_channel', // id
-    'High Importance Notifications', // title
-    'This channel is used for important notifications.', // description
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_importance_channel', // id
+  'High Importance Notifications', // title
+  'This channel is used for important notifications.', // description
+);
+AndroidInitializationSettings initializationSettingsAndroid;
+InitializationSettings initializationSettings;
+
+void initialize() {
+  initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
+
+  initializationSettings = InitializationSettings(
+      android: initializationSettingsAndroid
   );
-  AndroidInitializationSettings initializationSettingsAndroid;
-  InitializationSettings initializationSettings;
+}
+void firebaseMessagingBackground() async {
+  initialize();
+  if (Firebase.apps.length == 0)
+    await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+}
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  RemoteNotification notification = message.notification;
+  flutterLocalNotificationsPlugin.show(
+      0,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channel.description,
+          importance: Importance.max,
+          priority: Priority.high,
+          enableVibration: true,
+          icon: 'launch_background',
+        ),
+      ));
+}
+
+class FirebaseCloudMessaging {
+
   String _fcmToken;
   String _token;
 
@@ -30,12 +68,7 @@ class FirebaseCloudMessaging {
 
   FirebaseCloudMessaging(String token) {
     _token = token;
-    initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
-
-    initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid
-    );
-
+    initialize();
     flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
       onSelectNotification: onSelectNotification
@@ -77,6 +110,7 @@ class FirebaseCloudMessaging {
 
       if (notification != null && android != null) {
         print ("Received notification");
+        onSelectNotification(requestID);
         flutterLocalNotificationsPlugin.show(
             0,
             notification.title,
@@ -97,6 +131,7 @@ class FirebaseCloudMessaging {
             ));
       }
     });
+    firebaseMessagingBackground();
   }
 
 
