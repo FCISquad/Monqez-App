@@ -82,6 +82,23 @@ app.post('/decline_request', (request, response) => {
         }
     });
 });
+app.post( '/accept_request' , (request, response) => {
+    // let user = new HelperUser(request.body);
+    // user.requestAccept("monqez-ehab1", request.body);
+    response.sendStatus(200);
+
+    helper.verifyToken(request , (monqezId) => {
+        if ( monqezId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.requestAccept(monqezId, request.body);
+            response.sendStatus(200);
+        }
+    });
+} );
 
 
 module.exports = app;

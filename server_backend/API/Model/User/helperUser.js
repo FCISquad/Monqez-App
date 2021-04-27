@@ -73,6 +73,9 @@ class HelperUser extends User{
     requestDecline(monqezId, userJson){
         User._database.requestDecline(monqezId, userJson);
     }
+    requestAccept(monqezId, userJson){
+        User._database.requestAccept(monqezId, userJson);
+    }
 }
 
 module.exports = HelperUser;

@@ -325,7 +325,10 @@ class Database {
 
         admin.database().ref('requests/' + uid + '/' + timeID)
             .update(request)
-            .then( () => {} ) ;
+            .then( () => {
+                admin.database().ref('requests/' + uid + '/' + timeID + '/' + "rejected").set({"counter" : 0}).then(() => {})
+                admin.database().ref('requests/' + uid + '/' + timeID + '/' + "accepted").set({"counter" : 0}).then(() => {})
+            } ) ;
     }
 
     insertRequestAdditional(uid, request) {
@@ -355,10 +358,26 @@ class Database {
             .then(function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
                     admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "rejected")
-                        .push(
-                            monqezId
-                        )
-                        .then( () => {} ) ;
+                        .transaction(function(current_value){
+                            current_value["counter"]++;
+                            current_value['uid_' + current_value["counter"]] = monqezId;
+                            return current_value;
+                        }).then(() => {});
+
+                });
+            });
+    }
+    requestAccept(monqezId, userJson){
+        admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
+            .then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
+                        .transaction(function(current_value){
+                            current_value["counter"]++;
+                            current_value['uid_' + current_value["counter"]] = monqezId;
+                            return current_value;
+                        }).then(() => {});
+
                 });
             });
     }
