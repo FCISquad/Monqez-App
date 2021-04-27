@@ -26,31 +26,28 @@ void initialize() {
 }
 void firebaseMessagingBackground() async {
   initialize();
-  if (Firebase.apps.length == 0)
-    await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Background notification");
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  RemoteNotification notification = message.notification;
-  flutterLocalNotificationsPlugin.show(
-      0,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channel.description,
-          importance: Importance.max,
-          priority: Priority.high,
-          enableVibration: true,
-          icon: 'launch_background',
-        ),
-      ));
+  FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
+    print("Background notification");
+    if (Firebase.apps.length == 0)
+      await Firebase.initializeApp();
+    RemoteNotification notification = message.notification;
+    flutterLocalNotificationsPlugin.show(
+        0,
+        notification.title,
+        notification.body,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            channel.id,
+            channel.name,
+            channel.description,
+            importance: Importance.max,
+            priority: Priority.high,
+            enableVibration: true,
+            icon: 'launch_background',
+          ),
+        ));
+    return;
+  });
 }
 
 class FirebaseCloudMessaging {
