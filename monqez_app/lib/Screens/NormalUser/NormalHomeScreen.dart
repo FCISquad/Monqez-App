@@ -62,7 +62,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   Item _selectedSeviirty;
-  String _radioValue;
+  bool _radioValue;
   var _nameController = TextEditingController();
 
   List<Item> users = <Item>[
@@ -99,7 +99,32 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
   }
+  void _sendAdditionalInformation() async {
+    String tempToken = user.token;
+    Map<String, dynamic> body = {
+      'additionalInfo':{
+        'Address': _detailedAddress.text,
+        'Additional Notes': _aditionalNotes.text
+      },
+      'avatarBody':bodyMap.toString(),
+      'forMe':_radioValue.toString()
+    };
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/request_information/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+      body: jsonEncode(body),
+    );
 
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
   void _makeRequest() async {
     await _getCurrentUserLocation();
     String tempToken = user.token;
@@ -170,27 +195,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-  void _sendAditionalInformation() async {
-    String tempToken = user.token;
-    final http.Response response = await http.post(
-      Uri.parse('$url/user/request/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $tempToken',
-      },
-      body: jsonEncode(<String, String>{
-        'Adress': _detailedAddress.toString(),
-        'Aditional Notes': _aditionalNotes.toString()
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      makeToast("Submitted");
-    } else {
-      makeToast('Failed to submit user.');
-    }
-  }
 
   _showMaterialDialog() {
     showDialog(
@@ -252,7 +257,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           children: [
                             Text("For Me"),
                             Radio(
-                              value: 'For Me',
+                              value: true,
                               groupValue: _radioValue,
                               onChanged: (value) {
                                 setState(() {
@@ -263,7 +268,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             ),
                             Text("For Other"),
                             Radio(
-                              value: 'For Other',
+                              value: false,
                               groupValue: _radioValue,
                               onChanged: (value) {
                                 setState(() {
@@ -311,8 +316,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 width: 200,
                                 child: RaisedButton(
                                   onPressed: () {
-                                    print(_selectedSeviirty);
-                                    print(_radioValue);
+                                    _sendAdditionalInformation();
                                     Navigator.of(context).pop();
                                   },
                                   child: Text(
@@ -473,6 +477,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   void initState() {
     super.initState();
     bodyMap = 0;
+    _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
     animation = new Tween(begin: 0.0, end: 200.0).animate(controller);

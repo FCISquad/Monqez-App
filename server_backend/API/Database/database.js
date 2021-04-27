@@ -205,6 +205,10 @@ class Database {
 
     setHelperStatus(userID, status) {
         return new Promise((resolve, reject) => {
+            if (status !== 'Available'){
+                admin.database().ref('activeMonqez/' + userID).remove().then(()=>{});
+            }
+
             admin.database().ref('monqez/' + userID).update({
                 "status": status
             }).then(() => {
@@ -293,7 +297,7 @@ class Database {
             admin.database().ref('/activeMonqez').once("value", function (snapshot) {
                 resolve(snapshot);
             }).catch((error) => {
-                reject(error)
+                reject(error);
             });
         });
     }
@@ -303,7 +307,45 @@ class Database {
             admin.database().ref('user/' + userID).once("value", function (snapshot) {
                 resolve(snapshot.val()["token"]);
             }).catch((error) => {
-                reject(error)
+                reject(error);
+            });
+        });
+    }
+
+    insertRequest(uid, request){
+        let date_ob = new Date();
+
+        let date    = ("0" + date_ob.getDate()).slice(-2);
+        let month   = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+        let year    = date_ob.getFullYear();
+        let hours   = date_ob.getHours();
+        let minutes = date_ob.getMinutes();
+        let seconds = date_ob.getSeconds();
+        let timeID  = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+
+        admin.database().ref('requests/' + uid + '/' + timeID)
+            .update(request)
+            .then( () => {} ) ;
+    }
+
+    insertRequestAdditional(uid, request) {
+        console.log(request);
+        admin.database().ref('requests/' + uid).limitToLast(1).once('value')
+            .then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
+                    .update(request)
+                    .then( () => {} ) ;
+                    //console.log(childSnapshot.key);
+                });
+            });
+    }
+    getRequests(userID){
+        return new Promise((resolve, reject) => {
+            admin.database().ref('requests/' + userID).once("value", function (snapshot) {
+                resolve(snapshot.val());
+            }).catch((error) => {
+                reject(error);
             });
         });
     }

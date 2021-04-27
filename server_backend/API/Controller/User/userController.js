@@ -122,7 +122,7 @@ app.post('/update_registration_token', (request, response)=>{
 
 app.post('/request', (request, response) => {
     // let user = new NormalUser(request.body);
-    // user.request("userId", request.body);
+    // user.request("ehabfawzy", request.body);
     // response.sendStatus(200);
 
     helper.verifyToken(request , (userId) => {
@@ -134,6 +134,25 @@ app.post('/request', (request, response) => {
            let user = new NormalUser(request.body);
            user.request(userId, request.body);
            response.sendStatus(200);
+        }
+    });
+})
+
+app.post('/request_information', (request, response) => {
+
+    // let user = new NormalUser(request.body);
+    // user.request_additional("ehabfawzy", request.body);
+    // response.sendStatus(200);
+
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            let user = new NormalUser(request.body);
+            user.request_additional(userId, request.body);
+            response.sendStatus(200);
         }
     });
 })

@@ -35,6 +35,7 @@ class NormalUser extends User{
     }
 
     request(userID, userJson){
+        User._database.insertRequest(userID, userJson);
         User._database.getAllActiveMonqez().then( (activeMonqez) => {
             let distance = [];
             let normalUserLocation = [userJson["latitude"], userJson["longitude"]];
@@ -63,6 +64,9 @@ class NormalUser extends User{
 
             this.notify_monqez(min_three);
         } );
+    }
+    request_additional(userID, userJson){
+        User._database.insertRequestAdditional(userID, userJson);
     }
      notify_monqez(min_three){
          for (let i = 0; i < min_three.length; i++){
@@ -101,9 +105,6 @@ class NormalUser extends User{
                      });
              });
          }
-
-
-
      }
 }
 
