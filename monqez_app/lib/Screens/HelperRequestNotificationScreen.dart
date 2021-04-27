@@ -1,12 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Backend/Authentication.dart';
 import 'package:monqez_app/Screens/HelperUser/RequestScreen.dart';
-
 import 'package:http/http.dart' as http;
 
 class HelperRequestNotificationScreen extends StatefulWidget {
@@ -21,19 +18,37 @@ class HelperRequestNotificationScreenState
   var _prefs;
   String token;
 
-  void setResult(bool isAccepted) async {
-    print(isAccepted.toString());
+  void decline() async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
 
     final http.Response response = await http.post(
-      Uri.parse('$url/helper/request_response'),
+      Uri.parse('$url/helper/decline_request'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, String>{'result': isAccepted.toString()}),
+    );
+    if (response.statusCode == 200) {
+      makeToast("Successful");
+    } else {
+      print(response.statusCode);
+    }
+    setState(() {});
+  }
+
+  void accept() async {
+    _prefs = await SharedPreferences.getInstance();
+    token = _prefs.getString("userToken");
+
+    final http.Response response = await http.post(
+      Uri.parse('$url/helper/accept_request'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
     if (response.statusCode == 200) {
       makeToast("Successful");
@@ -87,7 +102,7 @@ class HelperRequestNotificationScreenState
                       style: ElevatedButton.styleFrom(
                           primary: Colors.green, shape: CircleBorder()),
                       onPressed: () => {
-                        setResult(true),
+                        accept(),
                         navigate(RequestScreen(), context, true)
                       },
                     ),
@@ -96,7 +111,7 @@ class HelperRequestNotificationScreenState
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red, shape: CircleBorder()),
                       onPressed: () => {
-                        setResult(false),
+                        decline(),
                         navigate(HelperHomeScreen(token), context, true) ///Momkn y error hena w token tb2a b null lw m3mlsh await
                       },
                     ),
