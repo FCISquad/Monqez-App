@@ -12,6 +12,7 @@ import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import '../LoginScreen.dart';
+import 'InstructionsScreen.dart';
 
 class NormalHomeScreen extends StatefulWidget {
   String token;
@@ -194,9 +195,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
-
-
-
   _showMaterialDialog() {
     showDialog(
         context: context,
@@ -318,6 +316,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
+                                    navigate(InstructionsScreen(user.token), context, true);
                                   },
                                   child: Text(
                                     "Submit",
