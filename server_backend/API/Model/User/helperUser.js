@@ -74,7 +74,11 @@ class HelperUser extends User{
         User._database.requestDecline(monqezId, userJson);
     }
     requestAccept(monqezId, userJson){
-        User._database.requestAccept(monqezId, userJson);
+        return new Promise( ((resolve, reject) => {
+            User._database.requestAccept(monqezId, userJson)
+                .then( () => { resolve() } )
+                .catch( () => { reject() } );
+        }) );
     }
 }
 

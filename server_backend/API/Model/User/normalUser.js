@@ -1,10 +1,8 @@
 const User = require("./user");
 const sphericalGeometry = require('spherical-geometry-js');
-const {latLng} = require("@google/maps/lib/internal/convert");
 const admin = require('firebase-admin');
 
-const xx = require("@google/maps");
-
+const max_distance = 3000; // 3 Km = 3000 Meter
 
 class NormalUser extends User {
     constructor(userJson) {
@@ -38,37 +36,50 @@ class NormalUser extends User {
     }
 
     request(userID, userJson) {
-        User._database.insertRequest(userID, userJson);
-        User._database.getAllActiveMonqez().then((activeMonqez) => {
-            let distance = [];
-            let normalUserLocation = [userJson["latitude"], userJson["longitude"]];
-            for (let uid in activeMonqez.val()) {
-                let longitude = activeMonqez.val()[uid]["longitude"];
-                let latitude = activeMonqez.val()[uid]["latitude"];
+        return new Promise((resolve, reject) => {
+            User._database.insertRequest(userID, userJson);
+            User._database.getAllActiveMonqez().then((activeMonqez) => {
+                let distance = [];
+                let normalUserLocation = [userJson["latitude"], userJson["longitude"]];
+                for (let uid in activeMonqez.val()) {
+                    let longitude = activeMonqez.val()[uid]["longitude"];
+                    let latitude = activeMonqez.val()[uid]["latitude"];
 
-                let monqezLocation = [latitude, longitude];
-                distance.push({
-                    "distance": sphericalGeometry.computeDistanceBetween(monqezLocation, normalUserLocation),
-                    "uid": uid
-                });
-            }
-
-            distance.sort((a, b) => {
-                if (a['distance'] === b['distance']) {
-                    return 0;
+                    let monqezLocation = [latitude, longitude];
+                    distance.push({
+                        "distance": sphericalGeometry.computeDistanceBetween(monqezLocation, normalUserLocation),
+                        "uid": uid
+                    });
                 }
-                return (a['distance'] < b['distance'] ? -1 : 1);
+
+                distance.sort((a, b) => {
+                    if (a['distance'] === b['distance']) {
+                        return 0;
+                    }
+                    return (a['distance'] < b['distance'] ? -1 : 1);
+                });
+
+                let min_three = []
+                min_three.push(userID);
+                min_three.push(userJson["latitude"]);
+                min_three.push(userJson["longitude"]);
+                for (let i = 0; i < Math.min(3, distance.length); ++i) {
+                    if ( distance[i]["uid"] <= max_distance ){
+                        min_three.push(distance[i]["uid"]);
+                    }
+                    else{
+                        // to be removed
+                        min_three.push(distance[i]["uid"]);
+                    }
+                }
+                if ( min_three.length > 0 ){
+                    this.notify_monqez(min_three);
+                }
+                else{
+                    reject();
+                }
+                resolve();
             });
-
-            let min_three = []
-            min_three.push(userID);
-            min_three.push(userJson["latitude"]);
-            min_three.push(userJson["longitude"]);
-            for (let i = 0; i < Math.min(3, distance.length); ++i) {
-                min_three.push(distance[i]["uid"]);
-            }
-
-            this.notify_monqez(min_three);
         });
     }
 

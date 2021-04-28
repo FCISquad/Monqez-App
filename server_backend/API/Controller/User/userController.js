@@ -132,8 +132,14 @@ app.post('/request', (request, response) => {
         }
         else{
            let user = new NormalUser(request.body);
-           user.request(userId, request.body);
-           response.sendStatus(200);
+           user.request(userId, request.body).then(() => {
+               response.sendStatus(200);
+           })
+           .catch(() => {
+               // service unavailable
+               response.sendStatus(503);
+           });
+
         }
     });
 })

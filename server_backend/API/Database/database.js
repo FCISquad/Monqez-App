@@ -343,6 +343,7 @@ class Database {
                 });
             });
     }
+
     getRequests(userID){
         return new Promise((resolve, reject) => {
             admin.database().ref('requests/' + userID).once("value", function (snapshot) {
@@ -367,20 +368,33 @@ class Database {
                 });
             });
     }
-    requestAccept(monqezId, userJson){
-        admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
-            .then(function(snapshot) {
-                snapshot.forEach(function(childSnapshot) {
-                    admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
-                        .transaction(function(current_value){
-                            current_value["counter"]++;
-                            current_value['uid_' + current_value["counter"]] = monqezId;
-                            return current_value;
-                        }).then(() => {});
 
+    requestAccept(monqezId, userJson){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        console.log('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted");
+                        admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
+                            .transaction(function(current_value){
+                                if ( current_value !== null ){
+                                    if ( current_value["counter"] === 1 ){
+                                        reject();
+                                    }
+                                    else{
+                                        current_value["counter"]++;
+                                        current_value['uid_' + current_value["counter"]] = monqezId;
+                                    }
+                                }
+
+                                return current_value;
+                            }).then(() => {resolve()});
+                    });
                 });
-            });
+        } );
+
     }
+
 }
 
 module.exports = Database;
