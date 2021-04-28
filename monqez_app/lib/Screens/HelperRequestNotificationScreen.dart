@@ -1,22 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Backend/Authentication.dart';
 import 'package:monqez_app/Screens/HelperUser/RequestScreen.dart';
 import 'package:http/http.dart' as http;
+import 'Model/Helper.dart';
 
-class HelperRequestNotificationScreen extends StatefulWidget {
-  @override
-  HelperRequestNotificationScreenState createState() =>
-      HelperRequestNotificationScreenState();
-}
-
-
-class HelperRequestNotificationScreenState
-    extends State<HelperRequestNotificationScreen> {
+// ignore: must_be_immutable
+class HelperRequestNotificationScreen extends StatelessWidget {
 
   static bool hideBackButton;
   static String requestID;
@@ -25,7 +19,7 @@ class HelperRequestNotificationScreenState
   var _prefs;
   String token;
 
-  Future<void> decline() async {
+  Future<void> decline(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
 
@@ -45,12 +39,12 @@ class HelperRequestNotificationScreenState
     } else {
       print(response.statusCode);
     }
-    setState(() {});
   }
 
-  Future<int> accept() async {
+  Future<int> accept(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
+    Provider.of<Helper>(context, listen: false).setToken(token);
     int returned = 0;
     final http.Response response = await http.post(
       Uri.parse('$url/helper/accept_request'),
@@ -65,14 +59,14 @@ class HelperRequestNotificationScreenState
     );
     if (response.statusCode == 200) {
       makeToast("Successful");
-    } else if (response.statusCode == 444){
+      Provider.of<Helper>(context, listen: false).changeStatus("Busy");
+    } else if (response.statusCode == 201){
       makeToast("Someone already accepted the request!");
-      returned = 444;
+      returned = 201;
     }
     else {
       print(response.statusCode);
     }
-    setState(() {});
     return returned;
   }
 
@@ -84,7 +78,7 @@ class HelperRequestNotificationScreenState
               child: new IconButton(
                   icon: new Icon(Icons.arrow_back),
                   onPressed: (){
-                    decline();
+                    decline(context);
                     Navigator.pop(context,true);
                   }
               ),
@@ -130,7 +124,7 @@ class HelperRequestNotificationScreenState
                       style: ElevatedButton.styleFrom(
                           primary: Colors.green, shape: CircleBorder()),
                       onPressed: () async {
-                        int result = await accept();
+                        int result = await accept(context);
                         if (result == 0){
                         navigate(RequestScreen(longitude, latitude), context, true);}
                         else{
@@ -143,7 +137,7 @@ class HelperRequestNotificationScreenState
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red, shape: CircleBorder()),
                       onPressed: () async {
-                        await decline();
+                        await decline(context);
                         navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                       },
                     ),

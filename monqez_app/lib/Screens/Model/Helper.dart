@@ -81,7 +81,6 @@ class Helper extends User with ChangeNotifier  {
           Duration(seconds: _samplingPeriod), (timer) => sendPosition());
     } else {
       if (timer != null) {
-        timer.cancel();
         stopBackgroundProcess();
       }
     }
@@ -120,7 +119,7 @@ class Helper extends User with ChangeNotifier  {
 
       changeStatus("Busy");
     }
-    if (longitude != null && latitude != null) {
+    if (longitude != null && latitude != null && status == "Available") {
 
       String tempToken = token;
       final http.Response response = await http.post(

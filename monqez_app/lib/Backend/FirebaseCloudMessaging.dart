@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
@@ -102,19 +101,17 @@ class FirebaseCloudMessaging {
       AndroidNotification android = message.notification?.android;
       var data = message.data;
       String requestID;
-      /*if (data != null){
+      if (data != null){
         requestID = data['userId'];
-        HelperRequestNotificationScreenState.requestID = requestID;
-        HelperRequestNotificationScreenState.longitude = double.parse(data['longitude']) ;
-        HelperRequestNotificationScreenState.latitude = double.parse(data['latitude']);
-        //print("Request ID: "+ requestID);
+        HelperRequestNotificationScreen.requestID = requestID;
+        HelperRequestNotificationScreen.longitude = double.parse(data['longitude']) ;
+        HelperRequestNotificationScreen.latitude = double.parse(data['latitude']);
       }
       if (data != null){
         requestID = data['userId'];
-      }*/
-      print("Foreground notification");
+      }
       if (notification != null && android != null) {
-        HelperRequestNotificationScreenState.hideBackButton = false;
+        HelperRequestNotificationScreen.hideBackButton = false;
         print ("Received notification");
         onSelectNotification(requestID);
         flutterLocalNotificationsPlugin.show(
