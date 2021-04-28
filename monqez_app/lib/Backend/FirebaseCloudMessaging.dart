@@ -24,32 +24,36 @@ void initialize() {
       android: initializationSettingsAndroid
   );
 }
+/*
 void firebaseMessagingBackground() async {
-  initialize();
-  FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
-    print("Background notification");
-    if (Firebase.apps.length == 0)
-      await Firebase.initializeApp();
-    RemoteNotification notification = message.notification;
-    flutterLocalNotificationsPlugin.show(
-        0,
-        notification.title,
-        notification.body,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            channel.id,
-            channel.name,
-            channel.description,
-            importance: Importance.max,
-            priority: Priority.high,
-            enableVibration: true,
-            icon: 'launch_background',
-          ),
-        ));
-    return;
-  });
+  if (Firebase.apps.length == 0)
+    await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 }
 
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Background notification");
+  HelperRequestNotificationScreenState.hideBackButton = true;
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  RemoteNotification notification = message.notification;
+  flutterLocalNotificationsPlugin.show(
+      0,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channel.description,
+          importance: Importance.max,
+          priority: Priority.high,
+          enableVibration: true,
+          icon: 'launch_background',
+        ),
+      ));
+}
+*/
 class FirebaseCloudMessaging {
 
   String _fcmToken;
@@ -98,7 +102,7 @@ class FirebaseCloudMessaging {
       AndroidNotification android = message.notification?.android;
       var data = message.data;
       String requestID;
-      if (data != null){
+      /*if (data != null){
         requestID = data['userId'];
         HelperRequestNotificationScreenState.requestID = requestID;
         HelperRequestNotificationScreenState.longitude = double.parse(data['longitude']) ;
@@ -107,9 +111,10 @@ class FirebaseCloudMessaging {
       }
       if (data != null){
         requestID = data['userId'];
-      }
+      }*/
       print("Foreground notification");
       if (notification != null && android != null) {
+        HelperRequestNotificationScreenState.hideBackButton = false;
         print ("Received notification");
         onSelectNotification(requestID);
         flutterLocalNotificationsPlugin.show(
@@ -132,7 +137,7 @@ class FirebaseCloudMessaging {
             ));
       }
     });
-    firebaseMessagingBackground();
+    //firebaseMessagingBackground();
   }
 
 

@@ -22,6 +22,7 @@ environment:
 
 dependencies:
   assorted_layout_widgets: ^4.0.7
+  property_change_notifier: ^0.2.0
   location: ^4.1.1
   firebase_messaging: ^9.1.1
   flutter_local_notifications: ^5.0.0+1
@@ -56,6 +57,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0
 
+analyzer:
+  language:
+    enableSuperMixins: false
 
 dev_dependencies:
   flutter_test:

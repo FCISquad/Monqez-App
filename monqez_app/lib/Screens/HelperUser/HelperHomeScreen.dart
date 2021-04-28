@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:location/location.dart' as loc;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
@@ -8,6 +7,7 @@ import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
 import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'package:property_change_notifier/property_change_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
@@ -28,16 +28,12 @@ class HelperHomeScreen extends StatefulWidget {
 
 class HelperHomeScreenState extends State<HelperHomeScreen>
     with SingleTickerProviderStateMixin {
+
   static Helper user;
-  String _status;
+  static String _status;
   List<String> _statusDropDown;
   List<Icon> icons;
   bool _isLoading = true;
-  Timer timer;
-  double longitude;
-  double latitude;
-  final _samplingPeriod = 5;
-  final loc.Location _location = loc.Location();
   String messageTitle = "Empty";
   String notificationAlert = "alert";
 
@@ -51,20 +47,19 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
         setState(() {});
       }
       if (user.status == "Available") {
-        _requestGps();
-        startBackgroundProcess();
-        timer = Timer.periodic(
-            Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
+        user.requestGps();
+        user.startBackgroundProcess();
       }
     });
   }
+
+
 
   @override
   void initState() {
     _statusDropDown = <String>["Available", "Contacting only", "Busy"];
     _status = _statusDropDown[0];
     super.initState();
-    timer = null;
   }
 
   Widget getCard(String title, String trail, Widget nextScreen, IconData icon,
@@ -107,98 +102,13 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
     );
   }
 
-  Future<void> sendPosition() async {
-    if (!await _location.serviceEnabled()) {
-      setState(() {
-        changeStatus("Busy");
-      });
-    }
-    if (longitude != null && latitude != null) {
 
-      String tempToken = user.token;
-      final http.Response response = await http.post(
-        Uri.parse('$url/helper/update_location/'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $tempToken',
-        },
-        body: jsonEncode(<String, double>{
-          'latitude':  latitude,
-          'longitude': longitude
-        }),
-      );
 
-      if (response.statusCode == 200) {
-        makeToast("Submitted");
-      } else {
-        makeToast('Failed to submit user.');
-      }
-    }
-  }
 
-  startBackgroundProcess() async {
-    await BackgroundLocation.setAndroidNotification(
-      title: "Monqez is running",
-      message: "Available",
-      icon: "@mipmap/ic_launcher",
-    );
-    await BackgroundLocation.setAndroidConfiguration(1000);
-    await BackgroundLocation.startLocationService();
-    BackgroundLocation.getLocationUpdates((location) {
-      latitude = location.latitude;
-      longitude = location.longitude;
-    });
-  }
 
-  stopBackgroundProcess() {
-    BackgroundLocation.stopLocationService();
-  }
 
-  Future _requestGps() async {
-    if (!await _location.serviceEnabled()) {
-      stopBackgroundProcess();
-      bool result = await _location.requestService();
-      if (result == false) {
-        setState(() {
-          changeStatus("Busy");
-        });
-      }
-    }
-  }
 
-  Future<void> changeStatus(newValue) async {
-    _status = newValue;
-    if (newValue == "Available") {
-      ///////
-      _requestGps();
-      startBackgroundProcess();
-      timer = Timer.periodic(
-          Duration(seconds: _samplingPeriod), (timer) => sendPosition());
-    } else {
-      if (timer != null) {
-        timer.cancel();
-        stopBackgroundProcess();
-      }
-    }
-    var _prefs = await SharedPreferences.getInstance();
-    String token = _prefs.getString("userToken");
-    final http.Response response = await http.post(
-      Uri.parse('$url/helper/setstatus/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(<String, String>{'status': newValue}),
-    );
 
-    if (response.statusCode == 200) {
-      makeToast("Submitted");
-    } else {
-      makeToast('Failed to submit user.');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -237,7 +147,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                   onChanged: (newValue) {
                     setState(() {
                       _status = newValue;
-                      changeStatus(newValue);
+                      user.changeStatus(newValue);
                     });
                   },
                   items: _statusDropDown.map((location) {
@@ -324,8 +234,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                             elevation: 5.0,
                             onPressed: () {
                               if (user.status == "Available") {
-                                timer.cancel();
-                                stopBackgroundProcess();
+                                user.stopBackgroundProcess();
                               }
                               logout();
                               navigate(LoginScreen(), context, true);

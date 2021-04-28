@@ -63,6 +63,7 @@ class _SplashState extends State<Splash> {
         .then((RemoteMessage message) {
       if (message != null) {
         enter = false;
+        HelperRequestNotificationScreenState.hideBackButton = true;
         _navigate = HelperRequestNotificationScreen();
       }
     });

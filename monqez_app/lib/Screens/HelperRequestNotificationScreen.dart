@@ -14,16 +14,18 @@ class HelperRequestNotificationScreen extends StatefulWidget {
       HelperRequestNotificationScreenState();
 }
 
+
 class HelperRequestNotificationScreenState
     extends State<HelperRequestNotificationScreen> {
 
+  static bool hideBackButton;
   static String requestID;
   static double longitude;
   static double latitude;
   var _prefs;
   String token;
 
-  void decline() async {
+  Future<void> decline() async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
 
@@ -78,12 +80,15 @@ class HelperRequestNotificationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            leading: new IconButton(
-                icon: new Icon(Icons.arrow_back),
-                onPressed: (){
-                  decline();
-                  Navigator.pop(context,true);
-                }
+            leading:  Visibility(
+              child: new IconButton(
+                  icon: new Icon(Icons.arrow_back),
+                  onPressed: (){
+                    decline();
+                    Navigator.pop(context,true);
+                  }
+              ),
+              visible: !hideBackButton,
             ),
             title: getTitle(
                 "Monqez - Helper", 22.0, secondColor, TextAlign.start, true),
@@ -137,9 +142,9 @@ class HelperRequestNotificationScreenState
                       child: Icon(Icons.close, size: 60.0),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red, shape: CircleBorder()),
-                      onPressed: () => {
-                        decline(),
-                        navigate(HelperHomeScreen(token), context, true) ///Momkn y error hena w token tb2a b null lw m3mlsh await
+                      onPressed: () async {
+                        await decline();
+                        navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                       },
                     ),
                   ],
