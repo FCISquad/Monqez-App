@@ -5,7 +5,6 @@ import 'package:background_location/background_location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:provider/provider.dart';
 
 import 'User.dart';
 
@@ -23,7 +22,7 @@ class Helper extends User with ChangeNotifier  {
   }
 
   Future<void> setToken(String token) async {
-    this.token = token ;
+    super.setToken(token);
     await getState();
     if (status == "Available") {
       requestGps();
@@ -76,7 +75,6 @@ class Helper extends User with ChangeNotifier  {
   Future<void> changeStatus(newValue) async {
     status = newValue;
     if (newValue == "Available") {
-      ///////
       requestGps();
       startBackgroundProcess();
       timer = Timer.periodic(
@@ -87,6 +85,7 @@ class Helper extends User with ChangeNotifier  {
         stopBackgroundProcess();
       }
     }
+    notifyListeners();
     final http.Response response = await http.post(
       Uri.parse('$url/helper/setstatus/'),
       headers: <String, String>{
@@ -102,7 +101,6 @@ class Helper extends User with ChangeNotifier  {
     } else {
       makeToast('Failed to submit user.');
     }
-    notifyListeners();
   }
 
 

@@ -81,8 +81,8 @@ class HelperHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    //if (!_isLoaded)
-      Provider.of<Helper>(context, listen: false).setToken(token);
+    if (!_isLoaded)
+      Provider.of<Helper>(context, listen: true).setToken(token);
     if ( Provider.of<Helper>(context, listen: true).status == null) {
       return Scaffold(
           backgroundColor: secondColor,
@@ -100,8 +100,7 @@ class HelperHomeScreen extends StatelessWidget {
                   ))));
     } else
 
-    //if(!_isLoaded)
-      //_isLoaded = true;
+    if(!_isLoaded) _isLoaded = true;
       return Scaffold(
         backgroundColor: secondColor,
         appBar: AppBar(

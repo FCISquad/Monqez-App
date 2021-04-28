@@ -21,6 +21,10 @@ class User {
     this.token = token;
     fcm = new FirebaseCloudMessaging(token);
   }
+  setToken(String token) {
+    this.token = token;
+    fcm = new FirebaseCloudMessaging(token);
+  }
   getUser() async {
     http.Response response2 = await http.get(
       Uri.parse('$url/user/getprofile/'),
