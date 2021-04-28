@@ -16,6 +16,7 @@ class User {
   String token;
   FirebaseCloudMessaging fcm;
 
+  User.empty();
   User(String token) {
     this.token = token;
     fcm = new FirebaseCloudMessaging(token);

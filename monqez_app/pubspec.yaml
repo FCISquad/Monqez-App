@@ -22,7 +22,6 @@ environment:
 
 dependencies:
   assorted_layout_widgets: ^4.0.7
-  property_change_notifier: ^0.2.0
   location: ^4.1.1
   firebase_messaging: ^9.1.1
   flutter_local_notifications: ^5.0.0+1
@@ -46,6 +45,8 @@ dependencies:
   url_launcher: ^6.0.3
   geolocator: ^7.0.3
   flutter_polyline_points: ^1.0.0
+  provider: ^5.0.0
+
 
 
 

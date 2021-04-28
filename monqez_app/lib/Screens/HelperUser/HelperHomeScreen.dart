@@ -7,7 +7,7 @@ import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
 import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
-import 'package:property_change_notifier/property_change_notifier.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
@@ -16,54 +16,26 @@ import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:background_location/background_location.dart';
 
 // ignore: must_be_immutable
-class HelperHomeScreen extends StatefulWidget {
+
+
+class HelperHomeScreen extends StatelessWidget {
   String token;
 
   HelperHomeScreen(String token) {
     this.token = token;
   }
-  @override
-  HelperHomeScreenState createState() => HelperHomeScreenState(token);
-}
 
-class HelperHomeScreenState extends State<HelperHomeScreen>
-    with SingleTickerProviderStateMixin {
+  List<String> _statusDropDown = <String>["Available", "Contacting only", "Busy"];
 
-  static Helper user;
-  static String _status;
-  List<String> _statusDropDown;
   List<Icon> icons;
-  bool _isLoading = true;
+  bool _isLoaded = false ;
   String messageTitle = "Empty";
   String notificationAlert = "alert";
 
-  HelperHomeScreenState(String token) {
-    Future.delayed(Duration(seconds: 1), () async {
-      user = new Helper(token);
-      await user.getState();
-      _isLoading = false;
-      _status = user.status;
-      if (mounted) {
-        setState(() {});
-      }
-      if (user.status == "Available") {
-        user.requestGps();
-        user.startBackgroundProcess();
-      }
-    });
-  }
 
-
-
-  @override
-  void initState() {
-    _statusDropDown = <String>["Available", "Contacting only", "Busy"];
-    _status = _statusDropDown[0];
-    super.initState();
-  }
 
   Widget getCard(String title, String trail, Widget nextScreen, IconData icon,
-      double width) {
+      double width,BuildContext context) {
     return Card(
       elevation: 0,
       color: Colors.transparent,
@@ -106,13 +78,12 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
 
 
 
-
-
-
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+
+    //if (!_isLoaded)
+      Provider.of<Helper>(context, listen: false).setToken(token);
+    if ( Provider.of<Helper>(context, listen: true).status == null) {
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -128,6 +99,9 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                     //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else
+
+    //if(!_isLoaded)
+      //_isLoaded = true;
       return Scaffold(
         backgroundColor: secondColor,
         appBar: AppBar(
@@ -143,12 +117,10 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                 child: DropdownButton(
                   dropdownColor: firstColor,
                   //hint: Text('Status'), // Not necessary for Option 1
-                  value: _status,
+                  value: Provider.of<Helper>(context, listen: true).status,
                   onChanged: (newValue) {
-                    setState(() {
-                      _status = newValue;
-                      user.changeStatus(newValue);
-                    });
+                    Provider.of<Helper>(context, listen: false).status = newValue;
+                    Provider.of<Helper>(context, listen: false).changeStatus(newValue);
                   },
                   items: _statusDropDown.map((location) {
                     return DropdownMenuItem(
@@ -174,7 +146,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          getTitle(user.name, 26, secondColor, TextAlign.start,
+                          getTitle( Provider.of<Helper>(context, listen: true).name, 26, secondColor, TextAlign.start,
                               true),
                           Icon(Icons.account_circle_rounded,
                               size: 90, color: secondColor),
@@ -194,7 +166,7 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                         size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(ProfileScreen(user), context, false);
+                      navigate(ProfileScreen( Provider.of<Helper>(context, listen: false)), context, false);
                     },
                   ),
                   ListTile(
@@ -233,8 +205,8 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                         child: RaisedButton(
                             elevation: 5.0,
                             onPressed: () {
-                              if (user.status == "Available") {
-                                user.stopBackgroundProcess();
+                              if (Provider.of<Helper>(context, listen: true).status == "Available") {
+                                Provider.of<Helper>(context, listen: true).stopBackgroundProcess();
                               }
                               logout();
                               navigate(LoginScreen(), context, true);
@@ -277,19 +249,19 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                             "4",
                             CallingQueueScreen(),
                             Icons.call,
-                            (MediaQuery.of(context).size.width - 40) / 2),
+                            (MediaQuery.of(context).size.width - 40) / 2,context),
                         getCard(
                             "Chat Queue",
                             "3",
                             ChatQueueScreen(),
                             Icons.chat,
-                            (MediaQuery.of(context).size.width - 40) / 2),
+                            (MediaQuery.of(context).size.width - 40) / 2,context),
                       ],
                     ),
                     getCard("Request Queue", "6", null, Icons.local_hospital,
-                        MediaQuery.of(context).size.width),
+                        MediaQuery.of(context).size.width,context),
                     getCard("My Ratings", "4.4", HelperRatingsScreen(),
-                        Icons.star_rate, MediaQuery.of(context).size.width),
+                        Icons.star_rate, MediaQuery.of(context).size.width,context),
                   ],
                 ),
               ),

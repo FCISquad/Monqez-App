@@ -1,13 +1,15 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:location/location.dart' as loc;
 import 'package:background_location/background_location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:provider/provider.dart';
 
 import 'User.dart';
 
-class Helper extends User {
+class Helper extends User with ChangeNotifier  {
   String status;
   Timer timer;
   final _samplingPeriod = 5;
@@ -15,10 +17,19 @@ class Helper extends User {
   double latitude;
   final loc.Location _location = loc.Location();
 
+  Helper.empty ():super.empty();
   Helper(String token) : super(token) {
     timer = null;
   }
 
+  Future<void> setToken(String token) async {
+    this.token = token ;
+    await getState();
+    if (status == "Available") {
+      requestGps();
+      startBackgroundProcess();
+    }
+  }
   Future<void> getState() async {
     await super.getUser();
     http.Response response2 = await http.get(
@@ -37,6 +48,7 @@ class Helper extends User {
       print(response2.statusCode);
     }
     print("Helper: " + name + ", " + status);
+    notifyListeners();
   }
 
 
@@ -90,6 +102,7 @@ class Helper extends User {
     } else {
       makeToast('Failed to submit user.');
     }
+    notifyListeners();
   }
 
 
@@ -98,17 +111,16 @@ class Helper extends User {
       stopBackgroundProcess();
       bool result = await _location.requestService();
       if (result == false) {
-        setState(() {
-          changeStatus("Busy");
-        });
+
+        changeStatus("Busy");
+
       }
     }
   }
   Future<void> sendPosition() async {
     if (!await _location.serviceEnabled()) {
-      setState(() {
-        changeStatus("Busy");
-      });
+
+      changeStatus("Busy");
     }
     if (longitude != null && latitude != null) {
 
