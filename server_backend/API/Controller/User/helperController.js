@@ -5,6 +5,7 @@ const app = express();
 const helper = require("../../Tools/RequestFunctions");
 const HelperUser = require("../../Model/User/helperUser");
 const normalUser = require("../User/userController");
+
 // const userController = require()
 
 
@@ -76,11 +77,13 @@ app.post('/decline_request', (request, response) => {
             response.sendStatus(403);
         }
         else{
+            console.log("decline");
             let user = new HelperUser(request.body);
             user.requestDecline(monqezId, request.body)
                 .then((allDecline) => {
                     if ( allDecline === true ){
-                        normalUser.rerequest(request.body);
+                        console.log("ALL DECLINED");
+                       normalUser.rerequest(request.body);
                     }
                     response.sendStatus(200);
                 });
@@ -88,32 +91,32 @@ app.post('/decline_request', (request, response) => {
     });
 });
 app.post( '/accept_request' , (request, response) => {
-    let user = new HelperUser(request.body);
-    user.requestAccept("monqez-ehab1", request.body)
-        .then( () => {
-            response.sendStatus(200);
-        } )
-        .catch( () => {
-            response.sendStatus(201);
-        } );
-    // response.sendStatus(200);
+    // let user = new HelperUser(request.body);
+    // user.requestAccept("monqez-ehab1", request.body)
+    //     .then( () => {
+    //         response.sendStatus(200);
+    //     } )
+    //     .catch( () => {
+    //         response.sendStatus(201);
+    //     } );
+    // // response.sendStatus(200);
 
-    // helper.verifyToken(request , (monqezId) => {
-    //     if ( monqezId === null ){
-    //         // Forbidden
-    //         response.sendStatus(403);
-    //     }
-    //     else{
-    //         let user = new HelperUser(request.body);
-    //         user.requestAccept(monqezId, request.body)
-    //             .then( () => {
-    //                 response.sendStatus(200);
-    //             })
-    //             .catch( () => {
-    //                 response.sendStatus(201);
-    //             });
-    //     }
-    // });
+    helper.verifyToken(request , (monqezId) => {
+        if ( monqezId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.requestAccept(monqezId, request.body)
+                .then( () => {
+                    response.sendStatus(200);
+                })
+                .catch( () => {
+                    response.sendStatus(201);
+                });
+        }
+    });
 } );
 
 
