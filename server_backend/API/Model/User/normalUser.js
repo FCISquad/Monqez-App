@@ -35,9 +35,8 @@ class NormalUser extends User {
             });
     }
 
-    request(userID, userJson) {
+    request(userID, userJson, isFirst) {
         return new Promise((resolve, reject) => {
-            User._database.insertRequest(userID, userJson);
             User._database.getAllActiveMonqez().then((activeMonqez) => {
                 let distance = [];
                 let normalUserLocation = [userJson["latitude"], userJson["longitude"]];
@@ -63,7 +62,13 @@ class NormalUser extends User {
                 min_three.push(userID);
                 min_three.push(userJson["latitude"]);
                 min_three.push(userJson["longitude"]);
-                for (let i = 0; i < Math.min(3, distance.length); ++i) {
+
+                let minimumHelper = 3;
+                if (isFirst === false){
+                    minimumHelper = 6;
+                }
+
+                for (let i = 0; i < Math.min(minimumHelper, distance.length); ++i) {
                     if ( distance[i]["uid"] <= max_distance ){
                         min_three.push(distance[i]["uid"]);
                     }
@@ -72,6 +77,8 @@ class NormalUser extends User {
                         min_three.push(distance[i]["uid"]);
                     }
                 }
+
+                User._database.insertRequest(userID, userJson, min_three.length - 3, isFirst);
                 if ( min_three.length > 0 ){
                     this.notify_monqez(min_three);
                 }
@@ -128,6 +135,14 @@ class NormalUser extends User {
                     });
             });
         }
+    }
+    getLongLat(userId){
+        return new Promise( (resolve, _) => {
+            User._database.getLongLat(userId)
+                .then( (location) => {
+                    resolve(location);
+                } )
+        } );
     }
 }
 
