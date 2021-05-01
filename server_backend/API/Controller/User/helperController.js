@@ -4,6 +4,11 @@ const app = express();
 
 const helper = require("../../Tools/RequestFunctions");
 const HelperUser = require("../../Model/User/helperUser");
+const normalUser = require("../User/userController");
+
+// const userController = require()
+
+
 app.post('/setstatus' , (request , response) => {
     // let helper = new HelperUser(request.body);
     // helper.setStatus(request.body.uid , request.body.status)
@@ -31,7 +36,6 @@ app.post('/setstatus' , (request , response) => {
         }
     })
 });
-
 app.get( '/getstate' , (request , response) => {
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
@@ -49,8 +53,6 @@ app.get( '/getstate' , (request , response) => {
         }
     });
 } );
-
-
 app.post('/update_location', (request, response) => {
 
     helper.verifyToken(request, (userID) => {
@@ -64,7 +66,6 @@ app.post('/update_location', (request, response) => {
         }
     });
 });
-
 app.post('/decline_request', (request, response) => {
     // let user = new HelperUser(request.body);
     // user.requestDecline("monqez-ehab1", request.body);
@@ -76,16 +77,30 @@ app.post('/decline_request', (request, response) => {
             response.sendStatus(403);
         }
         else{
+            console.log("decline");
             let user = new HelperUser(request.body);
-            user.requestDecline(monqezId, request.body);
-            response.sendStatus(200);
+            user.requestDecline(monqezId, request.body)
+                .then((allDecline) => {
+                    if ( allDecline === true ){
+                        console.log("ALL DECLINED");
+                        user.rerequest(request.body);
+                        // normalUser.re_request(request.body);
+                    }
+                    response.sendStatus(200);
+                });
         }
     });
 });
 app.post( '/accept_request' , (request, response) => {
     // let user = new HelperUser(request.body);
-    // user.requestAccept("monqez-ehab1", request.body);
-    response.sendStatus(200);
+    // user.requestAccept("monqez-ehab1", request.body)
+    //     .then( () => {
+    //         response.sendStatus(200);
+    //     } )
+    //     .catch( () => {
+    //         response.sendStatus(201);
+    //     } );
+    // // response.sendStatus(200);
 
     helper.verifyToken(request , (monqezId) => {
         if ( monqezId === null ){
@@ -94,8 +109,13 @@ app.post( '/accept_request' , (request, response) => {
         }
         else{
             let user = new HelperUser(request.body);
-            user.requestAccept(monqezId, request.body);
-            response.sendStatus(200);
+            user.requestAccept(monqezId, request.body)
+                .then( () => {
+                    response.sendStatus(200);
+                })
+                .catch( () => {
+                    response.sendStatus(201);
+                });
         }
     });
 } );

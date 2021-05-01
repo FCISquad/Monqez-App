@@ -1,4 +1,6 @@
 const User = require("./user");
+const normalUser = require('../User/normalUser');
+const helper = require('../../Tools/RequestFunctions');
 
 class HelperUser extends User{
     constructor(userJson) {
@@ -71,10 +73,57 @@ class HelperUser extends User{
     }
 
     requestDecline(monqezId, userJson){
-        User._database.requestDecline(monqezId, userJson);
+        return new Promise( (resolve, reject) => {
+            User._database.requestDecline(monqezId, userJson)
+                .then( (allDecline) => {
+                    resolve(allDecline);
+                } )
+                .catch(() => {reject();});
+        } );
     }
     requestAccept(monqezId, userJson){
-        User._database.requestAccept(monqezId, userJson);
+        return new Promise( ((resolve, reject) => {
+            User._database.requestAccept(monqezId, userJson)
+                .then( () => { resolve() } )
+                .catch( () => { reject() } );
+        }) );
+    }
+    rerequest(userJson){
+            let user = new normalUser(userJson);
+            user.getLongLat(userJson["uid"]).then( (locationJson) => {
+                let cur = locationJson.val();
+                let key = Object.keys(cur)[0];
+
+                if ( cur[key]['isFirst'] === false ){
+                    const payload = {
+                        notification: {
+                            title: 'No monqez nearby',
+                            body: 'We apologize, there is no available monqez nearby'
+                        },
+                        data:{
+                            type: 'normal',
+                            description: 'message'
+                        }
+                    };
+
+                    const options = {
+                        priority: 'high',
+                        timeToLive: 60 * 60
+                    };
+
+                    helper.send_notifications(
+                        userJson["uid"],
+                        payload,
+                        options
+                    );
+                }
+                else{
+                    user.request(userJson["uid"], cur[key] , false)
+                        .then(() => {})
+                        .catch(() => {}
+                        );
+                }
+            } );
     }
 }
 
