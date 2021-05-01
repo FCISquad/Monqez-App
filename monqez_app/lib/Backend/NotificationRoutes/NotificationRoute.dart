@@ -18,7 +18,8 @@ abstract class NotificationRoute{
 
 
   NotificationRoute(RemoteMessage message) {
-    message = message;
+    print("Notification Route");
+    this.message = message;
     notification = message.notification;
     android = message.notification?.android;
     initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
@@ -34,6 +35,7 @@ abstract class NotificationRoute{
   Future onSelectNotification (String payload);
 
   showNotification() {
+    print("Showed");
     if (notification != null && android != null) {
       flutterLocalNotificationsPlugin.show(
           0,

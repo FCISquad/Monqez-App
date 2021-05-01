@@ -72,11 +72,11 @@ class FirebaseCloudMessaging {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       var data = message.data;
 
-      if (data['type'] == "Helper") {
+      if (data['type'] == "helper") {
         route = new HelperUserNotification(message);
-      } else if (data['type'] == "Normal") {
+      } else if (data['type'] == "normal") {
         route = new NormalUserNotification(message);
-      } else if (data['type'] == "Admin"){
+      } else if (data['type'] == "admin"){
         route = new AdminUserNotification(message);
       } else {
         makeToast("Invalid notification received");
