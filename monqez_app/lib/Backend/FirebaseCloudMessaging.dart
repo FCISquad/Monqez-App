@@ -1,28 +1,15 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
-import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'dart:convert';
 import 'dart:async';
 import '../main.dart';
+import 'NotificationRoutes/AdminUserNotification.dart';
+import 'NotificationRoutes/NormalUserNotification.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-final AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_importance_channel', // id
-  'High Importance Notifications', // title
-  'This channel is used for important notifications.', // description
-);
-AndroidInitializationSettings initializationSettingsAndroid;
-InitializationSettings initializationSettings;
 
-void initialize() {
-  initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
-
-  initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid
-  );
-}
 /*
 void firebaseMessagingBackground() async {
   if (Firebase.apps.length == 0)
@@ -57,23 +44,9 @@ class FirebaseCloudMessaging {
 
   String _fcmToken;
   String _token;
-
-  Future onSelectNotification(String payload) async {
-    if (payload != null) {
-      print('Notification payload: $payload');
-      print("HERE!!");
-    }
-    navigatorKey.currentState.pushNamed('notification');
-  }
-
-
+  NotificationRoute route;
   FirebaseCloudMessaging(String token) {
     _token = token;
-    initialize();
-    flutterLocalNotificationsPlugin.initialize(
-        initializationSettings,
-      onSelectNotification: onSelectNotification
-    );
 
     FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
@@ -97,46 +70,21 @@ class FirebaseCloudMessaging {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification;
-      AndroidNotification android = message.notification?.android;
       var data = message.data;
-      String requestID;
-      if (data != null){
-        requestID = data['userId'];
-        HelperRequestNotificationScreen.requestID = requestID;
-        HelperRequestNotificationScreen.longitude = double.parse(data['longitude']) ;
-        HelperRequestNotificationScreen.latitude = double.parse(data['latitude']);
-      }
-      if (data != null){
-        requestID = data['userId'];
-      }
-      if (notification != null && android != null) {
-        HelperRequestNotificationScreen.hideBackButton = false;
-        print ("Received notification");
-        onSelectNotification(requestID);
-        flutterLocalNotificationsPlugin.show(
-            0,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(
-                channel.id,
-                channel.name,
-                channel.description,
-                importance: Importance.max,
-                priority: Priority.high,
-                enableVibration: true,
-                icon: 'launch_background',
 
-
-
-              ),
-            ));
+      if (data['type'] == "Helper") {
+        route = new HelperUserNotification(message);
+      } else if (data['type'] == "Normal") {
+        route = new NormalUserNotification(message);
+      } else if (data['type'] == "Admin"){
+        route = new AdminUserNotification(message);
+      } else {
+        makeToast("Invalid notification received");
       }
+
     });
     //firebaseMessagingBackground();
   }
-
 
   Future<void> updateRegistrationToken() async {
     final http.Response response = await http.post(
