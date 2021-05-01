@@ -12,8 +12,11 @@ class HelperUserNotification extends NotificationRoute {
   HelperUserNotification(RemoteMessage message) : super(message) {
     print("Helper Constructor");
     var data = message.data;
+    print(data);
     if (data["description"] == "request") {
       NotificationRoute.selectNavigate = HelperRequestNotificationScreen();
+
+      print("Check Helper 2");
       request();
     } else {
       NotificationRoute.selectNavigate = HelperHomeScreen(token);

@@ -42,10 +42,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   int bodyMap;
-
+  bool isLoaded = false;
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
-      checkNotification();
       user = new User(token);
       await user.getUser();
       _isLoading = false;
@@ -495,21 +494,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     controller.forward();
   }
 
-  void checkNotification() async {
-    Builder(
-      builder: (BuildContext context) {
-        FirebaseMessaging.instance
-            .getInitialMessage()
-            .then((RemoteMessage message) {
-          FirebaseCloudMessaging.route = new NormalUserNotification(message);
-          navigate(NotificationRoute.selectNavigate, context, false);
-        });
-        return null;
-      },
-    );
+  void checkNotification(BuildContext context) async {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      FirebaseCloudMessaging.route = new NormalUserNotification(message);
+      navigate(NotificationRoute.selectNavigate, context, false);
+    });
+    return null;
   }
   @override
   Widget build(BuildContext context) {
+    if (!isLoaded) {
+      checkNotification(context);
+      isLoaded = true;
+    }
     if (_isLoading) {
       return Scaffold(
           backgroundColor: secondColor,
