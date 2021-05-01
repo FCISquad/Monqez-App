@@ -3,6 +3,7 @@ const sphericalGeometry = require('spherical-geometry-js');
 const admin = require('firebase-admin');
 
 const max_distance = 3000; // 3 Km = 3000 Meter
+const helper = require('../../Tools/RequestFunctions');
 
 class NormalUser extends User {
     constructor(userJson) {
@@ -45,6 +46,7 @@ class NormalUser extends User {
                     let latitude = activeMonqez.val()[uid]["latitude"];
 
                     let monqezLocation = [latitude, longitude];
+
                     distance.push({
                         "distance": sphericalGeometry.computeDistanceBetween(monqezLocation, normalUserLocation),
                         "uid": uid
@@ -97,42 +99,39 @@ class NormalUser extends User {
     notify_monqez(min_three) {
         for (let i = 3; i < min_three.length; i++) {
             User._database.getFCMToken(min_three[i]).then((token) => {
-                let registrationTokens = [];
-                registrationTokens.push(token);
+                // let registrationTokens = [];
+                // registrationTokens.push(token);
 
-                const message = {
-                    data: {score: '850', time: '2:45'},
-                    tokens: registrationTokens,
-                }
-
-                console.log(message);
                 const payload = {
                     notification: {
-                        title: 'Urgent action needed!',
-                        body: 'Urgent action is needed to prevent your account from being disabled!'
+                        title: 'Help is needed!',
+                        body: 'A person nearby requires your help!'
                     },
                     data : {
+                        type: 'helper',
+                        description: 'request',
                         userId: min_three[0],
                         latitude: min_three[1].toString(),
                         longitude: min_three[2].toString()
                     }
                 };
 
-                // Set the message as high priority and have it expire after 24 hours.
                 const options = {
                     priority: 'high',
                     timeToLive: 60 * 60
                 };
 
-                admin.messaging().sendToDevice(registrationTokens, payload, options)
-                    .then(function (response) {
-                        // See the MessagingDevicesResponse reference documentation for
-                        // the contents of response.
-                        console.log('Successfully sent message:', response);
-                    })
-                    .catch(function (error) {
-                        console.log('Error sending message:', error);
-                    });
+                helper.send_notifications(min_three[i], payload, options);
+
+                // admin.messaging().sendToDevice(registrationTokens, payload, options)
+                //     .then(function (response) {
+                //         // See the MessagingDevicesResponse reference documentation for
+                //         // the contents of response.
+                //         console.log('Successfully sent message:', response);
+                //     })
+                //     .catch(function (error) {
+                //         console.log('Error sending message:', error);
+                //     });
             });
         }
     }

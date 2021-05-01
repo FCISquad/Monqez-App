@@ -174,14 +174,16 @@ var secondRequest = function rerequest(userJson) {
 }
 */
 
-module.exports.rerequest = (userJson) => {
-        let user = new NormalUser(userJson);
-        user.getLongLat(userJson["uid"]).then( (locationJson) => {
-            user.request(userJson["uid"], locationJson , false)
-                .then(() => {})
-                .catch(() => {}
-                );
-        } );
-};
+function re_request(userJson){
+    let user = new NormalUser(userJson);
+    user.getLongLat(userJson["uid"]).then( (locationJson) => {
+        user.request(userJson["uid"], locationJson , false)
+            .then(() => {})
+            .catch(() => {}
+            );
+    } );
+}
+
+module.exports.re_request = re_request;
 
 module.exports = app;

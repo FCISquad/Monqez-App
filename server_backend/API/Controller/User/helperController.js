@@ -83,7 +83,8 @@ app.post('/decline_request', (request, response) => {
                 .then((allDecline) => {
                     if ( allDecline === true ){
                         console.log("ALL DECLINED");
-                       normalUser.rerequest(request.body);
+                        user.rerequest(request.body);
+                        // normalUser.re_request(request.body);
                     }
                     response.sendStatus(200);
                 });

@@ -331,7 +331,7 @@ class Database {
                     admin.database().ref('requests/' + uid + '/' + timeID + '/' + "rejected").set({"counter" : 0}).then(() => {});
                     admin.database().ref('requests/' + uid + '/' + timeID + '/' + "accepted").set({"counter" : 0}).then(() => {});
                     admin.database().ref('requests/' + uid + '/' + timeID).update({"monqezCounter" : monqezCounter}).then(() => {});
-                    admin.database().ref('requests/' + uid + '/' + timeID).update({"re-request" : false}).then(() => {});
+                    admin.database().ref('requests/' + uid + '/' + timeID).update({"isFirst" : true}).then(() => {});
                     admin.database().ref('requests/' + uid + '/' + timeID).update({"longitude" : request["longitude"]}).then(() => {});
                     admin.database().ref('requests/' + uid + '/' + timeID).update({"latitude" : request["latitude"]}).then(() => {});
                 } ) ;
@@ -343,10 +343,10 @@ class Database {
                         admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
                             .update({
                                 "monqezCounter": monqezCounter,
-                                "rejected/counter" : 0
+                                "rejected/counter" : 0,
+                                "isFirst": false
                             })
                             .then( () => {} ) ;
-                        //console.log(childSnapshot.key);
                     });
                 });
         }
@@ -385,7 +385,7 @@ class Database {
                             if (current_value !== null) {
                                 console.log(current_value);
                                 current_value["rejected"]["counter"]++;
-                                current_value["rejected"]['uid_' + current_value["counter"]] = monqezId;
+                                current_value["rejected"]['uid_' + current_value["rejected"]["counter"]] = monqezId;
                                 if (current_value["rejected"]["counter"] === current_value["monqezCounter"]) {
                                     allDecline = true;
                                 }
