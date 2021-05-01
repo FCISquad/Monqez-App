@@ -1,10 +1,12 @@
 
-
+import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class NotificationRoute{
   RemoteMessage message;
+  static Widget selectNavigate;
   RemoteNotification notification ;
   AndroidNotification android ;
   final AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -15,9 +17,15 @@ abstract class NotificationRoute{
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings initializationSettingsAndroid;
   InitializationSettings initializationSettings;
+  String token ;
 
+  void getToken () async {
+    var _prefs = await SharedPreferences.getInstance();
+    this.token = _prefs.getString("userToken");
+  }
 
   NotificationRoute(RemoteMessage message) {
+    getToken();
     print("Notification Route");
     this.message = message;
     notification = message.notification;

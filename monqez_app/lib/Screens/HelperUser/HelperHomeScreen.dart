@@ -1,6 +1,9 @@
-import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
@@ -8,21 +11,19 @@ import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:background_location/background_location.dart';
+
+
+
 
 // ignore: must_be_immutable
-
-
 class HelperHomeScreen extends StatelessWidget {
   String token;
 
   HelperHomeScreen(String token) {
     this.token = token;
+    checkNotification();
   }
 
   List<String> _statusDropDown = <String>["Available", "Contacting only", "Busy"];
@@ -80,7 +81,6 @@ class HelperHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     if (!_isLoaded)
       Provider.of<Helper>(context, listen: true).setToken(token);
     if ( Provider.of<Helper>(context, listen: true).status == null) {
@@ -267,6 +267,21 @@ class HelperHomeScreen extends StatelessWidget {
             ),
           ),
         ),
+      );
+  }
+
+  void checkNotification() async {
+    Builder(
+        builder: (BuildContext context) {
+          FirebaseMessaging.instance
+              .getInitialMessage()
+              .then((RemoteMessage message) {
+
+            FirebaseCloudMessaging.route = new HelperUserNotification(message);
+            navigate(NotificationRoute.selectNavigate, context, false);
+          });
+          return null;
+        },
       );
   }
 }

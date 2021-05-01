@@ -7,9 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class NormalUserNotification extends NotificationRoute {
   NormalUserNotification(RemoteMessage message) : super(message) {
+    print("Normal Constructor");
     var data = message.data;
     if (data["description"] == "message") {
       showNotification();
+      NotificationRoute.selectNavigate = NormalHomeScreen(token);
     } else {
 
     }
@@ -17,10 +19,7 @@ class NormalUserNotification extends NotificationRoute {
 
   @override
   Future onSelectNotification(String payload) async {
-    if (message.data["description"] == "message") {
-      var _prefs = await SharedPreferences.getInstance();
-      String token = _prefs.getString("userToken");
-      navigate(NormalHomeScreen(token), null, true);
-    }
+    print("Normal On Select");
+    navigate(NotificationRoute.selectNavigate, null, true);
   }
 }

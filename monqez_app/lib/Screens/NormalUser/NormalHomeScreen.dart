@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
@@ -40,6 +45,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
 
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
+      checkNotification();
       user = new User(token);
       await user.getUser();
       _isLoading = false;
@@ -489,6 +495,19 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     controller.forward();
   }
 
+  void checkNotification() async {
+    Builder(
+      builder: (BuildContext context) {
+        FirebaseMessaging.instance
+            .getInitialMessage()
+            .then((RemoteMessage message) {
+          FirebaseCloudMessaging.route = new NormalUserNotification(message);
+          navigate(NotificationRoute.selectNavigate, context, false);
+        });
+        return null;
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {

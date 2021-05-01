@@ -44,7 +44,7 @@ class FirebaseCloudMessaging {
 
   String _fcmToken;
   String _token;
-  NotificationRoute route;
+  static NotificationRoute route;
   FirebaseCloudMessaging(String token) {
     _token = token;
 
@@ -73,8 +73,10 @@ class FirebaseCloudMessaging {
       var data = message.data;
 
       if (data['type'] == "helper") {
+        print("Helper");
         route = new HelperUserNotification(message);
       } else if (data['type'] == "normal") {
+        print("Normal");
         route = new NormalUserNotification(message);
       } else if (data['type'] == "admin"){
         route = new AdminUserNotification(message);

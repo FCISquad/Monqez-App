@@ -1,6 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
 import 'dart:convert';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
@@ -58,15 +61,27 @@ class _SplashState extends State<Splash> {
     Widget _navigate;
 
     bool enter = true;
-    await FirebaseMessaging.instance
-        .getInitialMessage()
-        .then((RemoteMessage message) {
-      if (message != null) {
-        enter = false;
-        HelperRequestNotificationScreen.hideBackButton = true;
-        _navigate = HelperRequestNotificationScreen();
-      }
-    });
+    /*await FirebaseMessaging.instance
+      .getInitialMessage()
+      .then((RemoteMessage message) {
+
+        if (message != null) {
+          enter = false;
+          var data = message.data;
+
+          if (data['type'] == "helper") {
+            FirebaseCloudMessaging.route = new HelperUserNotification(message);
+            HelperRequestNotificationScreen.hideBackButton = true;
+          } else if (data['type'] == "normal") {
+            _navigate = NormalHomeScreen(token);
+          } else if (data['type'] == "admin"){
+            _navigate = AdminHomeScreen();
+          } else {
+            makeToast("Invalid notification received");
+          }
+          _navigate = NotificationRoute.selectNavigate;
+        }
+    });*/
 
 
    if (enter) {
