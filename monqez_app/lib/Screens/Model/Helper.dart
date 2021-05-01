@@ -77,8 +77,6 @@ class Helper extends User with ChangeNotifier  {
     if (newValue == "Available") {
       requestGps();
       startBackgroundProcess();
-      timer = Timer.periodic(
-          Duration(seconds: _samplingPeriod), (timer) => sendPosition());
     } else {
       if (timer != null) {
         stopBackgroundProcess();
