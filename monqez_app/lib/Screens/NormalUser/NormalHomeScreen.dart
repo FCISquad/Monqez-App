@@ -45,7 +45,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   bool isLoaded = false;
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
-      user = new User(token);
+      user = new User.empty();
       await user.getUser();
       _isLoading = false;
     });

@@ -14,16 +14,23 @@ class User {
   String buildNumber;
   String gender;
   String token;
-  FirebaseCloudMessaging fcm;
+  static FirebaseCloudMessaging fcm;
 
   User.empty();
-  User(String token) {
+
+  /*User(String token) {
     this.token = token;
     fcm = new FirebaseCloudMessaging(token);
-  }
+  }*/
   setToken(String token) {
     this.token = token;
+    if (fcm == null) {
+      fcm = new FirebaseCloudMessaging(token);
+    }
+    /*if(!FirebaseCloudMessaging.tokenTaken){
+      FirebaseCloudMessaging.tokenTaken=true;
     fcm = new FirebaseCloudMessaging(token);
+    }*/
   }
   getUser() async {
     http.Response response2 = await http.get(

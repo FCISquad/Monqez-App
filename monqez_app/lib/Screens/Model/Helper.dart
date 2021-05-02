@@ -17,9 +17,7 @@ class Helper extends User with ChangeNotifier  {
   final loc.Location _location = loc.Location();
 
   Helper.empty ():super.empty();
-  Helper(String token) : super(token) {
-    timer = null;
-  }
+
 
   Future<void> setToken(String token) async {
     super.setToken(token);

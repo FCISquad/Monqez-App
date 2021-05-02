@@ -82,7 +82,8 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                   icon: new Icon(Icons.arrow_back),
                   onPressed: (){
                     decline(context);
-                    navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
+                    Navigator.pop(context);
+                    //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                   }
               ),
               visible: true,
@@ -141,7 +142,9 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                           primary: Colors.red, shape: CircleBorder()),
                       onPressed: () async {
                         await decline(context);
-                        navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
+
+                        Navigator.pop(context);
+                        //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                       },
                     ),
                   ],

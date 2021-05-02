@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
@@ -10,7 +11,7 @@ import 'NotificationRoutes/AdminUserNotification.dart';
 import 'NotificationRoutes/NormalUserNotification.dart';
 
 
-/*
+
 void firebaseMessagingBackground() async {
   if (Firebase.apps.length == 0)
     await Firebase.initializeApp();
@@ -19,40 +20,27 @@ void firebaseMessagingBackground() async {
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Background notification");
-  HelperRequestNotificationScreenState.hideBackButton = true;
+  //HelperRequestNotificationScreenState.hideBackButton = true;
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  RemoteNotification notification = message.notification;
-  flutterLocalNotificationsPlugin.show(
-      0,
-      notification.title,
-      notification.body,
-      NotificationDetails(
-        android: AndroidNotificationDetails(
-          channel.id,
-          channel.name,
-          channel.description,
-          importance: Importance.max,
-          priority: Priority.high,
-          enableVibration: true,
-          icon: 'launch_background',
-        ),
-      ));
+
 }
-*/
+
 class FirebaseCloudMessaging {
 
   String _fcmToken;
   String _token;
   static NotificationRoute route;
+  static bool tokenTaken = false;
   FirebaseCloudMessaging(String token) {
     _token = token;
 
-    FirebaseMessaging.instance.getToken().then((fcmToken) async {
+      FirebaseMessaging.instance.getToken().then((fcmToken) async {
       _fcmToken = fcmToken;
       print("FCM:" + fcmToken);
       await updateRegistrationToken();
     });
+
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
@@ -70,9 +58,12 @@ class FirebaseCloudMessaging {
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      initalizeRoutes(message, false);
+      if (message != null) {
+        print("on Message");
+        initalizeRoutes(message, false);
+      }
     });
-    //firebaseMessagingBackground();
+    firebaseMessagingBackground();
   }
 
   void initalizeRoutes(RemoteMessage message, bool isBackground) {

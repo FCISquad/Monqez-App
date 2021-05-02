@@ -98,6 +98,7 @@ class _SplashState extends State<Splash> {
           if (type == 0) {
             _navigate = NormalHomeScreen(token);
           } else if (type == 1) {
+            print("IF");
             _navigate = HelperHomeScreen(token);
           } else if (type == 2) {
             _navigate = AdminHomeScreen();
