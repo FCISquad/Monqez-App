@@ -279,8 +279,9 @@ class HelperHomeScreen extends StatelessWidget {
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        FirebaseCloudMessaging.route = new HelperUserNotification(message);
-        navigate(NotificationRoute.selectNavigate, context, false);
+        FirebaseCloudMessaging.route = new HelperUserNotification(message, true);
+        print("Navigating");
+        navigate(NotificationRoute.selectNavigate, context, true);
       }
     });
 }

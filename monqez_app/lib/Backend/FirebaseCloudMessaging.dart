@@ -64,30 +64,31 @@ class FirebaseCloudMessaging {
         HelperRequestNotificationScreenState.requestID = requestID;
         print("Request ID: "+ requestID);
       }
-
        */
-      navigatorKey.currentState.pushNamed('notification');
+      initalizeRoutes(message, true);
+      //navigatorKey.currentState.pushNamed('notification');
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      var data = message.data;
-
-      if (data['type'] == "helper") {
-        print("Helper");
-        route = new HelperUserNotification(message);
-      } else if (data['type'] == "normal") {
-        print("Normal");
-        route = new NormalUserNotification(message);
-      } else if (data['type'] == "admin"){
-        route = new AdminUserNotification(message);
-      } else {
-        makeToast("Invalid notification received");
-      }
-
+      initalizeRoutes(message, false);
     });
     //firebaseMessagingBackground();
   }
 
+  void initalizeRoutes(RemoteMessage message, bool isBackground) {
+    var data = message.data;
+    if (data['type'] == "helper") {
+      print("Helper");
+      route = new HelperUserNotification(message, isBackground);
+    } else if (data['type'] == "normal") {
+      print("Normal");
+      route = new NormalUserNotification(message, isBackground);
+    } else if (data['type'] == "admin"){
+      route = new AdminUserNotification(message, false);
+    } else {
+      makeToast("Invalid notification received");
+    }
+  }
   Future<void> updateRegistrationToken() async {
     final http.Response response = await http.post(
       Uri.parse('$url/user/update_registration_token/'),

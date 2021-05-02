@@ -499,7 +499,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        FirebaseCloudMessaging.route = new NormalUserNotification(message);
+        FirebaseCloudMessaging.route = new NormalUserNotification(message, true);
         navigate(NotificationRoute.selectNavigate, context, false);
       }
     });

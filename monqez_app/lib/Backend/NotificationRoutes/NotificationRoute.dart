@@ -9,6 +9,7 @@ abstract class NotificationRoute{
   static Widget selectNavigate;
   RemoteNotification notification ;
   AndroidNotification android ;
+  bool isBackground = true;
   final AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -24,7 +25,7 @@ abstract class NotificationRoute{
     this.token = _prefs.getString("userToken");
   }
 
-  NotificationRoute(RemoteMessage message) {
+  NotificationRoute(RemoteMessage message, bool isBackground) {
     getToken();
     print("Notification Route");
     this.message = message;
@@ -44,7 +45,7 @@ abstract class NotificationRoute{
 
   showNotification() {
     print("Showed");
-    if (notification != null && android != null) {
+    if (notification != null && android != null && !isBackground) {
       flutterLocalNotificationsPlugin.show(
           0,
           notification.title,

@@ -6,7 +6,7 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NormalUserNotification extends NotificationRoute {
-  NormalUserNotification(RemoteMessage message) : super(message) {
+  NormalUserNotification(RemoteMessage message, bool isBackground) : super(message, isBackground) {
     print("Normal Constructor");
     var data = message.data;
     if (data["description"] == "message") {

@@ -12,7 +12,10 @@ import 'Model/Helper.dart';
 // ignore: must_be_immutable
 class HelperRequestNotificationScreen extends StatelessWidget {
 
-  static bool hideBackButton;
+  //static bool hideBackButton;
+  HelperRequestNotificationScreen() {
+    print("HelperRequest");
+  }
   static String requestID;
   static double longitude;
   static double latitude;
@@ -79,10 +82,10 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                   icon: new Icon(Icons.arrow_back),
                   onPressed: (){
                     decline(context);
-                    Navigator.pop(context,true);
+                    navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                   }
               ),
-              visible: !hideBackButton,
+              visible: true,
             ),
             title: getTitle(
                 "Monqez - Helper", 22.0, secondColor, TextAlign.start, true),

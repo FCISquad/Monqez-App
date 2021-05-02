@@ -74,7 +74,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
         FirebaseMessaging.instance
             .getInitialMessage()
             .then((RemoteMessage message) {
-          FirebaseCloudMessaging.route = new AdminUserNotification(message);
+          FirebaseCloudMessaging.route = new AdminUserNotification(message, true);
           navigate(NotificationRoute.selectNavigate, context, false);
         });
         return null;
