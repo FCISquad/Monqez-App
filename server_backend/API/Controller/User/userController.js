@@ -122,7 +122,7 @@ app.post('/update_registration_token', (request, response)=>{
 
 app.post('/request', (request, response) => {
     // let user = new NormalUser(request.body);
-    // user.request("ehabfawzy", request.body);
+    // user.request("ehabzzz", request.body, true);
     // response.sendStatus(200);
 
     helper.verifyToken(request , (userId) => {
@@ -132,8 +132,14 @@ app.post('/request', (request, response) => {
         }
         else{
            let user = new NormalUser(request.body);
-           user.request(userId, request.body);
-           response.sendStatus(200);
+           user.request(userId, request.body, true).then(() => {
+               response.sendStatus(200);
+           })
+           .catch(() => {
+               // service unavailable
+               response.sendStatus(503);
+           });
+
         }
     });
 })
@@ -155,5 +161,29 @@ app.post('/request_information', (request, response) => {
             response.sendStatus(200);
         }
     });
-})
+});
+/*
+var secondRequest = function rerequest(userJson) {
+    let user = new NormalUser(userJson);
+    user.getLongLat(userJson["uid"]).then( (locationJson) => {
+        user.request(userJson["uid"], locationJson , false)
+            .then(() => {})
+            .catch(() => {}
+            );
+    } );
+}
+*/
+
+function re_request(userJson){
+    let user = new NormalUser(userJson);
+    user.getLongLat(userJson["uid"]).then( (locationJson) => {
+        user.request(userJson["uid"], locationJson , false)
+            .then(() => {})
+            .catch(() => {}
+            );
+    } );
+}
+
+module.exports.re_request = re_request;
+
 module.exports = app;

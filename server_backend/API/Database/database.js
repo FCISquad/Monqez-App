@@ -312,20 +312,44 @@ class Database {
         });
     }
 
-    insertRequest(uid, request){
-        let date_ob = new Date();
+    insertRequest(uid, request, monqezCounter, isFirst){
+        if ( isFirst === true ){
+            let date_ob = new Date();
 
-        let date    = ("0" + date_ob.getDate()).slice(-2);
-        let month   = ("0" + (date_ob.getMonth() + 1)).slice(-2);
-        let year    = date_ob.getFullYear();
-        let hours   = date_ob.getHours();
-        let minutes = date_ob.getMinutes();
-        let seconds = date_ob.getSeconds();
-        let timeID  = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+            let date    = ("0" + date_ob.getDate()).slice(-2);
+            let month   = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            let year    = date_ob.getFullYear();
+            let hours   = ("0" + date_ob.getHours()).slice(-2);
+            let minutes = ("0" + date_ob.getMinutes()).slice(-2);
+            let seconds = ("0" + date_ob.getSeconds()).slice(-2);
+            let timeID  = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+            //let timeID = date_ob.getTime();
 
-        admin.database().ref('requests/' + uid + '/' + timeID)
-            .update(request)
-            .then( () => {} ) ;
+            admin.database().ref('requests/' + uid + '/' + timeID)
+                .update(request)
+                .then( () => {
+                    admin.database().ref('requests/' + uid + '/' + timeID + '/' + "rejected").set({"counter" : 0}).then(() => {});
+                    admin.database().ref('requests/' + uid + '/' + timeID + '/' + "accepted").set({"counter" : 0}).then(() => {});
+                    admin.database().ref('requests/' + uid + '/' + timeID).update({"monqezCounter" : monqezCounter}).then(() => {});
+                    admin.database().ref('requests/' + uid + '/' + timeID).update({"isFirst" : true}).then(() => {});
+                    admin.database().ref('requests/' + uid + '/' + timeID).update({"longitude" : request["longitude"]}).then(() => {});
+                    admin.database().ref('requests/' + uid + '/' + timeID).update({"latitude" : request["latitude"]}).then(() => {});
+                } ) ;
+        }
+        else{
+            admin.database().ref('requests/' + uid).limitToLast(1).once('value')
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
+                            .update({
+                                "monqezCounter": monqezCounter,
+                                "rejected/counter" : 0,
+                                "isFirst": false
+                            })
+                            .then( () => {} ) ;
+                    });
+                });
+        }
     }
 
     insertRequestAdditional(uid, request) {
@@ -340,6 +364,7 @@ class Database {
                 });
             });
     }
+
     getRequests(userID){
         return new Promise((resolve, reject) => {
             admin.database().ref('requests/' + userID).once("value", function (snapshot) {
@@ -347,6 +372,67 @@ class Database {
             }).catch((error) => {
                 reject(error);
             });
+        });
+    }
+
+    requestDecline(monqezId, userJson){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        let allDecline = false;
+                        admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key).transaction(function(current_value){
+                            if (current_value !== null) {
+                                console.log(current_value);
+                                current_value["rejected"]["counter"]++;
+                                current_value["rejected"]['uid_' + current_value["rejected"]["counter"]] = monqezId;
+                                if (current_value["rejected"]["counter"] === current_value["monqezCounter"]) {
+                                    allDecline = true;
+                                }
+                            }
+                                return current_value;
+                            }).then(() => {
+                                resolve(allDecline);
+                            })
+                            .catch(() => {reject()});
+
+                    });
+                });
+        } );
+
+    }
+
+    requestAccept(monqezId, userJson){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        console.log('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted");
+                        admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
+                            .transaction(function(current_value){
+                                if ( current_value !== null ){
+                                    if ( current_value["counter"] === 1 ){
+                                        reject();
+                                    }
+                                    else{
+                                        current_value["counter"]++;
+                                        current_value['uid_' + current_value["counter"]] = monqezId;
+                                    }
+                                }
+
+                                return current_value;
+                            }).then(() => {resolve()});
+                    });
+                });
+        } );
+    }
+
+
+    getLongLat(uid){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + uid).limitToLast(1).once('value').then(function(snapshot) {
+                        resolve(snapshot);
+                    });
         });
     }
 }
