@@ -46,6 +46,8 @@ dependencies:
   geolocator: ^7.0.3
   flutter_polyline_points: ^1.0.0
   provider: ^5.0.0
+  auto_size_text: ^2.1.0
+  flutter_absolute_path: ^1.0.6
 
 
 
@@ -96,6 +98,9 @@ flutter:
     - images/BodyMap/shoulderL.png
     - images/BodyMap/shoulderR.png
     - images/BodyMap/stomach.png
+    - images/ToBeRemoved/burn.png
+    - images/ToBeRemoved/leg.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
