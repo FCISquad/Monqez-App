@@ -46,6 +46,8 @@ dependencies:
   geolocator: ^7.0.3
   flutter_polyline_points: ^1.0.0
   provider: ^5.0.0
+  agora_rtc_engine: ^3.3.3
+  permission_handler:
 
 
 

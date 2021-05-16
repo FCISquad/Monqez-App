@@ -7,6 +7,7 @@ import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
+import 'package:monqez_app/Screens/NormalUser/NormalCallScreen.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -533,7 +534,20 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
               shadowColor: Colors.black,
               backgroundColor: firstColor,
               iconTheme: IconThemeData(color: secondColor),
-              elevation: 5),
+              elevation: 5,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.video_call,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  navigate(NormalCallScreen(), context, false);
+                  // do something
+                },
+              )
+            ],
+          ),
           drawer: Drawer(
             child: ListView(
               padding: EdgeInsets.zero,
