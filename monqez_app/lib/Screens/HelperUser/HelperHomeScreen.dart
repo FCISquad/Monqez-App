@@ -1,74 +1,41 @@
-import 'dart:async';
-import 'package:location/location.dart' as loc;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
 import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:monqez_app/Screens/LoginScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:background_location/background_location.dart';
 
 // ignore: must_be_immutable
-class HelperHomeScreen extends StatefulWidget {
+class HelperHomeScreen extends StatelessWidget {
   String token;
 
   HelperHomeScreen(String token) {
+    print("Constructor");
     this.token = token;
   }
-  @override
-  HelperHomeScreenState createState() => HelperHomeScreenState(token);
-}
 
-class HelperHomeScreenState extends State<HelperHomeScreen>
-    with SingleTickerProviderStateMixin {
-  static Helper user;
-  String _status;
-  List<String> _statusDropDown;
+  List<String> _statusDropDown = <String>[
+    "Available",
+    "Contacting only",
+    "Busy"
+  ];
+
   List<Icon> icons;
-  bool _isLoading = true;
-  Timer timer;
-  double longitude;
-  double latitude;
-  final _samplingPeriod = 5;
-  final loc.Location _location = loc.Location();
+  bool _isLoaded = false;
   String messageTitle = "Empty";
   String notificationAlert = "alert";
 
-  HelperHomeScreenState(String token) {
-    Future.delayed(Duration(seconds: 1), () async {
-      user = new Helper(token);
-      await user.getState();
-      _isLoading = false;
-      _status = user.status;
-      if (mounted) {
-        setState(() {});
-      }
-      if (user.status == "Available") {
-        _requestGps();
-        startBackgroundProcess();
-        timer = Timer.periodic(
-            Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    _statusDropDown = <String>["Available", "Contacting only", "Busy"];
-    _status = _statusDropDown[0];
-    super.initState();
-    timer = null;
-  }
-
   Widget getCard(String title, String trail, Widget nextScreen, IconData icon,
-      double width) {
+      double width, BuildContext context) {
     return Card(
       elevation: 0,
       color: Colors.transparent,
@@ -107,102 +74,15 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
     );
   }
 
-  Future<void> sendPosition() async {
-    if (!await _location.serviceEnabled()) {
-      setState(() {
-        changeStatus("Busy");
-      });
-    }
-    if (longitude != null && latitude != null) {
-
-      String tempToken = user.token;
-      final http.Response response = await http.post(
-        Uri.parse('$url/helper/update_location/'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $tempToken',
-        },
-        body: jsonEncode(<String, double>{
-          'latitude':  latitude,
-          'longitude': longitude
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        makeToast("Submitted");
-      } else {
-        makeToast('Failed to submit user.');
-      }
-    }
-  }
-
-  startBackgroundProcess() async {
-    await BackgroundLocation.setAndroidNotification(
-      title: "Monqez is running",
-      message: "Available",
-      icon: "@mipmap/ic_launcher",
-    );
-    await BackgroundLocation.setAndroidConfiguration(1000);
-    await BackgroundLocation.startLocationService();
-    BackgroundLocation.getLocationUpdates((location) {
-      latitude = location.latitude;
-      longitude = location.longitude;
-    });
-  }
-
-  stopBackgroundProcess() {
-    BackgroundLocation.stopLocationService();
-  }
-
-  Future _requestGps() async {
-    if (!await _location.serviceEnabled()) {
-      stopBackgroundProcess();
-      bool result = await _location.requestService();
-      if (result == false) {
-        setState(() {
-          changeStatus("Busy");
-        });
-      }
-    }
-  }
-
-  Future<void> changeStatus(newValue) async {
-    _status = newValue;
-    if (newValue == "Available") {
-      ///////
-      _requestGps();
-      startBackgroundProcess();
-      timer = Timer.periodic(
-          Duration(seconds: _samplingPeriod), (timer) => sendPosition());
-    } else {
-      if (timer != null) {
-        timer.cancel();
-        stopBackgroundProcess();
-      }
-    }
-    var _prefs = await SharedPreferences.getInstance();
-    String token = _prefs.getString("userToken");
-    final http.Response response = await http.post(
-      Uri.parse('$url/helper/setstatus/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(<String, String>{'status': newValue}),
-    );
-
-    if (response.statusCode == 200) {
-      makeToast("Submitted");
-    } else {
-      makeToast('Failed to submit user.');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
+    print("Is Loaded: " + _isLoaded.toString());
+    if (!_isLoaded) {
+      _isLoaded = true;
+      Provider.of<Helper>(context, listen: false).setToken(token);
+      checkNotification(context);
+    }
+    if (Provider.of<Helper>(context, listen: true).status == null) {
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -212,9 +92,9 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                   height: 100,
                   width: 100,
                   child: CircularProgressIndicator(
-                      backgroundColor: secondColor,
-                      strokeWidth: 5,
-                  //    valueColor:
+                    backgroundColor: secondColor,
+                    strokeWidth: 5,
+                    //    valueColor:
                     //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else
@@ -233,12 +113,12 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                 child: DropdownButton(
                   dropdownColor: firstColor,
                   //hint: Text('Status'), // Not necessary for Option 1
-                  value: _status,
+                  value: Provider.of<Helper>(context, listen: true).status,
                   onChanged: (newValue) {
-                    setState(() {
-                      _status = newValue;
-                      changeStatus(newValue);
-                    });
+                    Provider.of<Helper>(context, listen: false).status =
+                        newValue;
+                    Provider.of<Helper>(context, listen: false)
+                        .changeStatus(newValue);
                   },
                   items: _statusDropDown.map((location) {
                     return DropdownMenuItem(
@@ -264,7 +144,11 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          getTitle(user.name, 26, secondColor, TextAlign.start,
+                          getTitle(
+                              Provider.of<Helper>(context, listen: true).name,
+                              26,
+                              secondColor,
+                              TextAlign.start,
                               true),
                           Icon(Icons.account_circle_rounded,
                               size: 90, color: secondColor),
@@ -284,7 +168,11 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                         size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(ProfileScreen(user), context, false);
+                      navigate(
+                          ProfileScreen(
+                              Provider.of<Helper>(context, listen: false)),
+                          context,
+                          false);
                     },
                   ),
                   ListTile(
@@ -323,9 +211,11 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                         child: RaisedButton(
                             elevation: 5.0,
                             onPressed: () {
-                              if (user.status == "Available") {
-                                timer.cancel();
-                                stopBackgroundProcess();
+                              if (Provider.of<Helper>(context, listen: true)
+                                      .status ==
+                                  "Available") {
+                                Provider.of<Helper>(context, listen: true)
+                                    .stopBackgroundProcess();
                               }
                               logout();
                               navigate(LoginScreen(), context, true);
@@ -368,19 +258,26 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
                             "4",
                             CallingQueueScreen(),
                             Icons.call,
-                            (MediaQuery.of(context).size.width - 40) / 2),
+                            (MediaQuery.of(context).size.width - 40) / 2,
+                            context),
                         getCard(
                             "Chat Queue",
                             "3",
                             ChatQueueScreen(),
                             Icons.chat,
-                            (MediaQuery.of(context).size.width - 40) / 2),
+                            (MediaQuery.of(context).size.width - 40) / 2,
+                            context),
                       ],
                     ),
                     getCard("Request Queue", "6", null, Icons.local_hospital,
-                        MediaQuery.of(context).size.width),
-                    getCard("My Ratings", "4.4", HelperRatingsScreen(),
-                        Icons.star_rate, MediaQuery.of(context).size.width),
+                        MediaQuery.of(context).size.width, context),
+                    getCard(
+                        "My Ratings",
+                        "4.4",
+                        HelperRatingsScreen(),
+                        Icons.star_rate,
+                        MediaQuery.of(context).size.width,
+                        context),
                   ],
                 ),
               ),
@@ -389,4 +286,15 @@ class HelperHomeScreenState extends State<HelperHomeScreen>
         ),
       );
   }
+}
+
+void checkNotification(BuildContext context) async {
+  print("Check Helper 1");
+  FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage message) {
+    if (message != null) {
+      FirebaseCloudMessaging.route = new HelperUserNotification(message, true);
+      print("Navigating");
+      navigate(NotificationRoute.selectNavigate, context, true);
+    }
+  });
 }

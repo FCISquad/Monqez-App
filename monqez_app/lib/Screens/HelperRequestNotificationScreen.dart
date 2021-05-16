@@ -1,29 +1,28 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Backend/Authentication.dart';
 import 'package:monqez_app/Screens/HelperUser/RequestScreen.dart';
 import 'package:http/http.dart' as http;
+import 'Model/Helper.dart';
 
-class HelperRequestNotificationScreen extends StatefulWidget {
-  @override
-  HelperRequestNotificationScreenState createState() =>
-      HelperRequestNotificationScreenState();
-}
+// ignore: must_be_immutable
+class HelperRequestNotificationScreen extends StatelessWidget {
 
-class HelperRequestNotificationScreenState
-    extends State<HelperRequestNotificationScreen> {
-
+  //static bool hideBackButton;
+  HelperRequestNotificationScreen() {
+    print("HelperRequest");
+  }
   static String requestID;
   static double longitude;
   static double latitude;
   var _prefs;
   String token;
 
-  void decline() async {
+  Future<void> decline(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
 
@@ -43,12 +42,12 @@ class HelperRequestNotificationScreenState
     } else {
       print(response.statusCode);
     }
-    setState(() {});
   }
 
-  Future<int> accept() async {
+  Future<int> accept(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
+    Provider.of<Helper>(context, listen: false).setToken(token);
     int returned = 0;
     final http.Response response = await http.post(
       Uri.parse('$url/helper/accept_request'),
@@ -63,14 +62,14 @@ class HelperRequestNotificationScreenState
     );
     if (response.statusCode == 200) {
       makeToast("Successful");
-    } else if (response.statusCode == 444){
+      Provider.of<Helper>(context, listen: false).changeStatus("Busy");
+    } else if (response.statusCode == 201){
       makeToast("Someone already accepted the request!");
-      returned = 444;
+      returned = 201;
     }
     else {
       print(response.statusCode);
     }
-    setState(() {});
     return returned;
   }
 
@@ -78,6 +77,17 @@ class HelperRequestNotificationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+            leading:  Visibility(
+              child: new IconButton(
+                  icon: new Icon(Icons.arrow_back),
+                  onPressed: (){
+                    decline(context);
+                    Navigator.pop(context);
+                    //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
+                  }
+              ),
+              visible: true,
+            ),
             title: getTitle(
                 "Monqez - Helper", 22.0, secondColor, TextAlign.start, true),
             shadowColor: Colors.black,
@@ -118,7 +128,7 @@ class HelperRequestNotificationScreenState
                       style: ElevatedButton.styleFrom(
                           primary: Colors.green, shape: CircleBorder()),
                       onPressed: () async {
-                        int result = await accept();
+                        int result = await accept(context);
                         if (result == 0){
                         navigate(RequestScreen(longitude, latitude), context, true);}
                         else{
@@ -130,9 +140,11 @@ class HelperRequestNotificationScreenState
                       child: Icon(Icons.close, size: 60.0),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.red, shape: CircleBorder()),
-                      onPressed: () => {
-                        decline(),
-                        navigate(HelperHomeScreen(token), context, true) ///Momkn y error hena w token tb2a b null lw m3mlsh await
+                      onPressed: () async {
+                        await decline(context);
+
+                        Navigator.pop(context);
+                        //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                       },
                     ),
                   ],

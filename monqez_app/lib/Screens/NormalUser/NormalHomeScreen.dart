@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
@@ -12,6 +17,7 @@ import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 
 import '../LoginScreen.dart';
+import 'InstructionsScreen.dart';
 
 class NormalHomeScreen extends StatefulWidget {
   String token;
@@ -36,10 +42,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   int bodyMap;
-
+  bool isLoaded = false;
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
-      user = new User(token);
+      user = new User.empty();
       await user.getUser();
       _isLoading = false;
     });
@@ -194,9 +200,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
-
-
-
   _showMaterialDialog() {
     showDialog(
         context: context,
@@ -318,6 +321,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
+                                    navigate(InstructionsScreen(user.token), context, false);
                                   },
                                   child: Text(
                                     "Submit",
@@ -490,8 +494,22 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     controller.forward();
   }
 
+  void checkNotification(BuildContext context) async {
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) {
+        FirebaseCloudMessaging.route = new NormalUserNotification(message, true);
+        navigate(NotificationRoute.selectNavigate, context, false);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
+    if (!isLoaded) {
+      checkNotification(context);
+      isLoaded = true;
+    }
     if (_isLoading) {
       return Scaffold(
           backgroundColor: secondColor,

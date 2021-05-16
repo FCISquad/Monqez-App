@@ -1,4 +1,8 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/AdminUserNotification.dart';
+import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
@@ -25,12 +29,13 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
 
   AdminHomeScreenState() {
     applicationNumber = 0;
+    checkNotification();
     getToken();
   }
 
   Future<void> getState() async {
     String token = AdminHomeScreenState.token;
-    user = new User(token);
+    user = new User.empty();
     await user.getUser();
     final http.Response response = await http.post(
       Uri.parse('$url/admin/get_state/'),
@@ -63,6 +68,19 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     await getState();
   }
 
+  void checkNotification() async {
+    Builder(
+      builder: (BuildContext context) {
+        FirebaseMessaging.instance
+            .getInitialMessage()
+            .then((RemoteMessage message) {
+          FirebaseCloudMessaging.route = new AdminUserNotification(message, true);
+          navigate(NotificationRoute.selectNavigate, context, false);
+        });
+        return null;
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
