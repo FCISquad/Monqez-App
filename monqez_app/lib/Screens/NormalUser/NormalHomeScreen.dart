@@ -47,6 +47,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
+      user.setToken(token);
       await user.getUser();
       _isLoading = false;
     });
@@ -106,15 +107,16 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
   }
+
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
     Map<String, dynamic> body = {
-      'additionalInfo':{
+      'additionalInfo': {
         'Address': _detailedAddress.text,
         'Additional Notes': _aditionalNotes.text
       },
-      'avatarBody':bodyMap.toString(),
-      'forMe':_radioValue.toString()
+      'avatarBody': bodyMap.toString(),
+      'forMe': _radioValue.toString()
     };
     final http.Response response = await http.post(
       Uri.parse('$url/user/request_information/'),
@@ -132,6 +134,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       makeToast('Failed to submit user.');
     }
   }
+
   void _makeRequest() async {
     await _getCurrentUserLocation();
     String tempToken = user.token;
@@ -201,6 +204,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
+
   _showMaterialDialog() {
     showDialog(
         context: context,
@@ -322,7 +326,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(user.token), context, false);
+                                    navigate(InstructionsScreen(user.token),
+                                        context, false);
                                   },
                                   child: Text(
                                     "Submit",
@@ -343,14 +348,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
+
   PolylinePoints polylinePoints;
 
   List<LatLng> polylineCoordinates = [];
 
-
   Map<PolylineId, Polyline> polylines = {};
   _createPolylines(Position start, Position destination) async {
-
     polylinePoints = PolylinePoints();
 
     // Generating the list of coordinates to be used for
@@ -500,11 +504,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        FirebaseCloudMessaging.route = new NormalUserNotification(message, true);
+        FirebaseCloudMessaging.route =
+            new NormalUserNotification(message, true);
         navigate(NotificationRoute.selectNavigate, context, false);
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     if (!isLoaded) {
@@ -529,12 +535,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-              title:
-                  getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
-              shadowColor: Colors.black,
-              backgroundColor: firstColor,
-              iconTheme: IconThemeData(color: secondColor),
-              elevation: 5,
+            title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
+            shadowColor: Colors.black,
+            backgroundColor: firstColor,
+            iconTheme: IconThemeData(color: secondColor),
+            elevation: 5,
             actions: <Widget>[
               IconButton(
                 icon: Icon(
@@ -615,7 +620,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
-				polylines: Set<Polyline>.of(polylines.values),
+                polylines: Set<Polyline>.of(polylines.values),
               ),
               /*SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -638,9 +643,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     height: 50,
                     child: RaisedButton(
                       onPressed: () {
-
                         //_createPolylines();
-                        _makeRequest () ;
+                        _makeRequest();
 
                         _showMaterialDialog();
                       },
