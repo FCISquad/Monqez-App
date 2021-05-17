@@ -7,6 +7,7 @@ import 'package:monqez_app/Screens/CallPage.dart';
 import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 class CallingQueueScreen extends StatefulWidget {
@@ -31,17 +32,17 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   bool _isLoading = true;
 
   void iterateJson(String jsonStr) {
-    _calls = <ListTile>[];
-    List<dynamic> calls = json.decode(jsonStr);
-    int counter = 1;
+    List<dynamic> callss = json.decode(jsonStr);
 
-    calls.forEach((call) {
+    callss.forEach((call) {
       var singleCall = call as Map<String, dynamic>;
-      String channelID = singleCall['channelID'];
-      String type = singleCall['type'];
-      String data = singleCall['data'];
-      String severity = singleCall['severity'];
-      String name = singleCall['name'];
+      if (singleCall == null) return;
+      var key = singleCall.keys.elementAt(0);
+      String channelID = singleCall[key]['channelId'];
+      String type = singleCall[key]['type'];
+      String data = singleCall[key]['data'];
+      String name = singleCall[key]['name'];
+      print(channelID);
       //String date = singleCall['date'];
       IconData icon;
       if (type == "video") {
@@ -49,9 +50,8 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       } else {
         icon = Icons.call;
       }
-
-      _calls.add(getCard(name, data, icon, double.parse(severity),
-          MediaQuery.of(context).size.width, channelID));
+      _calls.add(getCard(
+          name, data, icon, MediaQuery.of(context).size.width, channelID));
     });
   }
 
@@ -68,6 +68,7 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       },
     );
     if (response.statusCode == 200) {
+      print("Response");
       print(response.body);
       iterateJson(response.body);
       setState(() {
@@ -86,16 +87,19 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   @override
   void initState() {
     super.initState();
+    getAllApplications();
     //callController.addListener();
   }
 
-  Widget getCard(String name, String comment, IconData icon, double rating,
-      double width, String channelID) {
+  Widget getCard(String name, String comment, IconData icon, double width,
+      String channelID) {
     return Card(
       elevation: 0,
       color: Colors.transparent,
       child: GestureDetector(
-        onTap: () => {
+        onTap: () async => {
+          await _handleCameraAndMic(Permission.camera),
+          await _handleCameraAndMic(Permission.microphone),
           Navigator.push(
               context,
               MaterialPageRoute(
@@ -127,8 +131,6 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
                   contentPadding: EdgeInsets.fromLTRB(10, 0, 10, 10),
                   title: getTitle(
                       comment, 16, secondColor, TextAlign.start, false),
-                  trailing: getTitle("Severity: " + rating.toString(), 16,
-                      secondColor, TextAlign.end, true),
                 ),
                 //ListT
               ],
@@ -192,5 +194,10 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
           ),
         ),
       );
+  }
+
+  Future<void> _handleCameraAndMic(Permission permission) async {
+    final status = await permission.request();
+    print(status);
   }
 }
