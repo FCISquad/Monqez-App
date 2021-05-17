@@ -36,24 +36,28 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   void iterateJson(String jsonStr) {
     List<dynamic> callss = json.decode(jsonStr);
 
+    //m7taga ttshal bs ana 5ayf asheel l for each
     callss.forEach((call) {
       var singleCall = call as Map<String, dynamic>;
+      print("SINGLE");
+      print(singleCall);
       if (singleCall == null) return;
-      var key = singleCall.keys.elementAt(0);
-      String channelID = singleCall[key]['channelId'];
-      String type = singleCall[key]['type'];
-      String data = singleCall[key]['data'];
-      String name = singleCall[key]['name'];
-      print(channelID);
-      //String date = singleCall['date'];
-      IconData icon;
-      if (type == "video") {
-        icon = Icons.video_call;
-      } else {
-        icon = Icons.call;
+      for (int i = 0; i < singleCall.keys.length; i++) {
+        var key = singleCall.keys.elementAt(i);
+        String channelID = singleCall[key]['channelId'];
+        String type = singleCall[key]['type'];
+        String data = singleCall[key]['data'];
+        String name = singleCall[key]['name'];
+        //String date = singleCall['date'];
+        IconData icon;
+        if (type == "video") {
+          icon = Icons.video_call;
+        } else {
+          icon = Icons.call;
+        }
+        _calls.add(getCard(name, data, icon, MediaQuery.of(context).size.width,
+            channelID, type));
       }
-      _calls.add(getCard(name, data, icon, MediaQuery.of(context).size.width,
-          channelID, type));
     });
   }
 
