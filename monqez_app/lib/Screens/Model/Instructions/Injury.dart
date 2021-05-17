@@ -22,12 +22,12 @@ class Injury {
 
   void load() {
     /// HTTP Request
-    _instructions.add(new Pair(_title.getImage(), "ARSAD AD SSADA SDA SJ FJGG IRFJ VJNF"));
+    /*_instructions.add(new Pair(_title.getImage(), "ARSAD AD SSADA SDA SJ FJGG IRFJ VJNF"));
 
     _instructions.add(new Pair(_title.getImage(), "AR SAD ADSSA DAS DAS JFJGGI RFJVJNF"));
 
     _instructions.add(new Pair(_title.getImage(), "ARSADAD SSA DAS DASJFJ GGIRF JVJNF"));
 
-    _instructions.add(new Pair(_title.getImage(), "ARSA DADSS ADASDA SJF JGGIRFJVJ NF"));
+    _instructions.add(new Pair(_title.getImage(), "ARSA DADSS ADASDA SJF JGGIRFJVJ NF"));*/
   }
 }

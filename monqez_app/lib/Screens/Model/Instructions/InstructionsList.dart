@@ -14,10 +14,10 @@ class InstructionsList with ChangeNotifier {
   }
 
   loadInjuries() async { // will be http request
-      _injuries.add(new Injury(File('images/ToBeRemoved/leg.png'), "Broken Leg"));
+      /*_injuries.add(new Injury(File('images/ToBeRemoved/leg.png'), "Broken Leg"));
       _injuries.add(new Injury(File('images/ToBeRemoved/burn.png'), "Burn Injuries"));
       _injuries.add(new Injury(File('images/ToBeRemoved/leg.png'), "Broken Leg"));
-      _injuries.add(new Injury(File('images/ToBeRemoved/burn.png'), "Burn Injuries"));
+      _injuries.add(new Injury(File('images/ToBeRemoved/burn.png'), "Burn Injuries"));*/
       notifyListeners();
   }
   getInjuries() {
@@ -27,9 +27,12 @@ class InstructionsList with ChangeNotifier {
   void select(int index) {
     this.selected = index;
     _injuries[index].load();
-    navigatorKey.currentState.pushNamed('injury');
   }
   Injury getSelected() {
-    return _injuries[selected];
+    if (selected == -1)
+      return null;
+    int temp = selected;
+    selected = -1;
+    return _injuries[temp];
   }
 }

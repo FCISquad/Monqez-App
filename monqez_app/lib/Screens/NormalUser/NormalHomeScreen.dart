@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
-import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
@@ -15,9 +14,8 @@ import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-
 import '../LoginScreen.dart';
-import 'InstructionsScreen.dart';
+import '../Instructions/InstructionsScreen.dart';
 
 class NormalHomeScreen extends StatefulWidget {
   String token;

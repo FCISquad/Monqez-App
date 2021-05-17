@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
+import 'package:monqez_app/Screens/Instructions/ModifyInstruction.dart';
 import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
-import 'package:monqez_app/Screens/NormalUser/InjuryScreen.dart';
-import 'package:monqez_app/Screens/NormalUser/InstructionsScreen.dart';
+import 'package:monqez_app/Screens/Instructions/InjuryScreen.dart';
+import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
 import 'package:provider/provider.dart';
 import 'Screens/Model/Helper.dart';
 import 'Screens/SplashScreen.dart';
@@ -36,10 +37,11 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => Splash(),
+        '/': (context) => InstructionsScreen(),
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
-        'injury': (context) => InjuryScreen()
+        'injury': (context) => InjuryScreen(),
+        'modify_instruction': (context) => ModifyInstruction()
       },
     );
   }
@@ -59,6 +61,9 @@ class MyApp extends StatelessWidget {
       case 'instructions':
         return MaterialPageRoute<dynamic>(
             builder: (BuildContext context) => InjuryScreen());
+      case 'modify_instruction':
+        return MaterialPageRoute<dynamic>(
+            builder: (BuildContext context) => ModifyInstruction());
       default:
         return null;
     }
