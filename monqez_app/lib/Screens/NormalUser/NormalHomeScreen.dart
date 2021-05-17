@@ -715,13 +715,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode(<String, String>{
-          'name': _additionalInfoController.text,
+          'data': _additionalInfoController.text,
           'type': type
         }));
 
     if (response.statusCode == 200) {
-      var parsed = jsonDecode(response.body).cast<String, dynamic>();
-      channelID = parsed['channelID'];
+      //var parsed = jsonDecode(response.body).cast<String, dynamic>();
+      channelID = response.body;
     } else {
       print(response.statusCode);
       return;
