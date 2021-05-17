@@ -47,7 +47,7 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       if (type == "video") {
         icon = Icons.video_call;
       } else {
-        icon = Icons.voice_chat;
+        icon = Icons.call;
       }
 
       _calls.add(getCard(name, data, icon, double.parse(severity),

@@ -548,7 +548,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   Icons.call,
                   color: Colors.white,
                 ),
-                onPressed: _showCallDialog
+                onPressed: () {
+                  _showCallDialog("voice");
+                }
                 // do something
                 ,
               ),
@@ -557,7 +559,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   Icons.video_call,
                   color: Colors.white,
                 ),
-                onPressed: _showCallDialog
+                onPressed: () {
+                  _showCallDialog("video");
+                }
                 // do something
                 ,
               )
@@ -698,7 +702,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
 
   Future<void> HTTPPost() async {}
 
-  Future<void> onJoin() async {
+  Future<void> onJoin(String type) async {
     await _handleCameraAndMic(Permission.camera);
     await _handleCameraAndMic(Permission.microphone);
     String token = user.token;
@@ -712,7 +716,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         },
         body: jsonEncode(<String, String>{
           'name': _additionalInfoController.text,
-          'type': 'video'
+          'type': type
         }));
 
     if (response.statusCode == 200) {
@@ -731,7 +735,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     }
   }
 
-  _showCallDialog() {
+  _showCallDialog(String type) {
     showDialog(
         context: context,
         builder: (context) {
@@ -769,7 +773,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               SizedBox(
                                 width: 200,
                                 child: RaisedButton(
-                                  onPressed: onJoin,
+                                  onPressed: () {
+                                    onJoin(type);
+                                  },
                                   child: Text(
                                     "Submit",
                                     style: TextStyle(color: Colors.white),
