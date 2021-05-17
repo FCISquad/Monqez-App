@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
+import '../VoicePage.dart';
+
 class CallingQueueScreen extends StatefulWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,8 +52,8 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       } else {
         icon = Icons.call;
       }
-      _calls.add(getCard(
-          name, data, icon, MediaQuery.of(context).size.width, channelID));
+      _calls.add(getCard(name, data, icon, MediaQuery.of(context).size.width,
+          channelID, type));
     });
   }
 
@@ -92,19 +94,27 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   }
 
   Widget getCard(String name, String comment, IconData icon, double width,
-      String channelID) {
+      String channelID, type) {
     return Card(
       elevation: 0,
       color: Colors.transparent,
       child: GestureDetector(
-        onTap: () async => {
-          await _handleCameraAndMic(Permission.camera),
-          await _handleCameraAndMic(Permission.microphone),
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CallPage(channelName: channelID),
-              ))
+        onTap: () async {
+          await _handleCameraAndMic(Permission.camera);
+          await _handleCameraAndMic(Permission.microphone);
+          if (type == "video") {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CallPage(channelName: channelID),
+                ));
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => VoicePage(channelName: channelID),
+                ));
+          }
         },
         child: Container(
           width: width,

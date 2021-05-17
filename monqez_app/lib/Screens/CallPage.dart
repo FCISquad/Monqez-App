@@ -207,7 +207,22 @@ class _CallPageState extends State<CallPage> {
               _videoView(views[0]),
             ],
           ),
-          Text("Please wait until a Monqez joins the call"),
+          Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration:
+                      BoxDecoration(border: Border.all(), color: Colors.red),
+                  child: Text(
+                    "Please wait until a Monqez joins",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )),
         ]));
       case 2:
         return Container(

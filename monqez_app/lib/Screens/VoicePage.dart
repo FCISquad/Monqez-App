@@ -1,24 +1,28 @@
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
-import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 
 const appID = '0ab37d96b60442c8985a93189f3402cb';
 
-class CallPage extends StatefulWidget {
+class VoicePage extends StatefulWidget {
   final String channelName;
-  const CallPage({Key key, this.channelName}) : super(key: key);
+  const VoicePage({Key key, this.channelName}) : super(key: key);
 
   @override
-  _CallPageState createState() => _CallPageState();
+  _VoicePageState createState() => _VoicePageState();
 }
 
-class _CallPageState extends State<CallPage> {
+class _VoicePageState extends State<VoicePage> {
   static final _users = <int>[];
   final _infoStrings = <String>[];
   bool muted = false;
   bool speaker = false;
   RtcEngine _engine;
+  bool screenEnabled = true;
+  bool _monqezJoined = false;
+  String textEnabled = "Double tap to lock the controls";
+  String textDisabled = "Double tap to unlock the controls";
 
   @override
   void dispose() {
@@ -87,6 +91,7 @@ class _CallPageState extends State<CallPage> {
           final info = 'userJoined: $uid';
           _infoStrings.add(info);
           _users.add(uid);
+          _monqezJoined = true;
         });
       },
       userOffline: (uid, reason) {
@@ -134,13 +139,13 @@ class _CallPageState extends State<CallPage> {
           RawMaterialButton(
             onPressed: _onSwitchSpeaker,
             child: Icon(
-              Icons.speaker,
-              color: Colors.blueAccent,
+              Icons.volume_up,
+              color: speaker ? Colors.white : Colors.blueAccent,
               size: 20.0,
             ),
             shape: CircleBorder(),
             elevation: 2.0,
-            fillColor: Colors.white,
+            fillColor: speaker ? Colors.blueAccent : Colors.white,
             padding: const EdgeInsets.all(12.0),
           )
         ],
@@ -152,39 +157,65 @@ class _CallPageState extends State<CallPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vpoice Call'),
+        title: Text('Voice Call'),
+        leading: IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () {
+              if (screenEnabled) Navigator.pop(context);
+              //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
+            }),
       ),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.white,
       body: Center(
         child: Stack(
           children: <Widget>[
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: CircularProfileAvatar(
+                  null,
+                  child: Icon(
+                    Icons.person,
+                    size: 60,
+                    color: _monqezJoined ? Colors.green : Colors.white,
+                  ),
+                  radius: 50,
+                  backgroundColor: Colors.transparent,
+                  borderColor: firstColor,
+                  elevation: 5.0,
+                  cacheImage: true,
+                  onTap: () {
+                    print('tapped');
+                  }, // sets on tap
+                ),
+              ),
+            ),
             //_viewRows(),
-            _toolbar(),
+            Align(
+                alignment: Alignment.center,
+                child: GestureDetector(
+                  onDoubleTap: () {
+                    setState(() {
+                      screenEnabled = !screenEnabled;
+                    });
+                  },
+                  child: Container(
+                    decoration:
+                        BoxDecoration(border: Border.all(), color: Colors.red),
+                    child: Text(
+                      screenEnabled ? textEnabled : textDisabled,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                )),
+            //_toolbar()
+            IgnorePointer(ignoring: !screenEnabled, child: _toolbar()),
           ],
         ),
-      ),
-    );
-  }
-
-  /// Helper function to get list of native views
-  List<Widget> _getRenderViews() {
-    final List<StatefulWidget> list = [];
-    list.add(RtcLocalView.SurfaceView());
-    _users.forEach((int uid) => list.add(RtcRemoteView.SurfaceView(uid: uid)));
-    return list;
-  }
-
-  /// Video view wrapper
-  Widget _videoView(view) {
-    return Expanded(child: Container(child: view));
-  }
-
-  /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
-    final wrappedViews = views.map<Widget>(_videoView).toList();
-    return Expanded(
-      child: Row(
-        children: wrappedViews,
       ),
     );
   }

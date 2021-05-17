@@ -19,6 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
 
 import '../LoginScreen.dart';
+import '../VoicePage.dart';
 import 'InstructionsScreen.dart';
 
 class NormalHomeScreen extends StatefulWidget {
@@ -707,7 +708,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     await _handleCameraAndMic(Permission.microphone);
     String token = user.token;
     String channelID;
-
+/*
     final http.Response response = await http.post(Uri.parse('$url/user/call/'),
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -727,12 +728,27 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       return;
     }
     if (channelID != null) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CallPage(channelName: channelID),
-          ));
+      if (type == "video") {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CallPage(channelName: channelID),
+            ));
+      }
+      else{
+         Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VoicePage(channelName: channelID),
+            ));
+      }
     }
+    */
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VoicePage(channelName: "channelID"),
+        ));
   }
 
   _showCallDialog(String type) {
