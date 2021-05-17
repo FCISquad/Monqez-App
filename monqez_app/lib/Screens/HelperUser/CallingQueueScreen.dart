@@ -100,7 +100,7 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       color: Colors.transparent,
       child: GestureDetector(
         onTap: () async {
-          await _handleCameraAndMic(Permission.camera);
+          if (type == "video") await _handleCameraAndMic(Permission.camera);
           await _handleCameraAndMic(Permission.microphone);
           if (type == "video") {
             Navigator.push(
