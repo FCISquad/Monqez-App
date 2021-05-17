@@ -178,11 +178,11 @@ class _VoicePageState extends State<VoicePage> {
                   child: Icon(
                     Icons.person,
                     size: 60,
-                    color: _monqezJoined ? Colors.green : Colors.white,
+                    color: Colors.white,
                   ),
                   radius: 50,
                   backgroundColor: Colors.transparent,
-                  borderColor: firstColor,
+                  borderColor: _monqezJoined ? Colors.green : firstColor,
                   elevation: 5.0,
                   cacheImage: true,
                   onTap: () {

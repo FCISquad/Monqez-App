@@ -701,14 +701,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     print(status);
   }
 
-  Future<void> HTTPPost() async {}
-
   Future<void> onJoin(String type) async {
-    await _handleCameraAndMic(Permission.camera);
+    if (type == "video") await _handleCameraAndMic(Permission.camera);
     await _handleCameraAndMic(Permission.microphone);
     String token = user.token;
     String channelID;
-/*
+
     final http.Response response = await http.post(Uri.parse('$url/user/call/'),
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -734,21 +732,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             MaterialPageRoute(
               builder: (context) => CallPage(channelName: channelID),
             ));
-      }
-      else{
-         Navigator.push(
+      } else {
+        Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => VoicePage(channelName: channelID),
             ));
       }
     }
-    */
+    /*
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => VoicePage(channelName: "channelID"),
         ));
+        */
   }
 
   _showCallDialog(String type) {
