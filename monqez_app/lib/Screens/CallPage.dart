@@ -71,7 +71,6 @@ class _CallPageState extends State<CallPage> {
         });
       },
       joinChannelSuccess: (channel, uid, elapsed) {
-        print("HERE!");
         setState(() {
           final info = 'onJoinChannel: $channel, uid: $uid';
           _infoStrings.add(info);
@@ -159,7 +158,7 @@ class _CallPageState extends State<CallPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agora Group Video Calling'),
+        title: Text('Video Call'),
       ),
       backgroundColor: Colors.green,
       body: Center(
@@ -202,9 +201,14 @@ class _CallPageState extends State<CallPage> {
     switch (views.length) {
       case 1:
         return Container(
-            child: Column(
-          children: <Widget>[_videoView(views[0])],
-        ));
+            child: Stack(children: <Widget>[
+          Column(
+            children: <Widget>[
+              _videoView(views[0]),
+            ],
+          ),
+          Text("Please wait until a Monqez joins the call"),
+        ]));
       case 2:
         return Container(
             child: Column(

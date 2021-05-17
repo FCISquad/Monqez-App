@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
 
-import 'CallPage.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../CallPage.dart';
 
 class NormalCallScreen extends StatefulWidget {
   @override

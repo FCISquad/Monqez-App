@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
-import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
-import 'package:monqez_app/Screens/NormalUser/NormalCallScreen.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -16,6 +14,9 @@ import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+
+import 'package:permission_handler/permission_handler.dart';
+import '../CallPage.dart';
 
 import '../LoginScreen.dart';
 import 'InstructionsScreen.dart';
@@ -42,6 +43,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
+  var _additionalInfoController = TextEditingController();
   int bodyMap;
   bool isLoaded = false;
   _NormalHomeScreenState(String token) {
@@ -543,13 +545,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             actions: <Widget>[
               IconButton(
                 icon: Icon(
+                  Icons.call,
+                  color: Colors.white,
+                ),
+                onPressed: _showCallDialog
+                // do something
+                ,
+              ),
+              IconButton(
+                icon: Icon(
                   Icons.video_call,
                   color: Colors.white,
                 ),
-                onPressed: () {
-                  navigate(NormalCallScreen(), context, false);
-                  // do something
-                },
+                onPressed: _showCallDialog
+                // do something
+                ,
               )
             ],
           ),
@@ -679,5 +689,104 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           ),
         ),
       );
+  }
+
+  Future<void> _handleCameraAndMic(Permission permission) async {
+    final status = await permission.request();
+    print(status);
+  }
+
+  Future<void> HTTPPost() async {}
+
+  Future<void> onJoin() async {
+    await _handleCameraAndMic(Permission.camera);
+    await _handleCameraAndMic(Permission.microphone);
+    String token = user.token;
+    String channelID;
+
+    final http.Response response = await http.post(Uri.parse('$url/user/call/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, String>{
+          'name': _additionalInfoController.text,
+          'type': 'video'
+        }));
+
+    if (response.statusCode == 200) {
+      var parsed = jsonDecode(response.body).cast<String, dynamic>();
+      channelID = parsed['channelID'];
+    } else {
+      print(response.statusCode);
+      return;
+    }
+    if (channelID != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CallPage(channelName: channelID),
+          ));
+    }
+  }
+
+  _showCallDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: Container(
+                height: 200,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                          child: Text(
+                        "Additional Information",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
+                      SizedBox(height: 20),
+                      TextField(
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Additional Information'),
+                        controller: _additionalInfoController,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: onJoin,
+                                  child: Text(
+                                    "Submit",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+        });
   }
 }

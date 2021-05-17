@@ -4,7 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-String url = "https://monqez.herokuapp.com";
+String url = "https://monqez1.loca.lt/";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -24,43 +24,39 @@ void makeToast(String text) {
   );
 }
 
-Future<bool> signup( TextEditingController _emailController,
-    TextEditingController _passwordController ) async {
-    try {
-      var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text, password: _passwordController.text);
-      if (result != null) {
-        makeToast("Signup successful");
-        var token = await FirebaseAuth.instance.currentUser.getIdToken();
-        saveUserToken(token, result.user.uid);
-        return true;
-
-      } else {
-        makeToast('Please try later');
-        return false;
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-in-use') {
-        makeToast('Email already exists!');
-        return false;
-      } else {
-        makeToast(e.code);
-        return false;
-      }
-
+Future<bool> signup(TextEditingController _emailController,
+    TextEditingController _passwordController) async {
+  try {
+    var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text, password: _passwordController.text);
+    if (result != null) {
+      makeToast("Signup successful");
+      var token = await FirebaseAuth.instance.currentUser.getIdToken();
+      saveUserToken(token, result.user.uid);
+      return true;
+    } else {
+      makeToast('Please try later');
+      return false;
+    }
+  } on FirebaseAuthException catch (e) {
+    if (e.code == 'email-already-in-use') {
+      makeToast('Email already exists!');
+      return false;
+    } else {
+      makeToast(e.code);
+      return false;
+    }
   }
 }
 
-
-Future<UserCredential> newAdmin( TextEditingController _emailController,
-    TextEditingController _passwordController ) async {
+Future<UserCredential> newAdmin(TextEditingController _emailController,
+    TextEditingController _passwordController) async {
   try {
     var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text, password: _passwordController.text);
     if (result != null) {
       var token = await FirebaseAuth.instance.currentUser.getIdToken();
       return result;
-
     } else {
       makeToast('Please try later');
       return null;
@@ -73,7 +69,6 @@ Future<UserCredential> newAdmin( TextEditingController _emailController,
       makeToast(e.code);
       return null;
     }
-
   }
 }
 
@@ -135,7 +130,6 @@ Future<bool> signInWithFacebook() async {
 
  */
 
-
 Future<bool> normalSignIn(TextEditingController _emailController,
     TextEditingController _passwordController) async {
   try {
@@ -170,11 +164,10 @@ Future<void> signOutGoogle() async {
   print("User Signed Out");
 }
 
-void logout () async {
+void logout() async {
   var _prefs = await SharedPreferences.getInstance();
   _prefs.remove('email');
   _prefs.remove('userID');
   _prefs.remove('userToken');
   makeToast('Logged out!');
 }
-
