@@ -120,5 +120,24 @@ app.post( '/accept_request' , (request, response) => {
     });
 } );
 
+app.post('/get_call_queue' , (request, response) => {
+    // let user = new HelperUser(request.body);
+    // user.getCalls().then( (channelId) => {
+    //     response.status(200).send(channelId);
+    // } );
+
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.getCalls().then( (channelId) => {
+                response.status(200).send(channelId);
+            } );
+        }
+    });
+});
+
 
 module.exports = app;
