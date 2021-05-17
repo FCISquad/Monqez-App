@@ -125,6 +125,14 @@ class HelperUser extends User{
                 }
             } );
     }
+
+    getCalls(){
+        return new Promise( (resolve, _) => {
+            User._database.getCalls().then( (snapShot) => {
+                resolve(snapShot);
+            } )
+        } )
+    }
 }
 
 module.exports = HelperUser;

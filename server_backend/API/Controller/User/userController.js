@@ -162,6 +162,27 @@ app.post('/request_information', (request, response) => {
         }
     });
 });
+
+app.post('/call', (request, response) => {
+
+    // let user = new NormalUser(request.body);
+    // user.insertCall( "ehabID" , request.body).then( (channelId) => {
+    //     response.status(200).send(channelId);
+    // } );
+
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new NormalUser(request.body);
+            user.insertCall(userId , request.body).then( (channelId) => {
+                response.status(200).send(channelId);
+            } );
+        }
+    });
+});
+
 /*
 var secondRequest = function rerequest(userJson) {
     let user = new NormalUser(userJson);

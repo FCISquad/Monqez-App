@@ -143,6 +143,14 @@ class NormalUser extends User {
                 } )
         } );
     }
+
+    insertCall(userId, Json){
+        return new Promise( (resolve, _) => {
+            User._database.insertCall(userId, Json).then( (channelId) => {
+                resolve(channelId);
+            } )
+        } );
+    }
 }
 
 module.exports = NormalUser;

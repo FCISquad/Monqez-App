@@ -21,7 +21,11 @@
   <component name="ChangeListManager">
     <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/helperController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/helperController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Controller/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Model/User/helperUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/helperUser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Model/User/normalUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/normalUser.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,26 +138,30 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1877" height="291" key="GridCell.Tab.0.bottom" timestamp="1619980032562">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="430" key="GridCell.Tab.0.bottom" timestamp="1621278048638">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032562" />
-    <state width="1877" height="291" key="GridCell.Tab.0.center" timestamp="1619980032561">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="430" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
+    <state width="1261" height="430" key="GridCell.Tab.0.center" timestamp="1621278048638">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032561" />
-    <state width="1877" height="291" key="GridCell.Tab.0.left" timestamp="1619980032561">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="430" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
+    <state width="1261" height="430" key="GridCell.Tab.0.left" timestamp="1621278048638">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032561" />
-    <state width="1877" height="291" key="GridCell.Tab.0.right" timestamp="1619980032562">
-      <screen x="0" y="0" width="1920" height="1050" />
+    <state width="1261" height="430" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
+    <state width="1261" height="430" key="GridCell.Tab.0.right" timestamp="1621278048638">
+      <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032562" />
+    <state width="1261" height="430" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
     <state width="1877" height="511" key="GridCell.Tab.1.bottom" timestamp="1618871401905">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -186,6 +194,10 @@
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1877" height="511" key="GridCell.Tab.2.right/0.0.1920.1050@0.0.1920.1050" timestamp="1618871401905" />
+    <state x="370" y="172" key="run.anything.popup" timestamp="1621274231381">
+      <screen x="62" y="0" width="1304" height="768" />
+    </state>
+    <state x="370" y="172" key="run.anything.popup/62.0.1304.768@62.0.1304.768" timestamp="1621274231381" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
