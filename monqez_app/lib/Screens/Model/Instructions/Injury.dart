@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:monqez_app/Screens/Instructions/ImageController.dart';
 import 'Pair.dart';
 
 class Injury {
@@ -6,15 +6,18 @@ class Injury {
   Pair _title;
   List<Pair> _instructions;
 
-  Injury(File image, String caption) {
+  Injury(ImageController image, String caption) {
     _title = new Pair(image, caption);
     _instructions = [];
   }
-  void addStep (File image, String caption) {
+  void addStep (ImageController image, String caption) {
     _instructions.add(Pair(image, caption));
   }
   Pair getTitle () {
     return _title;
+  }
+  void setInstructions(List<Pair> instructions) {
+    _instructions = instructions;
   }
   List<Pair> getInstructions() {
     return _instructions;

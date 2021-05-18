@@ -1,15 +1,15 @@
-import 'dart:io';
+import 'package:monqez_app/Screens/Instructions/ImageController.dart';
 
 class Pair {
-  File _image;
+  ImageController _image;
   String _caption;
 
-  Pair(File image, String caption) {
+  Pair(ImageController image, String caption) {
     _image = image;
     _caption = caption;
   }
 
-  File getImage() {
+  ImageController getImage() {
     return _image;
   }
   String getCaption() {

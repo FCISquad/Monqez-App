@@ -69,9 +69,8 @@ class _InjuryScreenState extends State<InjuryScreen> {
                     background: Padding(
                       padding: EdgeInsets.all(50),
                       child: Center(
-                        child: Image.asset(
-                          title.getImage().path,
-                          //height: height * 16,
+                        child: Image.memory(
+                          title.getImage().decode(),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -95,8 +94,8 @@ class _InjuryScreenState extends State<InjuryScreen> {
                           children: [
                             getText(instructions[index].getCaption(), 24, false,
                                 Colors.black),
-                            Image.asset(
-                              instructions[index].getImage().path,
+                            Image.memory(
+                              instructions[index].getImage().decode(),
                               height: height * 14,
                             )
                           ],

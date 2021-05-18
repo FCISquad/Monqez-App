@@ -4,6 +4,7 @@ import 'package:monqez_app/Screens/Model/Instructions/Injury.dart';
 import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
 import 'package:monqez_app/Screens/Model/Instructions/Pair.dart';
 import '../../main.dart';
+import 'ImageController.dart';
 import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Screens/Instructions/InjuryScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +13,7 @@ import 'dart:io';
 class InstructionsScreen extends StatelessWidget {
   bool _isAdmin;
   InstructionsScreen([this._isAdmin = true]);
+
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +26,26 @@ class InstructionsScreen extends StatelessWidget {
       width = height;
       height = temp;
     }
-    var provider = Provider.of<InstructionsList>(context);
+    var provider = Provider.of<InstructionsList>(context, listen: true);
     List<Injury> instructions = provider.getInjuries();
-    return MaterialApp(
+    print(instructions.toString());
+    if (instructions == null || instructions.isEmpty || instructions[0].getTitle().getImage().base_64 == null) {
+      return Scaffold(
+          backgroundColor: secondColor,
+          body: Container(
+              height: double.infinity,
+              alignment: Alignment.center,
+              child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(
+                    backgroundColor: secondColor,
+                    strokeWidth: 5,
+                    //    valueColor:
+                    //      new AlwaysStoppedAnimation<Color>(firstColor)
+                  ))));
+    } else {
+      return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
             leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
@@ -60,12 +79,31 @@ class InstructionsScreen extends StatelessWidget {
                   scrollDirection: Axis.vertical,
                   physics: AlwaysScrollableScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: instructions.length,
+                  itemCount: instructions.length + 1,
                   itemBuilder: (BuildContext context, int index) {
+                    if (index == instructions.length) {
+                      return Align(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          width: 200,
+                          // ignore: deprecated_member_use
+                          child: RaisedButton(
+                            onPressed: () {
+                              makeToast("Submitted");
+                              Navigator.of(context).pop();
+                            },
+                            child: Text(
+                              "Save Changes",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            color: Colors.deepOrange,
+                          ),
+                        ),
+                      );
+                    }
                     Injury selected = instructions[index];
-                    File image = selected.getTitle().getImage();
+                    ImageController image = selected.getTitle().getImage();
                     String caption = selected.getTitle().getCaption();
-
                     return Container(
                       decoration: BoxDecoration(
                         color: secondColor,
@@ -82,7 +120,7 @@ class InstructionsScreen extends StatelessWidget {
                         dense: true,
                         tileColor: Colors.transparent,
                         onTap: () {
-                          provider.select(index);
+                          provider.select(index, false);
                           navigatorKey.currentState.pushNamed('injury');
                         },
                         title: Stack(
@@ -94,7 +132,7 @@ class InstructionsScreen extends StatelessWidget {
                                 alignment: Alignment.topRight,
                                 child: GestureDetector(
                                   onTap: () {
-                                    provider.select(index);
+                                    provider.select(index, true);
                                     navigatorKey.currentState.pushNamed('modify_instruction');
                                   },
                                   child: new Align(
@@ -117,8 +155,8 @@ class InstructionsScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Image.asset(
-                                  image.path,
+                                Image.memory(
+                                  image.decode(),
                                   width: width * 50,
                                   height: width * 50,
                                 ),
@@ -133,6 +171,6 @@ class InstructionsScreen extends StatelessWidget {
                   })),
         ),
       ),
-    );
+    );}
   }
 }
