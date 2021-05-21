@@ -125,6 +125,22 @@ class HelperUser extends User{
                 }
             } );
     }
+
+    getCalls(){
+        return new Promise( (resolve, _) => {
+            User._database.getCalls().then( (snapShot) => {
+                resolve(snapShot);
+            } )
+        } )
+    }
+
+    acceptCall(monqezId, userJson){
+        return new Promise( ((resolve, reject) => {
+            User._database.callAccept(monqezId, userJson)
+                .then( () => { resolve() } )
+                .catch( () => { reject() } );
+        }) );
+    }
 }
 
 module.exports = HelperUser;

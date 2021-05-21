@@ -120,6 +120,21 @@ app.post('/update_registration_token', (request, response)=>{
     });
 });
 
+function requestTimeOut(userId, monqezIDs){
+    new NormalUser().isTimeOut(userId).then( (acceptCount) => {
+        if (acceptCount === 0){
+            for (let i = 3; i < monqezIDs.length; ++i){
+                let user = new NormalUser();
+                user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
+                    if (allDecline === true){
+                        re_request({"uid" : userId});
+                    }
+                } )
+            }
+        }
+    } );
+}
+
 app.post('/request', (request, response) => {
     // let user = new NormalUser(request.body);
     // user.request("ehabzzz", request.body, true);
@@ -132,14 +147,14 @@ app.post('/request', (request, response) => {
         }
         else{
            let user = new NormalUser(request.body);
-           user.request(userId, request.body, true).then(() => {
+           user.request(userId, request.body, true).then((monqezIDs) => {
                response.sendStatus(200);
+               setTimeout(30000, requestTimeOut, userId, monqezIDs);
            })
            .catch(() => {
                // service unavailable
                response.sendStatus(503);
            });
-
         }
     });
 })
@@ -162,6 +177,27 @@ app.post('/request_information', (request, response) => {
         }
     });
 });
+
+app.post('/call', (request, response) => {
+
+    // let user = new NormalUser(request.body);
+    // user.insertCall( "ehabID" , request.body).then( (channelId) => {
+    //     response.status(200).send(channelId);
+    // } );
+
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new NormalUser(request.body);
+            user.insertCall(userId , request.body).then( (channelId) => {
+                response.status(200).send(channelId);
+            } );
+        }
+    });
+});
+
 /*
 var secondRequest = function rerequest(userJson) {
     let user = new NormalUser(userJson);
