@@ -323,7 +323,6 @@ class Database {
             let minutes = ("0" + date_ob.getMinutes()).slice(-2);
             let seconds = ("0" + date_ob.getSeconds()).slice(-2);
             let timeID  = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-            //let timeID = date_ob.getTime();
 
             admin.database().ref('requests/' + uid + '/' + timeID)
                 .update(request)
@@ -427,6 +426,21 @@ class Database {
         } );
     }
 
+    requestAcceptCount(userID){
+        return new Promise( (resolve, _) => {
+            admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
+                .then(function(snapshot){
+                    snapshot.forEach(function(childSnapshot) {
+                        admin.database().ref('requests/' + userID + '/' + childSnapshot.key + '/' + "accepted")
+                            .transaction(function(current_value){
+                                resolve(current_value["counter"]);
+                                return current_value;
+                            })
+                            .then(()=>{});
+                    });
+                });
+        } );
+    }
 
     getLongLat(uid){
         return new Promise( (resolve, reject) => {
@@ -461,12 +475,18 @@ class Database {
 
     getCalls(){
         return new Promise( (resolve, _) => {
-            admin.database().ref('callsQueue/').orderByChild("date").limitToFirst(20)
+            admin.database().ref('callsQueue/').orderByChild("date").limitToLast(20)
                 .once( "value" , function (snapshot){
                     let table = [];
                     table.push(snapshot.val());
                     resolve(JSON.stringify(table));
                 } ).then(() => {});
+        } );
+    }
+
+    callAccept(monqezId, userJson){
+        return new Promise( (resolve, _) => {
+
         } );
     }
 }

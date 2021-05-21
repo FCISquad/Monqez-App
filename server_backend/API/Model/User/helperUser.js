@@ -133,6 +133,14 @@ class HelperUser extends User{
             } )
         } )
     }
+
+    acceptCall(monqezId, userJson){
+        return new Promise( ((resolve, reject) => {
+            User._database.callAccept(monqezId, userJson)
+                .then( () => { resolve() } )
+                .catch( () => { reject() } );
+        }) );
+    }
 }
 
 module.exports = HelperUser;

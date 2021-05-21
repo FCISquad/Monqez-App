@@ -84,7 +84,6 @@ app.post('/decline_request', (request, response) => {
                     if ( allDecline === true ){
                         console.log("ALL DECLINED");
                         user.rerequest(request.body);
-                        // normalUser.re_request(request.body);
                     }
                     response.sendStatus(200);
                 });
@@ -134,6 +133,20 @@ app.post('/get_call_queue' , (request, response) => {
             let user = new HelperUser(request.body);
             user.getCalls().then( (channelId) => {
                 response.status(200).send(channelId);
+            } );
+        }
+    });
+});
+
+app.post('/call_accept', (request, response) => {
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.acceptCall(userId, request.body).then( (channelId) => {
+                response.sendStatus(200);
             } );
         }
     });

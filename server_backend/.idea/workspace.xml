@@ -53,8 +53,8 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="12.19.0" />
-    <property name="javascript.nodejs.core.library.typings.version" value="12.19.0" />
+    <property name="javascript.nodejs.core.library.configured.version" value="14.15.0" />
+    <property name="javascript.nodejs.core.library.typings.version" value="14.17.0" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -65,7 +65,7 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="show.migrate.to.gradle.popup" value="false" />
-    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2020.2.3\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RunManager">
     <configuration name="server.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/server.js" working-dir="$PROJECT_DIR$">
@@ -119,6 +119,10 @@
       <workItem from="1619962716524" duration="8000" />
       <workItem from="1619964538878" duration="663000" />
       <workItem from="1619979370372" duration="670000" />
+      <workItem from="1621437719799" duration="652000" />
+      <workItem from="1621504168956" duration="1539000" />
+      <workItem from="1621549749843" duration="3010000" />
+      <workItem from="1621557319367" duration="2576000" />
     </task>
     <servers />
   </component>
@@ -138,30 +142,30 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1261" height="430" key="GridCell.Tab.0.bottom" timestamp="1621278048638">
+    <state width="1261" height="255" key="GridCell.Tab.0.bottom" timestamp="1621552806424">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032562" />
-    <state width="1261" height="430" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
-    <state width="1261" height="430" key="GridCell.Tab.0.center" timestamp="1621278048638">
+    <state width="1261" height="255" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
+    <state width="1261" height="255" key="GridCell.Tab.0.center" timestamp="1621552806424">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032561" />
-    <state width="1261" height="430" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
-    <state width="1261" height="430" key="GridCell.Tab.0.left" timestamp="1621278048638">
+    <state width="1261" height="255" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
+    <state width="1261" height="255" key="GridCell.Tab.0.left" timestamp="1621552806424">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032561" />
-    <state width="1261" height="430" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
-    <state width="1261" height="430" key="GridCell.Tab.0.right" timestamp="1621278048638">
+    <state width="1261" height="255" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
+    <state width="1261" height="255" key="GridCell.Tab.0.right" timestamp="1621552806424">
       <screen x="62" y="0" width="1304" height="768" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
     <state width="1877" height="291" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1619980032562" />
-    <state width="1261" height="430" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1621278048638" />
+    <state width="1261" height="255" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
     <state width="1877" height="511" key="GridCell.Tab.1.bottom" timestamp="1618871401905">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
@@ -206,6 +210,18 @@
           <url>file://$PROJECT_DIR$/API/Tools/RequestFunctions.js</url>
           <line>18</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/API/Database/database.js</url>
+          <line>45</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/API/Database/database.js</url>
+          <line>28</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

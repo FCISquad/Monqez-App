@@ -87,7 +87,7 @@ class NormalUser extends User {
                 else{
                     reject();
                 }
-                resolve();
+                resolve(min_three);
             });
         });
     }
@@ -149,6 +149,24 @@ class NormalUser extends User {
             User._database.insertCall(userId, Json).then( (channelId) => {
                 resolve(channelId);
             } )
+        } );
+    }
+
+    isTimeOut(userId){
+        return new Promise((resolve, _) => {
+            User._database.requestAcceptCount(userId).then( (acceptCount) => {resolve(acceptCount);} );
+        } );
+    }
+
+    requestTimeOut(userId, monqezId){
+        return new Promise( (resolve, reject) => {
+            User._database.requestDecline(userId, {"uid" : monqezId})
+                .then( (allDecline) => {
+                    resolve(allDecline);
+                } )
+                .catch((error) => {
+                    reject(error);
+                });
         } );
     }
 }
