@@ -1,3 +1,5 @@
+
+
 const admin = require('firebase-admin');
 const mailer = require('../Tools/nodeMailer');
 
@@ -489,6 +491,32 @@ class Database {
 
         } );
     }
+
+    saveInstructions(adminID, instructionJson) {
+        return new Promise((resolve, reject) => {
+            admin.database().ref('injuries').update({
+                injuries: instructionJson,
+                edited_by: adminID
+            }).then(() => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+    getInstructions() {
+        return new Promise(((resolve, reject) => {
+            admin.database().ref('injuries/')
+                .once("value", function (snapshot){
+                    resolve(JSON.stringify(snapshot));
+                })
+                .then((userInfo) => {})
+                .catch((error) => {
+                    reject(error);
+                })
+        }));
+    }
+
 }
 
 module.exports = Database;

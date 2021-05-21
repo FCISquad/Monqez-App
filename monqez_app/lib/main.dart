@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: onGenerateRoute,
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
+
       routes: {
         '/': (context) => InstructionsScreen(),
         'notification': (context) => HelperRequestNotificationScreen(),

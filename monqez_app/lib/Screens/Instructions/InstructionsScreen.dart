@@ -2,17 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/Model/Instructions/Injury.dart';
 import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
-import 'package:monqez_app/Screens/Model/Instructions/Pair.dart';
 import '../../main.dart';
 import 'ImageController.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Screens/Instructions/InjuryScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
-import 'dart:io';
 
 class InstructionsScreen extends StatelessWidget {
-  bool _isAdmin;
-  InstructionsScreen([this._isAdmin = true]);
+  final bool _isAdmin;
+  final String _token;
+  InstructionsScreen([this._isAdmin = true, this._token]);
 
 
   @override
@@ -29,7 +27,7 @@ class InstructionsScreen extends StatelessWidget {
     var provider = Provider.of<InstructionsList>(context, listen: true);
     List<Injury> instructions = provider.getInjuries();
     print(instructions.toString());
-    if (instructions == null || instructions.isEmpty || instructions[0].getTitle().getImage().base_64 == null) {
+    if (instructions == null) {
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -89,8 +87,8 @@ class InstructionsScreen extends StatelessWidget {
                           // ignore: deprecated_member_use
                           child: RaisedButton(
                             onPressed: () {
-                              makeToast("Submitted");
-                              Navigator.of(context).pop();
+                              provider.saveInjuries(_token);
+                              //Navigator.of(context).pop();
                             },
                             child: Text(
                               "Save Changes",

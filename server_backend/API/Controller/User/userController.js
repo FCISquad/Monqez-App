@@ -82,6 +82,18 @@ app.get( '/getprofile' , (request , response) => {
     });
 } );
 
+app.get( '/get_instructions' , (request , response) => {
+    User.getInstructions()
+        .then( (userJson) => {
+            response.send(userJson);
+        } )
+        .catch( (error) => {
+            console.log(error);
+            response.send(error);
+        } );
+
+} );
+
 app.post( '/edit' , (request , response) => {
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){

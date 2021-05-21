@@ -6,17 +6,25 @@ import 'package:flutter/services.dart';
 
 class ImageController {
   String base_64;
+  String _path;
+
   ImageController(File file) {
     base_64 = base64Encode(file.readAsBytesSync());
   }
   ImageController.fromAssets(String path) {
-    Future.delayed(Duration.zero, () async {
-      ByteData bytes = await rootBundle.load(path);
-      var buffer = bytes.buffer;
-      base_64 = base64.encode(Uint8List.view(buffer));
-    });
+    _path = path;
+  }
+
+  ImageController.fromBase64(String base64) {
+    this.base_64 = base64;
+  }
+  loadBytesFromAssets() async {
+    if(base_64 == null){
+      ByteData bytes = await rootBundle.load(_path);
+      base_64 = base64.encode(Uint8List.view(bytes.buffer));
+    }
   }
   Uint8List decode() {
-    return base_64 == null ? Uint8List(0) :  Base64Codec().decode(base_64);
+    return Base64Codec().decode(base_64);
   }
 }

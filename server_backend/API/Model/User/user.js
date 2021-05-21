@@ -94,6 +94,17 @@ class User{
                 })
         } );
     }
+    static getInstructions(){
+        return new Promise( ((resolve, reject) => {
+            User._database.getInstructions()
+                .then( (userJson) =>{
+                    resolve(userJson);
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        }));
+    }
 }
 
 module.exports = User;

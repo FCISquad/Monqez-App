@@ -33,4 +33,18 @@ class Injury {
 
     _instructions.add(new Pair(_title.getImage(), "ARSA DADSS ADASDA SJF JGGIRFJVJ NF"));*/
   }
+
+  Map<String, dynamic> getJson() {
+    List<Map> instructionsMap = [];
+    for (Pair p in _instructions) {
+      instructionsMap.add(p.getJson());
+    }
+
+    Map<String, dynamic> injuryMap = {
+      "Title": _title.getCaption(),
+      "Thumbnail": _title.getImage().base_64,
+      "instructions": instructionsMap
+    };
+    return injuryMap;
+  }
 }

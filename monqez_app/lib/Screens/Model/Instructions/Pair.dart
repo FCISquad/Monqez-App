@@ -15,4 +15,12 @@ class Pair {
   String getCaption() {
     return _caption;
   }
+
+  Map getJson() {
+    Map<String, dynamic> mp = {
+      "Step Text": _caption,
+      "Thumbnail": _image.base_64
+    };
+    return mp;
+  }
 }
