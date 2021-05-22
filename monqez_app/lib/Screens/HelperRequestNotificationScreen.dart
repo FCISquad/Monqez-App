@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Backend/Authentication.dart';
-import 'package:monqez_app/Screens/HelperUser/RequestScreen.dart';
 import 'package:http/http.dart' as http;
+import 'HelperUser/HelperRequestScreen.dart';
 import 'Model/Helper.dart';
 
 // ignore: must_be_immutable
@@ -21,6 +22,7 @@ class HelperRequestNotificationScreen extends StatelessWidget {
   static double latitude;
   var _prefs;
   String token;
+  Position helperLocation ;
 
   Future<void> decline(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
@@ -71,6 +73,10 @@ class HelperRequestNotificationScreen extends StatelessWidget {
       print(response.statusCode);
     }
     return returned;
+  }
+  _getCurrentUserLocation() async {
+    helperLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   @override
@@ -130,7 +136,9 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                       onPressed: () async {
                         int result = await accept(context);
                         if (result == 0){
-                        navigate(RequestScreen(longitude, latitude), context, true);}
+                          await _getCurrentUserLocation();
+                        navigate(HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
+                            context, true);}
                         else{
                           navigate(HelperHomeScreen(token), context, true); ///nfs error l t7t?
                         }
