@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:android_intent/android_intent.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,7 +16,7 @@ class HelperRequestScreen extends StatefulWidget {
   double reqLat;
   double helperLong ;
   double helperLat ;
-  HelperRequestScreen(double longitude, double latitude , double helperLong , double helperLat ){
+  HelperRequestScreen(double latitude, double longitude , double helperLat , double helperLong ){
     this.reqLong = longitude;
     this.reqLat = latitude;
     this.helperLong = helperLong ;
@@ -27,6 +29,8 @@ class HelperRequestScreen extends StatefulWidget {
 class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleTickerProviderStateMixin{
 
   double reqLong, reqLat,helperLong,helperLat;
+   LatLng initialLatLng ;
+   LatLng destinationLatLng ;
 
   _HelperRequestScreenState(double reqLong, double reqLat,double helperLong,double helperLat){
     this.reqLat = reqLat;
@@ -35,21 +39,27 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleT
     this.helperLong = helperLong ;
 
 
-    calcualteDistance() ;
+
+    // calcualteDistance() ;
 
   }
-  final LatLng initialLatLng = LatLng(30.029585, 31.022356);
-  final LatLng destinationLatLng = LatLng(30.060567, 30.962413);
-  
-  Position _currentPosition;
-  String _currentAddress;
+   // LatLng initialLatLng = LatLng(30.029585, 31.022356);
+   // LatLng destinationLatLng = LatLng(30.060567, 30.962413);
+
+  initializeSourceAndDestination(){
+    setState(() {
+       initialLatLng = LatLng(helperLat, helperLong);
+       destinationLatLng = LatLng(reqLat, reqLong);
+    });
+
+  }
+  double CAMERA_ZOOM = 16;
+  double CAMERA_TILT = 40;
+  double CAMERA_BEARING = 110;
 
   final startAddressController = TextEditingController();
   final destinationAddressController = TextEditingController();
 
-  String _startAddress = '';
-  String _destinationAddress = '';
-  String _placeDistance;
 
   Set<Polyline> _polylines = Set<Polyline>();
   List<LatLng> polylineCoordinates = [];
@@ -61,18 +71,19 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleT
     bearing: 192.833,
     target: LatLng(30.029585, 31.022356),
     tilt: 59.440,
-    zoom: 11.0,
+    zoom: 12.0,
   );
 
   @override
   void initState() {
 
     polylinePoints = PolylinePoints();
-
+    initializeSourceAndDestination();
     super.initState();
   }
-
   void showPinsOnMap() {
+    print ("--------------");
+    print(initialLatLng.latitude);
     _markers.add(
       Marker(
         markerId: MarkerId(initialLatLng.toString()),
@@ -85,6 +96,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleT
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
+    print (_markers) ;
     _markers.add(
       Marker(
         markerId: MarkerId(destinationLatLng.toString()),
@@ -99,9 +111,29 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleT
     );
 
   }
-  void calcualteDistance (){
-    _placeDistance = GeolocatorPlatform.instance.distanceBetween(helperLat, helperLong, reqLat, reqLong).toStringAsFixed(2);
+  // void calcualteDistance (){
+  //   _placeDistance = GeolocatorPlatform.instance.distanceBetween(helperLat, helperLong, reqLat, reqLong).toStringAsFixed(2);
+  // }
+
+  void setUrl(){
+    String url ='https://www.google.com/maps/dir/?api=1&origin=${initialLatLng.latitude},${initialLatLng.longitude} &destination=${destinationLatLng.latitude},${destinationLatLng.longitude}'
+        '&travelmode=driving&dir_action=navigate';
+
   }
+  Widget _getText(String text, double fontSize, FontWeight fontWeight , Color color,int lines) {
+    return AutoSizeText(text,
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontFamily: 'Cairo',
+            fontWeight: fontWeight
+        ),
+        maxLines:lines
+    );
+  }
+
   void setPolylines() async  {
     print ("--------------");
     print (initialLatLng) ;
@@ -134,59 +166,48 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleT
       });
     }
   }
-
-  Widget _textField({
-    TextEditingController controller,
-    String label,
-    String hint,
-    String initialValue,
-    double width,
-    Icon prefixIcon,
-    Widget suffixIcon,
-    Function(String) locationCallback,
-  }) {
-    return Container(
-      width: width * 0.8,
-      child: TextField(
-        onChanged: (value) {
-          locationCallback(value);
-        },
-        controller: controller,
-        // initialValue: initialValue,
-        decoration: new InputDecoration(
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-          labelText: label,
-          filled: true,
-          fillColor: Colors.white,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
-            ),
-            borderSide: BorderSide(
-              color: Colors.grey[400],
-              width: 2,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(10.0),
-            ),
-            borderSide: BorderSide(
-              color: Colors.blue[300],
-              width: 2,
-            ),
-          ),
-          contentPadding: EdgeInsets.all(15),
-          hintText: hint,
+  void _modalBottomSheetMenu(){
+    showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
         ),
-      ),
+        context: context,
+        builder: (builder){
+          return new Container(
+            height: 200,
+            color: Colors.transparent, //could change this to Color(0xFF737373),
+            //so you don't have to change MaterialApp canvasColor
+            child: new Container(
+              decoration: new BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(20))),
+
+              child: new Center(
+                  child: new Text("This is a modal sheet"),
+                )),
+          );
+        }
     );
+
+  }
+  _launch (){
+    AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull('https://www.google.com/maps/dir/?api=1&origin=${initialLatLng.latitude},${initialLatLng.longitude} &destination=${destinationLatLng.latitude},${destinationLatLng.longitude}'
+            '&travelmode=driving&dir_action=navigate'),
+        package: 'com.google.android.apps.maps');
+    intent.launch() ;
   }
 
 
   @override
   Widget build(BuildContext context) {
+    CameraPosition initialCameraPosition = CameraPosition(
+      zoom: CAMERA_ZOOM,
+      tilt: CAMERA_TILT,
+      bearing: CAMERA_BEARING,
+      target: initialLatLng,
+    );
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     return Container(
@@ -205,223 +226,63 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>  with SingleT
               zoomGesturesEnabled: true,
               zoomControlsEnabled: false,
               polylines: _polylines,
-
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
+
                 showPinsOnMap();
                 setPolylines();
               },
-
             ),
-            // Show zoom buttons
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    ClipOval(
-                      child: Material(
-                        color: Colors.blue[100], // button color
-                        child: InkWell(
-                          splashColor: Colors.blue, // inkwell color
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: Icon(Icons.add),
-                          ),
-                          // onTap: () {
-                          //   _controller.animateCamera(
-                          //     CameraUpdate.zoomIn(),
-                          //   );
-                          // },
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: width,
+                height: 90,
+                decoration: BoxDecoration(
+                  color: Colors.white
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround ,
+                  children: [
+                    Container(
+                      width:150 ,
+                        height:50 ,
+                        decoration: BoxDecoration(
+                            color: Colors.deepOrange
                         ),
+                      child: FlatButton(
+                        color: Colors.transparent,
+                        splashColor: Colors.black26,
+                        onPressed: () {
+                          _modalBottomSheetMenu();
+                        },
+                        child: _getText('Additional Information', 14, FontWeight.w700, Colors.white,2),
                       ),
+
                     ),
-                    SizedBox(height: 20),
-                    ClipOval(
-                      child: Material(
-                        color: Colors.blue[100], // button color
-                        child: InkWell(
-                          splashColor: Colors.blue, // inkwell color
-                          child: SizedBox(
-                            width: 50,
-                            height: 50,
-                            child: Icon(Icons.remove),
-                          ),
-                          // onTap: () {
-                          //   mapController.animateCamera(
-                          //     CameraUpdate.zoomOut(),
-                          //   );
-                          // },
+                    Container(
+                        width:150 ,
+                        height:50 ,
+                        decoration: BoxDecoration(
+                            color: Colors.deepOrange
                         ),
-                      ),
-                    )
+                      child: FlatButton(
+                        color: Colors.transparent,
+                        splashColor: Colors.black26,
+                        onPressed: () {
+                          _launch() ;
+                        },
+                        child: _getText('Navigate', 14, FontWeight.w700, Colors.white,1),
+                    ),
+
+                    ),
                   ],
                 ),
               ),
-            ),
-            // Show the place input fields & button for
-            // showing the route
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(20.0),
-                      ),
-                    ),
-                    width: width * 0.9,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Text(
-                            'Places',
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          SizedBox(height: 10),
-                          _textField(
-                              label: 'Start',
-                              hint: 'Choose starting point',
-                              initialValue: _currentAddress,
-                              prefixIcon: Icon(Icons.looks_one),
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.my_location),
-                                onPressed: () {
-                                  startAddressController.text = _currentAddress;
-                                  _startAddress = _currentAddress;
-                                },
-                              ),
-                              controller: startAddressController,
-                              width: width,
-                              locationCallback: (String value) {
-                                setState(() {
-                                  _startAddress = value;
-                                });
-                              }),
-                          SizedBox(height: 10),
-                          _textField(
-                              label: 'Destination',
-                              hint: 'Choose destination',
-                              initialValue: '',
-                              prefixIcon: Icon(Icons.looks_two),
-                              controller: destinationAddressController,
-                              width: width,
-                              locationCallback: (String value) {
-                                setState(() {
-                                  _destinationAddress = value;
-                                });
-                              }),
-                          SizedBox(height: 10),
-                          Visibility(
-                            visible: _placeDistance == null ? false : true,
-                            child: Text(
-                              'DISTANCE: $_placeDistance m',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          // RaisedButton(
-                          //   onPressed: (_startAddress != '' &&
-                          //       _destinationAddress != '')
-                          //       ? () async {
-                          //     setState(() {
-                          //       if (_markers.isNotEmpty) _markers.clear();
-                          //       if (polylines.isNotEmpty)
-                          //         polylines.clear();
-                          //       if (polylineCoordinates.isNotEmpty)
-                          //         polylineCoordinates.clear();
-                          //       _placeDistance = null;
-                          //     });
-                          //
-                          //     _calculateDistance().then((isCalculated) {
-                          //       if (isCalculated) {
-                          //         _scaffoldKey.currentState.showSnackBar(
-                          //           SnackBar(
-                          //             content: Text(
-                          //                 'Distance Calculated Sucessfully'),
-                          //           ),
-                          //         );
-                          //       } else {
-                          //         _scaffoldKey.currentState.showSnackBar(
-                          //           SnackBar(
-                          //             content: Text(
-                          //                 'Error Calculating Distance'),
-                          //           ),
-                          //         );
-                          //       }
-                          //     });
-                          //   }
-                          //       : null,
-                          //   color: Colors.red,
-                          //   shape: RoundedRectangleBorder(
-                          //     borderRadius: BorderRadius.circular(20.0),
-                          //   ),
-                          //   child: Padding(
-                          //     padding: const EdgeInsets.all(8.0),
-                          //     child: Text(
-                          //       'Show Route'.toUpperCase(),
-                          //       style: TextStyle(
-                          //         color: Colors.white,
-                          //         fontSize: 20.0,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
+            )
                         ],
                       ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            // Show current location button
-            SafeArea(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                  child: ClipOval(
-                    child: Material(
-                      color: Colors.orange[100], // button color
-                      child: InkWell(
-                        splashColor: Colors.orange, // inkwell color
-                        child: SizedBox(
-                          width: 56,
-                          height: 56,
-                          child: Icon(Icons.my_location),
-                        ),
-                        // onTap: () {
-                        //   mapController.animateCamera(
-                        //     CameraUpdate.newCameraPosition(
-                        //       CameraPosition(
-                        //         target: LatLng(
-                        //           _currentPosition.latitude,
-                        //           _currentPosition.longitude,
-                        //         ),
-                        //         zoom: 18.0,
-                        //       ),
-                        //     ),
-                        //   );
-                        // },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+                    )
     );
   }
 }

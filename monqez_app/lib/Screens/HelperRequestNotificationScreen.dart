@@ -137,7 +137,7 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                         int result = await accept(context);
                         if (result == 0){
                           await _getCurrentUserLocation();
-                        navigate(HelperRequestScreen(30.029585, 31.022356,30.060567, 30.962413),
+                        navigate(HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
                             context, true);}
                         else{
                           navigate(HelperHomeScreen(token), context, true); ///nfs error l t7t?
