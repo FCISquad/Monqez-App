@@ -19,8 +19,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
 import '../LoginScreen.dart';
 import '../VoicePage.dart';
-import 'InstructionsScreen.dart';
 
+// ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
   String token;
   NormalHomeScreen(String token) {
@@ -328,7 +328,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(user.token),
+                                    navigate(InstructionsScreen(),
                                         context, false);
                                   },
                                   child: Text(
