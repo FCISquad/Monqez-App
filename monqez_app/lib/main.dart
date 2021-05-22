@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
-import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Instructions/ModifyInstruction.dart';
 import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
 import 'package:monqez_app/Screens/Instructions/InjuryScreen.dart';
@@ -38,7 +37,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       routes: {
-        '/': (context) => InstructionsScreen(),
+        '/': (context) => Splash(),
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),
