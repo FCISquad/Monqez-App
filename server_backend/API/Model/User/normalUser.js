@@ -8,7 +8,7 @@ const helper = require('../../Tools/RequestFunctions');
 class NormalUser extends User {
     constructor(userJson) {
         super(userJson);
-        this.isBanned = userJson.isBanned;
+        //this.isBanned = userJson.isBanned;
 
         // this.userID = userJson.id;
         // this.userName = userJson.name;
@@ -46,7 +46,6 @@ class NormalUser extends User {
                     let latitude = activeMonqez.val()[uid]["latitude"];
 
                     let monqezLocation = [latitude, longitude];
-
                     distance.push({
                         "distance": sphericalGeometry.computeDistanceBetween(monqezLocation, normalUserLocation),
                         "uid": uid
@@ -80,8 +79,8 @@ class NormalUser extends User {
                     }
                 }
 
-                User._database.insertRequest(userID, userJson, min_three.length - 3, isFirst);
-                if ( min_three.length > 0 ){
+                if ( min_three.length > 3 ){
+                    User._database.insertRequest(userID, userJson, min_three.length - 3, isFirst);
                     this.notify_monqez(min_three);
                 }
                 else{
@@ -160,13 +159,30 @@ class NormalUser extends User {
 
     requestTimeOut(userId, monqezId){
         return new Promise( (resolve, reject) => {
-            User._database.requestDecline(userId, {"uid" : monqezId})
+            User._database.requestDecline(monqezId, {"uid" : userId})
                 .then( (allDecline) => {
                     resolve(allDecline);
                 } )
                 .catch((error) => {
                     reject(error);
                 });
+        } );
+    }
+
+    callOut(userId){
+        return new Promise( (resolve, reject) => {
+            User._database.callOut(userId)
+                .then( () => {
+                    resolve();
+                } )
+                .catch((error) => {
+                    reject(error);
+                });
+        } );
+    }
+    logCallRequest(userJson){
+        return new Promise( (resolve, _) => {
+            User._database.archiveCallRequest(userJson).then(()=>{ resolve() });
         } );
     }
 }
