@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:http/http.dart' as http;
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
+import 'package:shared_preferences/shared_preferences.dart';
 
 const appID = '0ab37d96b60442c8985a93189f3402cb';
 const token =
@@ -9,7 +14,8 @@ const token =
 
 class CallPage extends StatefulWidget {
   final String channelName;
-  const CallPage({Key key, this.channelName}) : super(key: key);
+  final String userType;
+  const CallPage({Key key, this.channelName, this.userType}) : super(key: key);
 
   @override
   _CallPageState createState() => _CallPageState();
@@ -21,6 +27,19 @@ class _CallPageState extends State<CallPage> {
   bool muted = false;
   RtcEngine _engine;
 
+  Future<void> callOut() async {
+    var _prefs = await SharedPreferences.getInstance();
+    String token = _prefs.getString("userToken");
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/call_out/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
   @override
   void dispose() {
     // clear users
@@ -28,6 +47,9 @@ class _CallPageState extends State<CallPage> {
     // destroy sdk
     _engine.leaveChannel();
     _engine.destroy();
+    if (widget.userType == "normal") {
+      callOut();
+    }
     super.dispose();
   }
 
