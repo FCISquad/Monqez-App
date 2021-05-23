@@ -211,10 +211,10 @@ class HelperHomeScreen extends StatelessWidget {
                         child: RaisedButton(
                             elevation: 5.0,
                             onPressed: () {
-                              if (Provider.of<Helper>(context, listen: true)
+                              if (Provider.of<Helper>(context, listen: false)
                                       .status ==
                                   "Available") {
-                                Provider.of<Helper>(context, listen: true)
+                                Provider.of<Helper>(context, listen: false)
                                     .stopBackgroundProcess();
                               }
                               logout();

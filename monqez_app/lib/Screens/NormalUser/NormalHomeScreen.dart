@@ -47,6 +47,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   var _additionalInfoController = TextEditingController();
   int bodyMap;
   bool isLoaded = false;
+  int firstStatusCode;
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
@@ -116,10 +117,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     Map<String, dynamic> body = {
       'additionalInfo': {
         'Address': _detailedAddress.text,
-        'Additional Notes': _aditionalNotes.text
+        'Additional Notes': _aditionalNotes.text,
+        'avatarBody': bodyMap.toString(),
+        'forMe': _radioValue.toString()
       },
-      'avatarBody': bodyMap.toString(),
-      'forMe': _radioValue.toString()
     };
     final http.Response response = await http.post(
       Uri.parse('$url/user/request_information/'),
@@ -138,7 +139,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     }
   }
 
-  void _makeRequest() async {
+  Future<void> _makeRequest() async {
     await _getCurrentUserLocation();
     String tempToken = user.token;
     final http.Response response = await http.post(
@@ -153,9 +154,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'longitude': _newUserPosition.longitude
       }),
     );
-
+    firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
       makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
     } else {
       makeToast('Failed to submit user.');
     }
@@ -657,11 +660,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     width: 200,
                     height: 50,
                     child: RaisedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         //_createPolylines();
-                        _makeRequest();
-
-                        _showMaterialDialog();
+                        await _makeRequest();
+                        if (firstStatusCode == 200) _showMaterialDialog();
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,
@@ -730,13 +732,19 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CallPage(channelName: channelID),
+              builder: (context) => CallPage(
+                channelName: channelID,
+                userType: "normal",
+              ),
             ));
       } else {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => VoicePage(channelName: channelID),
+              builder: (context) => VoicePage(
+                channelName: channelID,
+                userType: "normal",
+              ),
             ));
       }
     }

@@ -1,13 +1,18 @@
+import 'package:http/http.dart' as http;
+import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const appID = '0ab37d96b60442c8985a93189f3402cb';
 
 class VoicePage extends StatefulWidget {
   final String channelName;
-  const VoicePage({Key key, this.channelName}) : super(key: key);
+
+  final String userType;
+  const VoicePage({Key key, this.channelName, this.userType}) : super(key: key);
 
   @override
   _VoicePageState createState() => _VoicePageState();
@@ -24,6 +29,19 @@ class _VoicePageState extends State<VoicePage> {
   String textEnabled = "Double tap to lock the controls";
   String textDisabled = "Double tap to unlock the controls";
 
+  Future<void> callOut() async {
+    var _prefs = await SharedPreferences.getInstance();
+    String token = _prefs.getString("userToken");
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/call_out/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
   @override
   void dispose() {
     // clear users
@@ -31,6 +49,9 @@ class _VoicePageState extends State<VoicePage> {
     // destroy sdk
     _engine.leaveChannel();
     _engine.destroy();
+    if (widget.userType == "normal") {
+      callOut();
+    }
     super.dispose();
   }
 
@@ -97,6 +118,7 @@ class _VoicePageState extends State<VoicePage> {
       userOffline: (uid, reason) {
         setState(() {
           final info = 'userOffline: $uid , reason: $reason';
+          _monqezJoined = false;
           _infoStrings.add(info);
           _users.remove(uid);
         });
@@ -153,15 +175,20 @@ class _VoicePageState extends State<VoicePage> {
     );
   }
 
+  String titleWait = "Voice Call - waiting";
+  String titleJoined = "Voice Call - InCall";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Voice Call'),
+        title: Text(_monqezJoined ? titleJoined : titleWait),
         leading: IconButton(
             icon: new Icon(Icons.arrow_back),
             onPressed: () {
-              if (screenEnabled) Navigator.pop(context);
+              if (screenEnabled) {
+                Navigator.pop(context);
+              }
               //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
             }),
       ),

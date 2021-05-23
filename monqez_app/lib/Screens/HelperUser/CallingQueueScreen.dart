@@ -34,6 +34,7 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   bool _isLoading = true;
 
   void iterateJson(String jsonStr) {
+    _calls = [];
     List<dynamic> callss = json.decode(jsonStr);
 
     //m7taga ttshal bs ana 5ayf asheel l for each
@@ -44,6 +45,7 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       if (singleCall == null) return;
       for (int i = 0; i < singleCall.keys.length; i++) {
         var key = singleCall.keys.elementAt(i);
+        String normalUID = key;
         String channelID = singleCall[key]['channelId'];
         String type = singleCall[key]['type'];
         String data = singleCall[key]['data'];
@@ -56,12 +58,12 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
           icon = Icons.call;
         }
         _calls.add(getCard(name, data, icon, MediaQuery.of(context).size.width,
-            channelID, type));
+            channelID, type, normalUID));
       }
     });
   }
 
-  getAllApplications() async {
+  getAllCalls() async {
     _isLoading = true;
     var token = Provider.of<Helper>(context, listen: false).token;
 
@@ -90,34 +92,60 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
     }
   }
 
+  Future<int> acceptCall(String normalUID) async {
+    var token = Provider.of<Helper>(context, listen: false).token;
+
+    final http.Response response = await http.post(
+      Uri.parse('$url/helper/accept_call/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, String>{'uid': normalUID}),
+    );
+    return response.statusCode;
+  }
+
   @override
   void initState() {
     super.initState();
-    getAllApplications();
+    getAllCalls();
     //callController.addListener();
   }
 
   Widget getCard(String name, String comment, IconData icon, double width,
-      String channelID, type) {
+      String channelID, type, String normalUID) {
     return Card(
       elevation: 0,
       color: Colors.transparent,
       child: GestureDetector(
         onTap: () async {
-          if (type == "video") await _handleCameraAndMic(Permission.camera);
-          await _handleCameraAndMic(Permission.microphone);
-          if (type == "video") {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CallPage(channelName: channelID),
-                ));
+          int statusCode = await acceptCall(normalUID);
+          if (statusCode == 200) {
+            if (type == "video") await _handleCameraAndMic(Permission.camera);
+            await _handleCameraAndMic(Permission.microphone);
+            if (type == "video") {
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CallPage(channelName: channelID),
+                  ));
+              await getAllCalls();
+              setState(() {});
+            } else {
+              await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VoicePage(channelName: channelID),
+                  ));
+              await getAllCalls();
+              setState(() {});
+            }
+          } else if (statusCode == 503) {
+            makeToast("Call is already answered");
           } else {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => VoicePage(channelName: channelID),
-                ));
+            makeToast(statusCode.toString());
           }
         },
         child: Container(
@@ -158,7 +186,20 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return CircularProgressIndicator();
+      return Scaffold(
+          backgroundColor: secondColor,
+          body: Container(
+              height: double.infinity,
+              alignment: Alignment.center,
+              child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(
+                    backgroundColor: secondColor,
+                    strokeWidth: 5,
+                    //    valueColor:
+                    //      new AlwaysStoppedAnimation<Color>(firstColor)
+                  ))));
     } else
       return Scaffold(
         backgroundColor: secondColor,
