@@ -47,9 +47,9 @@ app.get( '/getstate' , (request , response) => {
             helper.getState(userId).then( (userJson) => {
                 response.send(userJson);
             } )
-                .catch( (error) => {
-                    response.send(error);
-                } );
+            .catch( (error) => {
+                response.send(error);
+            } );
         }
     });
 } );
@@ -77,31 +77,21 @@ app.post('/decline_request', (request, response) => {
             response.sendStatus(403);
         }
         else{
-            console.log("decline");
             let user = new HelperUser(request.body);
             user.requestDecline(monqezId, request.body)
                 .then((allDecline) => {
                     if ( allDecline === true ){
-                        console.log("ALL DECLINED");
                         user.rerequest(request.body);
-                        // normalUser.re_request(request.body);
                     }
                     response.sendStatus(200);
+                })
+                .catch((err) => {
+                    response.sendStatus(503);
                 });
         }
     });
 });
 app.post( '/accept_request' , (request, response) => {
-    // let user = new HelperUser(request.body);
-    // user.requestAccept("monqez-ehab1", request.body)
-    //     .then( () => {
-    //         response.sendStatus(200);
-    //     } )
-    //     .catch( () => {
-    //         response.sendStatus(201);
-    //     } );
-    // // response.sendStatus(200);
-
     helper.verifyToken(request , (monqezId) => {
         if ( monqezId === null ){
             // Forbidden
@@ -120,5 +110,59 @@ app.post( '/accept_request' , (request, response) => {
     });
 } );
 
+app.post('/get_call_queue' , (request, response) => {
+    // let user = new HelperUser(request.body);
+    // user.getCalls().then( (channelId) => {
+    //     response.status(200).send(channelId);
+    // } );
+
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.getCalls().then( (channelId) => {
+                response.status(200).send(channelId);
+            } );
+        }
+    });
+});
+
+app.post('/accept_call', (request, response) => {
+    console.log("in");
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.acceptCall(userId, request.body).then( () => {
+
+                console.log("Hussien");
+                response.sendStatus(200);
+
+                user.logCallRequest(request.body).then( ()=>{} );
+            } )
+            .catch( () => {
+                response.sendStatus(503);
+            } );
+        }
+    });
+});
+
+app.post('/get_additional_information', (request, response) => {
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new HelperUser(request.body);
+            user.get_additional_information(request.body["uid"]).then( (additionalInfo) => {
+                response.status(200).send(additionalInfo);
+            } );
+        }
+    });
+});
 
 module.exports = app;

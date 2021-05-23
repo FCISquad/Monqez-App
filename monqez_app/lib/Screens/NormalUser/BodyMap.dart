@@ -27,16 +27,17 @@ class BodyMap extends StatefulWidget {
 
   static _BodyMapState _bodyMapState;
   final ValueChanged<bool> onChange = null;
+  static String _selected = null;
 
   @override
   _BodyMapState createState() {
-    return _bodyMapState = new _BodyMapState();
+    return _bodyMapState = new _BodyMapState(_selected);
   }
 
   static void setSelected(int selected) {
-    var s = selected.toRadixString(2);
-    print(s);
-    _bodyMapState.setSelected(s);
+    _selected = selected.toRadixString(2);
+    print("Selected: " + _selected);
+    //_bodyMapState.setSelected(_selected);
   }
 
   static int getSelected() {
@@ -62,9 +63,15 @@ class BodyMap extends StatefulWidget {
 }
 
 class _BodyMapState extends State<BodyMap> {
+  String _selected;
+  _BodyMapState(this._selected);
+
 
   @override
   Widget build(BuildContext context) {
+    if (_selected != null)
+      setSelected(_selected);
+
     return new Scaffold(
       backgroundColor: Colors.white,
       body: InteractiveViewer(child:Center(
@@ -229,23 +236,28 @@ class _BodyMapState extends State<BodyMap> {
   }
 
   void setSelected(String s) {
-    for (String key in BodyMap.injury.keys) {
-      BodyMap.injury[key] = false ;
-    }
-    for (int i=0 ; i<s.length ; i++)
-      // True  1 don't'
-      // False 1 change
-      // True  0 change
-      // False 0 change
-      if (BodyMap.injury.values.elementAt(i) != (s[i] == "1")){
-        _changeColor(BodyMap.injury.keys.elementAt(i));
+    if (_BodyMapState != null) {
+      for (String key in BodyMap.injury.keys) {
+        BodyMap.injury[key] = false;
       }
+      for (int i = 0; i < s.length; i++)
+        // True  1 don't'
+        // False 1 change
+        // True  0 change
+        // False 0 change
+        if (BodyMap.injury.values.elementAt(i) != (s[i] == "1")) {
+          _changeColor(BodyMap.injury.keys.elementAt(i));
+        }
+    }
   }
   void _changeColor(var key){
+
     BodyMap.injury[key] = !BodyMap.injury[key];
     if (mounted) {
       setState(() {});
     }
-    widget.onChange?.call(BodyMap.injury[key]);
+    if ( widget.onChange != null)
+      widget.onChange?.call(BodyMap.injury[key]);
+
   }
 }

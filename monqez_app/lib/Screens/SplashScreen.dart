@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -24,8 +25,9 @@ class _SplashState extends State<Splash> {
   int type;
   bool isDisabled;
   bool firstLogin;
+  bool once = true;
 
-  Future<void> checkUser(var token, var uid) async {
+  Future<void> checkUser(var uid) async {
     final http.Response response2 = await http.get(
       Uri.parse('$url/user/get/'),
       headers: <String, String>{
@@ -42,9 +44,25 @@ class _SplashState extends State<Splash> {
       type = int.parse(sType);
       isDisabled = (sDisabled == 'true') ? true : false;
       firstLogin = (sFirst == 'true') ? true : false;
+    } else if (response2.statusCode == 403) {
+      if (once) {
+        once = false;
+        token = await FirebaseAuth.instance.currentUser.getIdToken();
+        print("HERE");
+        saveUserToken(token, uid);
+        setState(() {});
+      } else {
+        logout();
+        token = null;
+        makeToast("Error!");
+        makeToast(response2.statusCode.toString());
+      }
     } else {
+      logout();
+      token = null;
       print(response2.statusCode);
       makeToast("Error!");
+      makeToast(response2.statusCode.toString());
     }
   }
 
@@ -78,12 +96,11 @@ class _SplashState extends State<Splash> {
         }
     });*/
 
-
-   if (enter) {
+    if (enter) {
       if (token == null) {
         _navigate = LoginScreen();
       } else {
-        await checkUser(token, uid);
+        await checkUser(uid);
         if (isDisabled) {
           if (type == 0)
             makeToast("Account is banned!");
@@ -106,8 +123,8 @@ class _SplashState extends State<Splash> {
         }
       }
     }
-      map = _navigate;
-      navigate(map, context, true);
+    map = _navigate;
+    navigate(map, context, true);
   }
 
   @override

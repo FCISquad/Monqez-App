@@ -39,15 +39,20 @@ dependencies:
   image_picker: ^0.7.4
   camera: ^0.8.1
   file: ^6.1.0
-  google_maps_flutter: ^0.5.13
   pdf_viewer_plugin: ^1.1.1
   path_provider: ^2.0.1
   url_launcher: ^6.0.3
   geolocator: ^7.0.3
   flutter_polyline_points: ^1.0.0
   provider: ^5.0.0
-
-
+  mime: ^1.0.0
+  flutter_absolute_path: ^1.0.6
+  agora_rtc_engine: ^3.3.3
+  permission_handler:
+  google_maps_flutter: ^2.0.3
+  geodesy: ^0.3.2
+  android_intent: ^2.0.0
+  auto_size_text: ^2.1.0
 
 
   flutter:
@@ -96,6 +101,9 @@ flutter:
     - images/BodyMap/shoulderL.png
     - images/BodyMap/shoulderR.png
     - images/BodyMap/stomach.png
+    - images/ToBeRemoved/burn.png
+    - images/ToBeRemoved/leg.png
+
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

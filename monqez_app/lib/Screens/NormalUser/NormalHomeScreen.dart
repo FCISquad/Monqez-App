@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
-import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
@@ -15,10 +14,13 @@ import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-
+import '../Instructions/InstructionsScreen.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../CallPage.dart';
 import '../LoginScreen.dart';
-import 'InstructionsScreen.dart';
+import '../VoicePage.dart';
 
+// ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
   String token;
   NormalHomeScreen(String token) {
@@ -41,11 +43,14 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
+  var _additionalInfoController = TextEditingController();
   int bodyMap;
   bool isLoaded = false;
+  int firstStatusCode;
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
+      user.setToken(token);
       await user.getUser();
       _isLoading = false;
     });
@@ -105,15 +110,16 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onCameraMove(CameraPosition position) {
     _lastMapPosition = _position1.target;
   }
+
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
     Map<String, dynamic> body = {
-      'additionalInfo':{
+      'additionalInfo': {
         'Address': _detailedAddress.text,
-        'Additional Notes': _aditionalNotes.text
+        'Additional Notes': _aditionalNotes.text,
+        'avatarBody': bodyMap.toString(),
+        'forMe': _radioValue.toString()
       },
-      'avatarBody':bodyMap.toString(),
-      'forMe':_radioValue.toString()
     };
     final http.Response response = await http.post(
       Uri.parse('$url/user/request_information/'),
@@ -131,7 +137,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       makeToast('Failed to submit user.');
     }
   }
-  void _makeRequest() async {
+
+  Future<void> _makeRequest() async {
     await _getCurrentUserLocation();
     String tempToken = user.token;
     final http.Response response = await http.post(
@@ -146,9 +153,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'longitude': _newUserPosition.longitude
       }),
     );
-
+    firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
       makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
     } else {
       makeToast('Failed to submit user.');
     }
@@ -200,6 +209,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
+
   _showMaterialDialog() {
     showDialog(
         context: context,
@@ -321,7 +331,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(user.token), context, false);
+                                    navigate(InstructionsScreen(),
+                                        context, false);
                                   },
                                   child: Text(
                                     "Submit",
@@ -342,14 +353,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
+
   PolylinePoints polylinePoints;
 
   List<LatLng> polylineCoordinates = [];
 
-
   Map<PolylineId, Polyline> polylines = {};
   _createPolylines(Position start, Position destination) async {
-
     polylinePoints = PolylinePoints();
 
     // Generating the list of coordinates to be used for
@@ -499,11 +509,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         .getInitialMessage()
         .then((RemoteMessage message) {
       if (message != null) {
-        FirebaseCloudMessaging.route = new NormalUserNotification(message, true);
+        FirebaseCloudMessaging.route =
+            new NormalUserNotification(message, true);
         navigate(NotificationRoute.selectNavigate, context, false);
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     if (!isLoaded) {
@@ -528,12 +540,36 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-              title:
-                  getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
-              shadowColor: Colors.black,
-              backgroundColor: firstColor,
-              iconTheme: IconThemeData(color: secondColor),
-              elevation: 5),
+            title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
+            shadowColor: Colors.black,
+            backgroundColor: firstColor,
+            iconTheme: IconThemeData(color: secondColor),
+            elevation: 5,
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.call,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  _showCallDialog("voice");
+                }
+                // do something
+                ,
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.video_call,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  _showCallDialog("video");
+                }
+                // do something
+                ,
+              )
+            ],
+          ),
           drawer: Drawer(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -601,7 +637,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 mapType: _currentMapType,
                 markers: _markers,
                 onCameraMove: _onCameraMove,
-				polylines: Set<Polyline>.of(polylines.values),
+                polylines: Set<Polyline>.of(polylines.values),
               ),
               /*SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -623,12 +659,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     width: 200,
                     height: 50,
                     child: RaisedButton(
-                      onPressed: () {
-
+                      onPressed: () async {
                         //_createPolylines();
-                        _makeRequest () ;
-
-                        _showMaterialDialog();
+                        await _makeRequest();
+                        if (firstStatusCode == 200) _showMaterialDialog();
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,
@@ -661,5 +695,125 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           ),
         ),
       );
+  }
+
+  Future<void> _handleCameraAndMic(Permission permission) async {
+    final status = await permission.request();
+    print(status);
+  }
+
+  Future<void> onJoin(String type) async {
+    if (type == "video") await _handleCameraAndMic(Permission.camera);
+    await _handleCameraAndMic(Permission.microphone);
+    String token = user.token;
+    String channelID;
+
+    final http.Response response = await http.post(Uri.parse('$url/user/call/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, String>{
+          'data': _additionalInfoController.text,
+          'type': type
+        }));
+
+    if (response.statusCode == 200) {
+      //var parsed = jsonDecode(response.body).cast<String, dynamic>();
+      channelID = response.body;
+    } else {
+      print(response.statusCode);
+      return;
+    }
+    if (channelID != null) {
+      if (type == "video") {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CallPage(
+                channelName: channelID,
+                userType: "normal",
+              ),
+            ));
+      } else {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VoicePage(
+                channelName: channelID,
+                userType: "normal",
+              ),
+            ));
+      }
+    }
+    /*
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VoicePage(channelName: "channelID"),
+        ));
+        */
+  }
+
+  _showCallDialog(String type) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: Container(
+                height: 200,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                          child: Text(
+                        "Additional Information",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
+                      SizedBox(height: 20),
+                      TextField(
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Additional Information'),
+                        controller: _additionalInfoController,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: () {
+                                    onJoin(type);
+                                  },
+                                  child: Text(
+                                    "Submit",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+        });
   }
 }
