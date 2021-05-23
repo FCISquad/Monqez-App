@@ -10,17 +10,29 @@ class User{
         if (this.constructor == User) {
             throw new Error("Abstract classes can't be instantiated.");
         }
-        this.userID = userJson.userID;
-        this.userName = userJson.name;
-        this.userEmail = userJson.email;
-        this.userAddress = new Address(userJson.country , userJson.city , userJson.street , userJson.buildNumber);
-        this.userNationalID = userJson.national_id;
-        this.userPhoneNumber = userJson.phone_number;
-        this.userGender = userJson.gender;
-        this.userDOB = userJson.dob;
-        this.isDisable = userJson.isDisable;
-        this.#uid = userJson.uid;
+        // this.userID = userJson.userID;
+        // this.userName = userJson.name;
+        // this.userEmail = userJson.email;
+        // this.userAddress = new Address(userJson.country , userJson.city , userJson.street , userJson.buildNumber);
+        // this.userNationalID = userJson.national_id;
+        // this.userPhoneNumber = userJson.phone_number;
+        // this.userGender = userJson.gender;
+        // this.userDOB = userJson.dob;
+        // this.isDisable = userJson.isDisable;
+        // this.#uid = userJson.uid;
+
+        // this.userID = userJson["userID"];
+        // this.userName = userJson["name"];
+        // this.userEmail = userJson["email"];
+        // this.userAddress = new Address(userJson["country"] , userJson["city"] , userJson["street"] , userJson["buildNumber"]);
+        // this.userNationalID = userJson["national_id"];
+        // this.userPhoneNumber = userJson["phone_number"];
+        // this.userGender = userJson["gender"];
+        // this.userDOB = userJson["dob"];
+        // this.isDisable = userJson["isDisable"];
+        // this.#uid = userJson["uid"];
     }
+
     setUserId(userID){
         this.userID = userID;
     }

@@ -78,7 +78,7 @@ class HelperUser extends User{
                 .then( (allDecline) => {
                     resolve(allDecline);
                 } )
-                .catch(() => {reject();});
+                .catch((err) => {reject(err);});
         } );
     }
     requestAccept(monqezId, userJson){
@@ -91,10 +91,10 @@ class HelperUser extends User{
     rerequest(userJson){
             let user = new normalUser(userJson);
             user.getLongLat(userJson["uid"]).then( (locationJson) => {
-                let cur = locationJson.val();
-                let key = Object.keys(cur)[0];
+                // let cur = locationJson.val();
+                // let key = Object.keys(cur)[0];
 
-                if ( cur[key]['isFirst'] === false ){
+                if ( locationJson['isFirst'] === false ){
                     const payload = {
                         notification: {
                             title: 'No monqez nearby',
@@ -118,7 +118,7 @@ class HelperUser extends User{
                     );
                 }
                 else{
-                    user.request(userJson["uid"], cur[key] , false)
+                    user.request(userJson["uid"], locationJson , false)
                         .then(() => {})
                         .catch(() => {}
                         );
@@ -137,9 +137,23 @@ class HelperUser extends User{
     acceptCall(monqezId, userJson){
         return new Promise( ((resolve, reject) => {
             User._database.callAccept(monqezId, userJson)
-                .then( () => { resolve() } )
-                .catch( () => { reject() } );
+                .then( () => { console.log(1); resolve() } )
+                .catch( () => {console.log(2); reject() } );
         }) );
+    }
+
+    get_additional_information(userId){
+        return new Promise( (resolve, _) => {
+            User._database.getAdditionalInfo(userId).then( (additionalInfo) => {
+                resolve(additionalInfo);
+            } )
+        } );
+    }
+
+    logCallRequest(userJson){
+        return new Promise( (resolve, _) => {
+            User._database.archiveCallRequest(userJson).then(()=>{ resolve() });
+        } );
     }
 }
 

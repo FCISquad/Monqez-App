@@ -110,4 +110,8 @@ app.post('/test' , (request , response) => {
 });
 
 
+app.post('/base64', (req, res) => {
+    console.log(req.body["image"]);
+})
+
 module.exports = app;
