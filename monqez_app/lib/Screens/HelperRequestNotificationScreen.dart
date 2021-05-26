@@ -134,6 +134,7 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           primary: Colors.green, shape: CircleBorder()),
                       onPressed: () async {
+                        Provider.of<Helper>(context, listen: false).stopBackgroundProcess();
                         int result = await accept(context);
                         if (result == 0){
                           await _getCurrentUserLocation();

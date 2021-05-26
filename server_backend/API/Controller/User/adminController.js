@@ -100,6 +100,22 @@ app.post( '/set_approval' , (request , response) => {
     });
 } );
 
+app.post( '/save_instructions' , (request , response) => {
+    console.log("Here");
+    let admin = new adminModel(request.body);
+    admin.saveInstructions("Khaled" , request.body);
+    response.sendStatus(200);
+    // helper.verifyToken(request , (userID) => {
+    //     if ( userID === null ){
+    //         response.sendStatus(403);
+    //     }
+    //     else{
+    //         let admin = new adminModel(request.body);
+    //         admin.saveInstructions(userID , request.body);
+    //         response.sendStatus(200);
+    //     }
+    // });
+} );
 
 const mailer = require('../../Tools/nodeMailer');
 app.post('/test' , (request , response) => {
@@ -109,5 +125,9 @@ app.post('/test' , (request , response) => {
     response.end();
 });
 
+
+app.post('/base64', (req, res) => {
+    console.log(req.body["image"]);
+})
 
 module.exports = app;

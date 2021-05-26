@@ -14,14 +14,13 @@ import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-
+import '../Instructions/InstructionsScreen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
-
 import '../LoginScreen.dart';
 import '../VoicePage.dart';
-import 'InstructionsScreen.dart';
 
+// ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
   String token;
   NormalHomeScreen(String token) {
@@ -332,7 +331,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(user.token),
+                                    navigate(InstructionsScreen(),
                                         context, false);
                                   },
                                   child: Text(

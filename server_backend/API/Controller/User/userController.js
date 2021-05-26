@@ -82,6 +82,18 @@ app.get( '/getprofile' , (request , response) => {
     });
 } );
 
+app.get( '/get_instructions' , (request , response) => {
+    User.getInstructions()
+        .then( (userJson) => {
+            response.send(userJson);
+        } )
+        .catch( (error) => {
+            console.log(error);
+            response.send(error);
+        } );
+
+} );
+
 app.post( '/edit' , (request , response) => {
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
@@ -120,11 +132,22 @@ app.post('/update_registration_token', (request, response)=>{
     });
 });
 
-app.post('/request', (request, response) => {
-    // let user = new NormalUser(request.body);
-    // user.request("ehabzzz", request.body, true);
-    // response.sendStatus(200);
+function requestTimeOut(userId, monqezIDs){
+    new NormalUser().isTimeOut(userId).then( (acceptCount) => {
+        if (acceptCount === 0){
+            for (let i = 3; i < monqezIDs.length; ++i){
+                let user = new NormalUser({});
+                user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
+                    if (allDecline === true){
+                        re_request({"uid" : userId});
+                    }
+                } )
+            }
+        }
+    } );
+}
 
+app.post('/request', (request, response) => {
     helper.verifyToken(request , (userId) => {
         if ( userId === null ){
             // Forbidden
@@ -132,14 +155,17 @@ app.post('/request', (request, response) => {
         }
         else{
            let user = new NormalUser(request.body);
-           user.request(userId, request.body, true).then(() => {
+           user.request(userId, request.body, true).then((monqezIDs) => {
                response.sendStatus(200);
+               setTimeout(function (){
+                   requestTimeOut(userId, monqezIDs);
+               }, 30000);
+               //setTimeout(30000, requestTimeOut, userId, monqezIDs);
            })
            .catch(() => {
                // service unavailable
                response.sendStatus(503);
            });
-
         }
     });
 })
@@ -183,27 +209,38 @@ app.post('/call', (request, response) => {
     });
 });
 
-/*
-var secondRequest = function rerequest(userJson) {
-    let user = new NormalUser(userJson);
-    user.getLongLat(userJson["uid"]).then( (locationJson) => {
-        user.request(userJson["uid"], locationJson , false)
-            .then(() => {})
-            .catch(() => {}
-            );
-    } );
-}
-*/
-
 function re_request(userJson){
     let user = new NormalUser(userJson);
     user.getLongLat(userJson["uid"]).then( (locationJson) => {
-        user.request(userJson["uid"], locationJson , false)
-            .then(() => {})
-            .catch(() => {}
-            );
+        if (locationJson["isFirst"] === true){
+            user.request(userJson["uid"], locationJson , false)
+                .then((monqezIDs) => {
+                    setTimeout(function (){
+                        requestTimeOut(userJson["uid"], monqezIDs);
+                    }, 30000);
+                })
+                .catch(() => {});
+        }
     } );
 }
+
+app.post( '/call_out' , (request, response) => {
+    console.log(11);
+    helper.verifyToken(request, (userId) => {
+        if (userId === null){
+            response.sendStatus(403);
+        }
+        else{
+            let user = new NormalUser(request.body);
+            console.log(22);
+            user.callOut(userId).then( () => {
+                response.sendStatus(200);
+                console.log(33);
+                user.logCallRequest({"uid" : userId}).then(() => {});
+            } );
+        }
+    });
+} );
 
 module.exports.re_request = re_request;
 

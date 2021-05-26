@@ -1,3 +1,5 @@
+
+
 const admin = require('firebase-admin');
 const mailer = require('../Tools/nodeMailer');
 
@@ -323,7 +325,6 @@ class Database {
             let minutes = ("0" + date_ob.getMinutes()).slice(-2);
             let seconds = ("0" + date_ob.getSeconds()).slice(-2);
             let timeID  = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
-            //let timeID = date_ob.getTime();
 
             admin.database().ref('requests/' + uid + '/' + timeID)
                 .update(request)
@@ -334,6 +335,7 @@ class Database {
                     admin.database().ref('requests/' + uid + '/' + timeID).update({"isFirst" : true}).then(() => {});
                     admin.database().ref('requests/' + uid + '/' + timeID).update({"longitude" : request["longitude"]}).then(() => {});
                     admin.database().ref('requests/' + uid + '/' + timeID).update({"latitude" : request["latitude"]}).then(() => {});
+
                 } ) ;
         }
         else{
@@ -382,14 +384,24 @@ class Database {
                     snapshot.forEach(function(childSnapshot) {
                         let allDecline = false;
                         admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key).transaction(function(current_value){
-                            if (current_value !== null) {
-                                console.log(current_value);
-                                current_value["rejected"]["counter"]++;
-                                current_value["rejected"]['uid_' + current_value["rejected"]["counter"]] = monqezId;
-                                if (current_value["rejected"]["counter"] === current_value["monqezCounter"]) {
-                                    allDecline = true;
+                                if (current_value !== null) {
+
+                                    if ( current_value["status"] === 'closed' ){
+                                        reject('closed');
+                                    }
+                                    else{
+                                        console.log(current_value);
+                                        current_value["rejected"]["counter"]++;
+                                        current_value["rejected"]['uid_' + current_value["rejected"]["counter"]] = monqezId;
+                                        if (current_value["rejected"]["counter"] === current_value["monqezCounter"]) {
+                                            allDecline = true;
+
+                                            if (current_value["isFirst"] === false && allDecline === true){
+                                                current_value["status"] = "closed";
+                                            }
+                                        }
+                                    }
                                 }
-                            }
                                 return current_value;
                             }).then(() => {
                                 resolve(allDecline);
@@ -411,12 +423,19 @@ class Database {
                         admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
                             .transaction(function(current_value){
                                 if ( current_value !== null ){
-                                    if ( current_value["counter"] === 1 ){
-                                        reject();
+
+                                    if ( current_value["status"] === 'closed' ){
+                                        reject('closed');
                                     }
                                     else{
-                                        current_value["counter"]++;
-                                        current_value['uid_' + current_value["counter"]] = monqezId;
+                                        if ( current_value["counter"] === 1 ){
+                                            reject();
+                                        }
+                                        else{
+                                            current_value["counter"]++;
+                                            current_value['uid_' + current_value["counter"]] = monqezId;
+                                            current_value["status"] = "Accepted";
+                                        }
                                     }
                                 }
 
@@ -427,11 +446,30 @@ class Database {
         } );
     }
 
+    requestAcceptCount(userID){
+        return new Promise( (resolve, _) => {
+            admin.database().ref('requests/' + userID).limitToLast(1).once('value')
+                .then(function(snapshot){
+                    snapshot.forEach(function(childSnapshot) {
+                        admin.database().ref('requests/' + userID + '/' + childSnapshot.key + '/' + "accepted")
+                            .transaction(function(current_value){
+                                if (current_value !== null) {
+                                    resolve(current_value["counter"]);
+                                }
+                                return current_value;
+                            })
+                            .then(()=>{});
+                    });
+                });
+        } );
+    }
 
     getLongLat(uid){
         return new Promise( (resolve, reject) => {
             admin.database().ref('requests/' + uid).limitToLast(1).once('value').then(function(snapshot) {
-                        resolve(snapshot);
+                        snapshot.forEach(function(childSnapshot) {
+                            resolve(snapshot.val()[childSnapshot.key]);
+                        });
                     });
         });
     }
@@ -461,7 +499,7 @@ class Database {
 
     getCalls(){
         return new Promise( (resolve, _) => {
-            admin.database().ref('callsQueue/').orderByChild("date").limitToFirst(20)
+            admin.database().ref('callsQueue/').orderByChild("date").limitToLast(20)
                 .once( "value" , function (snapshot){
                     let table = [];
                     table.push(snapshot.val());
@@ -469,6 +507,115 @@ class Database {
                 } ).then(() => {});
         } );
     }
+
+    callAccept(monqezId, userJson){
+        return new Promise( (resolve, reject) => {
+                admin.database().ref('callsQueue/' + userJson["uid"]).transaction(function (current_value){
+                    if (current_value !== null){
+
+                        if (current_value["status"] === "Accepted"){
+                            reject();
+                        }
+                        else{
+                            current_value["status"] = "Accepted";
+                            current_value["monqezId"] = monqezId;
+                            resolve();
+                        }
+
+                    }
+
+                    return current_value;
+
+                })
+                    .then ( () => {} )
+                    .catch( () => {} );
+
+        } );
+    }
+
+    getAdditionalInfo(userId){
+        return new Promise( (resolve, _) => {
+            admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    resolve(snapshot.val()[childSnapshot.key]["additionalInfo"]);
+                });
+            });
+        } );
+    }
+
+    archiveCallRequest(userJson){
+        return new Promise( (resolve, _) => {
+            let date_ob = new Date();
+
+            let date    = ("0" + date_ob.getDate()).slice(-2);
+            let month   = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+            let year    = date_ob.getFullYear();
+            let hours   = ("0" + date_ob.getHours()).slice(-2);
+            let minutes = ("0" + date_ob.getMinutes()).slice(-2);
+            let seconds = ("0" + date_ob.getSeconds()).slice(-2);
+            let timeID  = year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds;
+
+            admin.database().ref( 'callsQueue/' + userJson["uid"] ).once("value")
+                .then( function (snapshot){
+                    console.log(snapshot.val());
+                    admin.database().ref( 'callsArchive/' + userJson["uid"] + '/' + timeID )
+                        .update(snapshot.val())
+                        .then( () => {} );
+
+                    admin.database().ref('callsQueue/' + userJson["uid"]).remove()
+                        .then( () => {} );
+
+                    resolve()
+                } );
+        } );
+    }
+
+    callOut(userId){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('callsQueue/' + userId).transaction(function (current_value){
+                if (current_value !== null){
+                    if (current_value["status"] === "Accepted"){
+                        reject();
+                    }
+                    else{
+                        current_value["status"] = "not responding";
+                        resolve();
+                    }
+                }
+                return current_value;
+
+            })
+                .then ( () => {} )
+                .catch( () => {} );
+
+        } );
+    }
+
+    saveInstructions(adminID, instructionJson) {
+        return new Promise((resolve, reject) => {
+            admin.database().ref('injuries').update({
+                injuries: instructionJson,
+                edited_by: adminID
+            }).then(() => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+    getInstructions() {
+        return new Promise(((resolve, reject) => {
+            admin.database().ref('injuries/')
+                .once("value", function (snapshot){
+                    resolve(JSON.stringify(snapshot));
+                })
+                .then((userInfo) => {})
+                .catch((error) => {
+                    reject(error);
+                })
+        }));
+    }
+
 }
 
 module.exports = Database;

@@ -217,6 +217,7 @@ class HelperHomeScreen extends StatelessWidget {
                                 Provider.of<Helper>(context, listen: false)
                                     .stopBackgroundProcess();
                               }
+                              print("Logging out");
                               logout();
                               navigate(LoginScreen(), context, true);
                             },

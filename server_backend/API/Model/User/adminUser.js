@@ -22,7 +22,10 @@ class Admin extends User{
     setApproval(adminID , applicationJson){
         User._database.setApproval(adminID , applicationJson);
     }
-    
+
+    saveInstructions(adminID, instructionJson) {
+        User._database.saveInstructions(adminID, instructionJson);
+    }
     getApplication(userID){
         return new Promise((resolve, _) => {
             User._database.getApplication(userID , function (applicationJson){
