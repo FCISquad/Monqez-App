@@ -14,6 +14,7 @@ class User {
   String buildNumber;
   String gender;
   String token;
+  String diseases = "";
   static FirebaseCloudMessaging fcm;
 
   User.empty();
@@ -32,6 +33,7 @@ class User {
     fcm = new FirebaseCloudMessaging(token);
     }*/
   }
+
   getUser() async {
     http.Response response2 = await http.get(
       Uri.parse('$url/user/getprofile/'),
@@ -53,7 +55,9 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
+      this.diseases = parsed['chronicDiseases'];
     } else {
+      print("HERE!");
       print(response2.statusCode);
       //makeToast("Error!");
     }
@@ -76,7 +80,8 @@ class User {
         'country': country,
         'city': city,
         'street': street,
-        'buildNumber': buildNumber
+        'buildNumber': buildNumber,
+        'chronicDiseases': diseases
       }),
     );
     if (response.statusCode == 200) {

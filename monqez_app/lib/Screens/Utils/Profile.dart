@@ -17,7 +17,9 @@ enum ScreenState {
   Viewing,
   Editing,
 }
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   User user;
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
@@ -27,6 +29,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   TextEditingController _cityController = TextEditingController();
   TextEditingController _streetController = TextEditingController();
   TextEditingController _buildNumberController = TextEditingController();
+  TextEditingController _diseasesController = TextEditingController();
 
   String gender = "";
 
@@ -34,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   bool _isLoading = true;
 
-  _ProfileScreenState(User user){
+  _ProfileScreenState(User user) {
     this.user = user;
     gender = user.gender;
   }
@@ -44,7 +47,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     super.initState();
     _isLoading = false;
   }
-  Widget _buildField(String title, String value, TextEditingController textController, double width) {
+
+  Widget _buildField(String title, String value,
+      TextEditingController textController, double width, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -79,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
-                Icons.account_circle_sharp,
+                icon,
                 color: secondColor,
               ),
               hintText: value,
@@ -95,18 +100,22 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
 
   Future<void> save() async {
-    print(_nameController == null);
-    if (_nameController.text.isNotEmpty)        user.name = _nameController.text;
-    if (_nationalIDController.text.isNotEmpty)  user.nationalID = _nationalIDController.text;
-    if (_phoneController.text.isNotEmpty)       user.phone = _phoneController.text;
-    if (_countryController.text.isNotEmpty)     user.country = _countryController.text;
-    if (_cityController.text.isNotEmpty)        user.city = _cityController.text;
-    if (_streetController.text.isNotEmpty)      user.street = _streetController.text;
-    if (_buildNumberController.text.isNotEmpty) user.buildNumber = _buildNumberController.text;
-    if (gender.isNotEmpty)                      user.gender = gender;
+    if (_nameController.text.isNotEmpty) user.name = _nameController.text;
+    if (_nationalIDController.text.isNotEmpty)
+      user.nationalID = _nationalIDController.text;
+    if (_phoneController.text.isNotEmpty) user.phone = _phoneController.text;
+    if (_countryController.text.isNotEmpty)
+      user.country = _countryController.text;
+    if (_cityController.text.isNotEmpty) user.city = _cityController.text;
+    if (_streetController.text.isNotEmpty) user.street = _streetController.text;
+    if (_buildNumberController.text.isNotEmpty)
+      user.buildNumber = _buildNumberController.text;
+    if (gender.isNotEmpty) user.gender = gender;
+    if (_diseasesController.text.isNotEmpty)
+      user.diseases = _diseasesController.text;
 
     bool success = await user.saveUser();
-    if ( success ) {
+    if (success) {
       state = ScreenState.Viewing;
       setState(() {});
     }
@@ -114,7 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   void edit() {
     state = ScreenState.Editing;
-    setState((){});
+    setState(() {});
   }
 
   Widget _buildSubmitBtn() {
@@ -143,6 +152,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       ),
     );
   }
+
   Color getMainColor() {
     return state == ScreenState.Editing ? firstColor : Colors.grey;
   }
@@ -156,8 +166,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Radio(
-          activeColor: Colors.blue,
-          focusColor: Colors.blue,
+          activeColor: firstColor,
+          focusColor: firstColor,
           value: title,
           groupValue: gender,
           onChanged: (value) {
@@ -176,123 +186,159 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
 
   Widget _addRadioGroup() {
-      return Row(
-          children: <Widget>[
-            addRadioButton(1, "Male"),
-            addRadioButton(2, "Female"),
-          ],
-      );
+    return Row(
+      children: <Widget>[
+        addRadioButton(1, "Male"),
+        addRadioButton(2, "Female"),
+      ],
+    );
   }
+
   @override
   Widget build(BuildContext context) {
-    if(_isLoading) {
+    if (_isLoading) {
       return CircularProgressIndicator();
-    } else return Scaffold(
-      backgroundColor: secondColor,
-      appBar: AppBar(
-        title: getTitle("Profile", 22.0, secondColor, TextAlign.start, true),
-        shadowColor: Colors.black,
-        backgroundColor: firstColor,
-        iconTheme: IconThemeData(color: secondColor),
-        elevation: 4,
-        leading: IconButton(icon:Icon(Icons.arrow_back),
-          onPressed:() => Navigator.pop(context, true),
+    } else
+      return Scaffold(
+        backgroundColor: secondColor,
+        appBar: AppBar(
+          title: getTitle("Profile", 22.0, secondColor, TextAlign.start, true),
+          shadowColor: Colors.black,
+          backgroundColor: firstColor,
+          iconTheme: IconThemeData(color: secondColor),
+          elevation: 4,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context, true),
+          ),
         ),
-      ),
-
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Container(
-            height: double.infinity,
-            child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10.0,
-                vertical: 20.0,
-              ),
-
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children:[
-                  Center(
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: CircularProfileAvatar(
-                            //'https://avatars0.githubusercontent.com/u/8264639?s=460&v=4',
-                            null,
-                            child: Image(
-                              image: AssetImage('assets/images/logo.png'),
-                              fit: BoxFit.cover,
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.light,
+          child: GestureDetector(
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: Container(
+              height: double.infinity,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 20.0,
+                ),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Center(
+                        child: Stack(children: [
+                          Center(
+                            child: CircularProfileAvatar(
+                              //'https://avatars0.githubusercontent.com/u/8264639?s=460&v=4',
+                              null,
+                              child: Image(
+                                image: AssetImage('assets/images/logo.png'),
+                                fit: BoxFit.cover,
+                              ),
+                              radius: 100,
+                              backgroundColor: Colors.transparent,
+                              borderColor: getMainColor(),
+                              elevation: 5.0,
+                              cacheImage: true,
+                              onTap: () {
+                                print('Tabbed');
+                              }, // sets on tap
                             ),
-                            radius: 100,
-                            backgroundColor: Colors.transparent,
-                            borderColor: getMainColor(),
-                            elevation: 5.0,
-                            cacheImage: true,
-                            onTap: () {
-                              print('Tabbed');
-                            }, // sets on tap
                           ),
-                        ),
-                        Center(
-                          child: Container(
-                            height: 205,
-                            width: 205,
-                            alignment: Alignment.bottomRight,
-                            child: getIcon(Icons.add_a_photo, 26, getMainColor())
-                          ),
-                        )
-                      ]
-                    ),
-                  ),
-                  SizedBox(height: 10.0),
-                  _buildField("Name", user.name, _nameController, MediaQuery.of(context).size.width),
-                  SizedBox(height: 20.0),
-                  _buildField("National ID", user.nationalID, _nationalIDController, MediaQuery.of(context).size.width),
-                  SizedBox(height: 20.0),
-                  _buildField("Phone Number", user.phone, _phoneController, MediaQuery.of(context).size.width),
-                  //_buildIDNumberTF(),
+                          Center(
+                            child: Container(
+                                height: 205,
+                                width: 205,
+                                alignment: Alignment.bottomRight,
+                                child: getIcon(
+                                    Icons.add_a_photo, 26, getMainColor())),
+                          )
+                        ]),
+                      ),
+                      SizedBox(height: 10.0),
+                      _buildField(
+                          "Name",
+                          user.name,
+                          _nameController,
+                          MediaQuery.of(context).size.width,
+                          Icons.account_circle_sharp),
+                      SizedBox(height: 20.0),
+                      _buildField(
+                          "National ID",
+                          user.nationalID,
+                          _nationalIDController,
+                          MediaQuery.of(context).size.width,
+                          Icons.assignment_ind_outlined),
+                      SizedBox(height: 20.0),
+                      _buildField("Phone Number", user.phone, _phoneController,
+                          MediaQuery.of(context).size.width, Icons.phone),
+                      //_buildIDNumberTF(),
+                      _buildField(
+                          "Diseases",
+                          user.diseases,
+                          _diseasesController,
+                          MediaQuery.of(context).size.width,
+                          Icons.accessibility_outlined),
+                      SizedBox(height: 15.0),
 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildField(
+                              "Country",
+                              user.country,
+                              _countryController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop),
+                          _buildField(
+                              "City",
+                              user.city,
+                              _cityController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop)
+                        ],
+                      ),
+                      SizedBox(height: 15.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildField(
+                              "Street",
+                              user.street,
+                              _streetController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop),
+                          _buildField(
+                              "Build Number",
+                              user.buildNumber,
+                              _buildNumberController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop)
+                        ],
+                      ),
+                      SizedBox(height: 15.0),
+                      Visibility(
+                          visible: state == ScreenState.Viewing,
+                          child: _buildField(
+                              "Gender",
+                              user.gender,
+                              _genderController,
+                              MediaQuery.of(context).size.width,
+                              Icons.account_circle_sharp)),
 
-                  SizedBox(height: 15.0),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildField("Country", user.country, _countryController, (MediaQuery.of(context).size.width-30)/2),
-                      _buildField("City", user.city, _cityController, (MediaQuery.of(context).size.width-30)/2)
-                    ],
-                  ),
-                  SizedBox(height: 15.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildField("Street", user.street, _streetController, (MediaQuery.of(context).size.width-30)/2),
-                      _buildField("Build Number", user.buildNumber, _buildNumberController, (MediaQuery.of(context).size.width-30)/2)
-                    ],
-                  ),
-                  SizedBox(height: 15.0),
-                  Visibility(
-                      visible: state == ScreenState.Viewing,
-                      child: _buildField("Gender", user.gender, _genderController, MediaQuery.of(context).size.width)
-                  ),
-
-                  Visibility(
-                    visible: state == ScreenState.Editing,
-                    child: _addRadioGroup(),
-                  ),
-                  SizedBox(height: 20.0),
-                  _buildSubmitBtn()
-                ]
+                      Visibility(
+                        visible: state == ScreenState.Editing,
+                        child: _addRadioGroup(),
+                      ),
+                      SizedBox(height: 20.0),
+                      _buildSubmitBtn()
+                    ]),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
   }
-
 }

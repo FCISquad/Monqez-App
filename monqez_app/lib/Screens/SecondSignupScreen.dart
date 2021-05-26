@@ -10,6 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
 import 'LoginScreen.dart';
@@ -30,6 +31,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _streetController = TextEditingController();
   var _buildNumberController = TextEditingController();
   var _certificateController = TextEditingController();
+  var _diseaseController = TextEditingController();
   var token;
   var uid;
   String _fullNameError = '';
@@ -139,7 +141,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     return Text(
       text,
       style: TextStyle(
-        color: Colors.white,
+        color: firstColor,
         fontSize: 16.0,
         fontWeight: FontWeight.bold,
       ),
@@ -206,7 +208,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
-
     final http.Response response = await http.post(
       Uri.parse('$url/user/signup'),
       headers: <String, String>{
@@ -223,7 +224,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'country': _countryController.text,
         'city': _cityController.text,
         'street': _streetController.text,
-        'buildNumber': _buildNumberController.text
+        'buildNumber': _buildNumberController.text,
+        'chronicDiseases': _diseaseController.text
       }),
     );
 
@@ -261,7 +263,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'buildNumber': _buildNumberController.text,
         'certificate': base64Image,
         'certificateName': _fileName,
-        'submissionDate': DateTime.now().toString()
+        'submissionDate': DateTime.now().toString(),
+        'chronicDiseases': _diseaseController.text
       }),
     );
 
@@ -329,7 +332,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       title: Text(
         "Signup as Monqez?",
         style: TextStyle(
-          color: Colors.white,
+          color: firstColor,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -360,7 +363,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             controller: _nameController,
             onChanged: _validateFullName,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -368,11 +371,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.account_circle_sharp,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               hintText: 'Enter your Name',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -381,10 +384,46 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         Visibility(
           child: Text(
             _fullNameError,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: firstColor, fontWeight: FontWeight.bold),
           ),
           visible: _fullNameError.isNotEmpty,
         ),
+      ],
+    );
+  }
+
+  Widget _buildDiseaseTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        getTitle("Diseases"),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            controller: _diseaseController,
+            style: TextStyle(
+              color: firstColor,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.accessibility_outlined,
+                color: firstColor,
+              ),
+              hintText: 'Enter any diseases',
+              hintStyle: TextStyle(
+                color: firstColor,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 5.0),
       ],
     );
   }
@@ -404,7 +443,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             controller: _phoneController,
             onChanged: _validatePhoneNumber,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -412,11 +451,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.phone,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               hintText: 'Enter your Phone Number',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -425,7 +464,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         Visibility(
           child: Text(
             _phoneNumberError,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: firstColor, fontWeight: FontWeight.bold),
           ),
           visible: _phoneNumberError.isNotEmpty,
         ),
@@ -448,7 +487,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               onChanged: _validateNationalId,
               keyboardType: TextInputType.number,
               style: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
                 fontFamily: 'OpenSans',
               ),
               decoration: InputDecoration(
@@ -456,7 +495,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 contentPadding: EdgeInsets.only(top: 14.0),
                 prefixIcon: Icon(
                   Icons.assignment_ind_outlined,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
                 suffixIcon: GestureDetector(
                   onTap: () {
@@ -464,12 +503,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   },
                   child: Icon(
                     Icons.camera_alt,
-                    color: Colors.deepOrange,
+                    color: firstColor,
                   ),
                 ),
                 hintText: 'Enter your ID Number',
                 hintStyle: TextStyle(
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
             ),
@@ -478,7 +517,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             child: Text(
               _nationalIdError,
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -498,12 +537,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   },
                   child: Icon(
                     Icons.highlight_remove,
-                    color: Colors.white,
+                    color: firstColor,
                   ),
                 ),
                 hintText: _imageName,
                 hintStyle: TextStyle(
-                  color: Colors.white,
+                  color: firstColor,
                 ),
               ),
             ),
@@ -519,7 +558,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         Text(
           "First-Aid Certificate",
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -533,7 +572,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             onChanged: _validateCertificate,
             readOnly: true,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -541,18 +580,18 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.book,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: _uploadCertificate,
                 child: Icon(
                   Icons.file_copy,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: _fileName,
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -561,7 +600,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           child: Text(
             _certificateError,
             style: TextStyle(
-              color: Colors.white,
+              color: firstColor,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -596,7 +635,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           child: TextFormField(
             readOnly: true,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             onTap: _selectDate,
@@ -607,12 +646,12 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 onTap: _selectDate,
                 child: Icon(
                   Icons.date_range,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: "${selectedDate.toLocal()}".split(' ')[0],
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -640,7 +679,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     controller: _countryController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -648,7 +687,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "Country",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   )),
@@ -660,7 +699,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     controller: _cityController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -668,7 +707,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "City",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   ))
@@ -689,7 +728,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     controller: _streetController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -697,7 +736,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "Street",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   )),
@@ -709,7 +748,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     controller: _buildNumberController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -717,7 +756,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "Build Number",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   )),
@@ -728,7 +767,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         Visibility(
           child: Text(_addressError,
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontWeight: FontWeight.bold,
               )),
           visible: _addressError.isNotEmpty,
@@ -785,11 +824,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: secondColor,
         child: Text(
           'Submit',
           style: TextStyle(
-            color: Colors.deepOrange,
+            color: firstColor,
             letterSpacing: 1,
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
@@ -804,7 +843,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Radio(
-          activeColor: Colors.white,
+          activeColor: firstColor,
           focusColor: Colors.blue,
           value: title,
           groupValue: gender,
@@ -817,7 +856,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         Text(
           title,
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              color: firstColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ],
     );
@@ -826,7 +865,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: secondColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -843,9 +882,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Add additional information',
+                    'Add Additional Information',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: firstColor,
                       fontSize: 23.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -860,6 +899,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     height: 10.0,
                   ),
                   _buildDatePicker(context),
+                  SizedBox(height: 10.0),
+                  _buildDiseaseTF(),
                   SizedBox(height: 10.0),
                   _buildAddress(),
                   SizedBox(height: 20.0),

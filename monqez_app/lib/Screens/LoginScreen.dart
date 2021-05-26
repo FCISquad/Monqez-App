@@ -10,6 +10,7 @@ import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import '../Backend/Authentication.dart';
 import 'UI.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     Firebase.initializeApp();
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: secondColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -77,7 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Sign In',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: firstColor,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -166,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Email',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -180,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
             onChanged: validateLoginCredentials,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -188,23 +189,10 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.email,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
-              enabledBorder: new OutlineInputBorder(
-                borderRadius: new BorderRadius.circular(10.0),
-                borderSide: new BorderSide(
-                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                    width: 3),
-              ),
-              focusedBorder: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(10.0),
-                  borderSide: new BorderSide(
-                      color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                      width: 3)),
               hintText: 'Enter your Email',
-              hintStyle: TextStyle(
-                color: Colors.deepOrange,
-              ),
+              hintStyle: TextStyle(color: firstColor),
             ),
           ),
         ),
@@ -212,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           _emailError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -227,7 +215,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Password',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -241,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
             obscureText: !_showPassword,
             onChanged: validatePassword,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -249,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -259,19 +247,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: Icon(
                   Icons.remove_red_eye,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: 'Enter your Password',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
         ),
         SizedBox(height: 5.0),
         Text(_passwordError,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: TextStyle(color: firstColor, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -349,11 +337,11 @@ class _LoginScreenState extends State<LoginScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: firstColor,
         child: Text(
           'LOGIN',
           style: TextStyle(
-            color: Colors.deepOrange,
+            color: secondColor,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -425,7 +413,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: 60.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: firstColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
@@ -469,7 +457,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextSpan(
               text: 'Don\'t have an Account? ',
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w400,
               ),
@@ -477,7 +465,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextSpan(
               text: 'Sign Up',
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -494,7 +482,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           '- OR -',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -502,7 +490,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Sign in with',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
