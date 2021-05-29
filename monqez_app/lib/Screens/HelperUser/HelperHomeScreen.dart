@@ -25,7 +25,6 @@ class HelperHomeScreen extends StatelessWidget {
 
   List<String> _statusDropDown = <String>[
     "Available",
-    "Contacting only",
     "Busy"
   ];
 
@@ -208,6 +207,7 @@ class HelperHomeScreen extends StatelessWidget {
                       child: Container(
                         height: 40,
                         width: 120,
+                        // ignore: deprecated_member_use
                         child: RaisedButton(
                             elevation: 5.0,
                             onPressed: () {
@@ -244,34 +244,26 @@ class HelperHomeScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
                   horizontal: 10.0,
-                  vertical: 40.0,
+                  vertical: 10.0,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        getCard(
-                            "Call Queue",
-                            "4",
-                            CallingQueueScreen(),
-                            Icons.call,
-                            (MediaQuery.of(context).size.width - 40) / 2,
-                            context),
-                        getCard(
-                            "Chat Queue",
-                            "3",
-                            ChatQueueScreen(),
-                            Icons.chat,
-                            (MediaQuery.of(context).size.width - 40) / 2,
-                            context),
-                      ],
-                    ),
-                    getCard("Request Queue", "6", null, Icons.local_hospital,
-                        MediaQuery.of(context).size.width, context),
+                    getCard(
+                        "Call Queue",
+                        "4",
+                        CallingQueueScreen(),
+                        Icons.call,
+                        MediaQuery.of(context).size.width,
+                        context),
+                    getCard(
+                        "Chat Queue",
+                        "3",
+                        ChatQueueScreen(),
+                        Icons.chat,
+                        MediaQuery.of(context).size.width,
+                        context),
                     getCard(
                         "My Ratings",
                         "4.4",

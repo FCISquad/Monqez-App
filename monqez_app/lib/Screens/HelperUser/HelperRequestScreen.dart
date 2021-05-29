@@ -45,7 +45,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
   int bodyMapValue;
   bool forMe;
-  Widget avatar = BodyMap();
+  Widget avatar;
 
   _HelperRequestScreenState(
       double reqLong, double reqLat, double helperLong, double helperLat) {
@@ -153,7 +153,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
       _detailedAddress.text = mp["Address"];
       bodyMapValue = int.parse(mp["avatarBody"]);
       print(bodyMapValue);
-      BodyMap.setSelected(bodyMapValue);
+      avatar = BodyMap.init(bodyMapValue);
       return true;
     }
     else{
@@ -232,7 +232,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                   shrinkWrap: true,
 
                   children: [
-                    SizedBox(height: 200, child: BodyMap()),
+                    SizedBox(height: 200, child: avatar),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       crossAxisAlignment: CrossAxisAlignment.center,

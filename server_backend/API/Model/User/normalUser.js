@@ -100,7 +100,6 @@ class NormalUser extends User {
             User._database.getFCMToken(min_three[i]).then((token) => {
                 // let registrationTokens = [];
                 // registrationTokens.push(token);
-
                 const payload = {
                     notification: {
                         title: 'Help is needed!',

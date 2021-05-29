@@ -159,7 +159,8 @@ class Database {
                         city: userInfo.val().city,
                         street: userInfo.val().street,
                         buildNumber: userInfo.val().buildNumber,
-                        gender: userInfo.val().gender
+                        gender: userInfo.val().gender,
+                        image: userInfo.val().image
                     });
                 })
                 .catch((error) => {
@@ -232,7 +233,8 @@ class Database {
                 city: userInfo.city,
                 street: userInfo.street,
                 buildNumber: userInfo.buildNumber,
-                gender: userInfo.gender
+                gender: userInfo.gender,
+                image: userInfo.image
             }).then(() => {
                 resolve();
             }).catch((error) => {

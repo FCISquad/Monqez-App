@@ -3,8 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,6 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
 import '../LoginScreen.dart';
 import '../VoicePage.dart';
+import 'NormalUserPreviousRequests.dart';
 
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   var _additionalInfoController = TextEditingController();
-  int bodyMap;
+  BodyMap avatar;
   bool isLoaded = false;
   int firstStatusCode;
   _NormalHomeScreenState(String token) {
@@ -112,12 +113,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
 
   void _sendAdditionalInformation() async {
+    print("Avatar:" + avatar.getSelected().toString());
     String tempToken = user.token;
     Map<String, dynamic> body = {
       'additionalInfo': {
         'Address': _detailedAddress.text,
         'Additional Notes': _aditionalNotes.text,
-        'avatarBody': bodyMap.toString(),
+        'avatarBody': avatar.getSelected().toString(),
         'forMe': _radioValue.toString()
       },
     };
@@ -186,12 +188,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      SizedBox(height: 400, child: BodyMap()),
+                      SizedBox(height: 400, child: avatar),
                       SizedBox(
                         width: 200,
                         child: RaisedButton(
                           onPressed: () {
-                            bodyMap = BodyMap.getSelected();
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -490,7 +491,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   @override
   void initState() {
     super.initState();
-    bodyMap = 0;
+    avatar = BodyMap();
     _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
@@ -603,6 +604,17 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         navigate(ProfileScreen(user), context, false);
                       },
                     ),
+
+                    ListTile(
+                      title: getTitle(
+                          'My Requests', 18, firstColor, TextAlign.start, true),
+                      leading: Icon(Icons.history,
+                          size: 30, color: firstColor),
+                      onTap: () {
+                        //Navigator.pop(context);
+                        navigate(NormalPreviousRequests(user), context, false);
+                      },
+                    ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
@@ -663,6 +675,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         //_createPolylines();
                         await _makeRequest();
                         if (firstStatusCode == 200) _showMaterialDialog();
+                        //_showMaterialDialog();
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,

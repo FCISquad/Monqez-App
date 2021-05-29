@@ -164,10 +164,8 @@ class ModifyInstructionState extends State<ModifyInstruction> {
                         // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () {
-                            print("Here " + instructions.length.toString());
                             instructions.add(new Pair(
                                 images.last, stepsControllers.last.text));
-                            print("Here2 " + instructions.length.toString());
                             Navigator.of(context).pop();
                           },
                           child: Text(

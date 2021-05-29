@@ -30,11 +30,6 @@ class InstructionsList with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<ImageController> getImage(String path) async {
-    ImageController imageController = ImageController.fromAssets(path);
-    await imageController.loadBytesFromAssets();
-    return imageController;
-  }
 
   void _iterateJson(String jsonStr) {
     Map<String, dynamic> applications = json.decode(jsonStr);

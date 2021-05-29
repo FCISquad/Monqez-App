@@ -1,6 +1,13 @@
+import 'dart:io';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mime/mime.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/Instructions/ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 
@@ -33,10 +40,12 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   ScreenState state = ScreenState.Viewing;
 
   bool _isLoading = true;
+  ImageController imageController ;
 
   _ProfileScreenState(User user){
     this.user = user;
     gender = user.gender;
+    imageController = user.image;
   }
 
   @override
@@ -94,8 +103,71 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     );
   }
 
+  bool fileType(String path, String type) {
+    final mimeType = lookupMimeType(path);
+    return mimeType.startsWith(type + '/');
+  }
+
+  Future<ImageController> _uploadProfilePicture() async {
+    FilePickerResult _path;
+    try {
+      _path = (await FilePicker.platform.pickFiles());
+    } on PlatformException catch (e) {
+      makeToast("Unsupported operation" + e.toString());
+    } catch (ex) {
+      makeToast(ex);
+    }
+    if (_path != null && fileType(_path.files.single.path, "image"))
+      return ImageController(File(_path.files.single.path));
+    else {
+      makeToast("Please Upload a photo!");
+      return null;
+    }
+  }
+  Widget getText(String text, double fontSize, bool isBold, Color color) {
+    return AutoSizeText(text,
+        style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
+        maxLines: 3);
+  }
+  void _buildImagePicker(BuildContext context) async {
+    imageController = await _uploadProfilePicture();
+    setState(() {});
+  }
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                TextButton(
+                  child: getText('Replace', 22, true, Colors.green),
+                  onPressed: () {
+                    print("Replaced");
+                    Navigator.of(context).pop();
+                    _buildImagePicker(context);
+                  },
+                ), // button 1
+                TextButton(
+                  child: getText('Remove', 22, true, Color(0xFFF27169)),
+                  onPressed: () {
+                    imageController = null;
+                    setState(() {});
+                    Navigator.of(context).pop();
+                  },
+                ) // button 2
+              ]),
+        );
+      },
+    );
+  }
+
   Future<void> save() async {
-    print(_nameController == null);
     if (_nameController.text.isNotEmpty)        user.name = _nameController.text;
     if (_nationalIDController.text.isNotEmpty)  user.nationalID = _nationalIDController.text;
     if (_phoneController.text.isNotEmpty)       user.phone = _phoneController.text;
@@ -104,6 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     if (_streetController.text.isNotEmpty)      user.street = _streetController.text;
     if (_buildNumberController.text.isNotEmpty) user.buildNumber = _buildNumberController.text;
     if (gender.isNotEmpty)                      user.gender = gender;
+    user.image = imageController;
 
     bool success = await user.saveUser();
     if ( success ) {
@@ -119,9 +192,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   Widget _buildSubmitBtn() {
     return Container(
-      //padding: EdgeInsets.symmetric(vertical: 25.0),
       width: MediaQuery.of(context).size.width / 2,
       height: 45,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () {
@@ -221,15 +294,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       children: [
                         Center(
                           child: CircularProfileAvatar(
-                            //'https://avatars0.githubusercontent.com/u/8264639?s=460&v=4',
                             null,
-                            child: Image(
-                              image: AssetImage('assets/images/logo.png'),
-                              fit: BoxFit.cover,
-                            ),
+                            child: imageController == null ? Container(): Image.memory(imageController.decode()),
                             radius: 100,
                             backgroundColor: Colors.transparent,
-                            borderColor: getMainColor(),
+                            borderColor: imageController == null ? getMainColor() : secondColor,
                             elevation: 5.0,
                             cacheImage: true,
                             onTap: () {
@@ -238,12 +307,28 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                           ),
                         ),
                         Center(
-                          child: Container(
+                          child: Container (
                             height: 205,
                             width: 205,
                             alignment: Alignment.bottomRight,
-                            child: getIcon(Icons.add_a_photo, 26, getMainColor())
-                          ),
+                            child: GestureDetector(
+                              onTap: () {
+                                if (state == ScreenState.Editing)
+                                  if (imageController == null) {
+                                    _buildImagePicker(context);
+                                  } else {
+                                    _showMyDialog();
+                                  }
+                              },
+                              child: new Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                      child: getIcon(Icons.add_a_photo, 26, getMainColor())
+                                  )),
+                            ),
+
+
+                          )
                         )
                       ]
                     ),

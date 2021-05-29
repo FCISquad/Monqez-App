@@ -1,3 +1,4 @@
+
 const Address = require("../address");
 const Database = require('../../Database/database');
 
@@ -109,6 +110,17 @@ class User{
     static getInstructions(){
         return new Promise( ((resolve, reject) => {
             User._database.getInstructions()
+                .then( (userJson) =>{
+                    resolve(userJson);
+                } )
+                .catch( (error) => {
+                    reject(error);
+                } )
+        }));
+    }
+    static getRequests(userId) {
+        return new Promise( ((resolve, reject) => {
+            User._database.getRequests(userId)
                 .then( (userJson) =>{
                     resolve(userJson);
                 } )

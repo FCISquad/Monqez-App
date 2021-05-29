@@ -2,6 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
+import 'package:monqez_app/Screens/Instructions/ImageController.dart';
 
 class User {
   String name;
@@ -14,9 +15,11 @@ class User {
   String buildNumber;
   String gender;
   String token;
+  ImageController image;
   static FirebaseCloudMessaging fcm;
 
   User.empty();
+
 
   /*User(String token) {
     this.token = token;
@@ -53,6 +56,7 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
+      this.image = parsed['image'].toString().length < 2 ? null : new ImageController.fromBase64(parsed['image']);
     } else {
       print(response2.statusCode);
       //makeToast("Error!");
@@ -76,7 +80,8 @@ class User {
         'country': country,
         'city': city,
         'street': street,
-        'buildNumber': buildNumber
+        'buildNumber': buildNumber,
+        'image': image == null ? '' : image.base_64
       }),
     );
     if (response.statusCode == 200) {

@@ -242,6 +242,25 @@ app.post( '/call_out' , (request, response) => {
     });
 } );
 
+app.post( '/get_requests' , (request , response) => {
+    helper.verifyToken(request , (userId) => {
+        if ( userId === null ){
+            // Forbidden
+            response.sendStatus(403);
+        }
+        else{
+            User.getRequests(userId)
+                .then( (userJson) => {
+                    response.send(userJson);
+                } )
+                .catch( (error) => {
+                    console.log(error);
+                    response.send(error);
+                } );
+        }
+    });
+} );
+
 module.exports.re_request = re_request;
 
 module.exports = app;

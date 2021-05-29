@@ -7,6 +7,12 @@ class HelperRatingsScreen extends StatefulWidget {
   _HelperHomeScreenState createState() => _HelperHomeScreenState();
 }
 
+class Rating {
+  Rating(this.name, this.comment, this.rate) ;
+  String name;
+  String comment;
+  double rate;
+}
 
 class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTickerProviderStateMixin {
   List<Widget> _ratingsList;
@@ -18,10 +24,10 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
     super.initState();
     Future.delayed(Duration.zero, () {
       _ratingsList = <Widget>[
-        getCard("Khaled Ezzat", "Great Person! I suggest him.", null, 5, MediaQuery.of(context).size.width ),
-        getCard("Hussien Ashraf", "He was late, but he saved my life !", null, 4, MediaQuery.of(context).size.width),
-        getCard("Hatem Mamdoh", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felis, tristique vel fringilla sed, suscipit sit amet orci. Sed dapibus mass", null, 4, MediaQuery.of(context).size.width),
-        getCard("Ehab Fawzy", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felci. Sed dapibus mass", null, 4, MediaQuery.of(context).size.width),
+        getCard(Rating("Khaled Ezzat", "Great Person! I suggest him.",5), null, MediaQuery.of(context).size.width ),
+        getCard(Rating("Hussien Ashraf", "He was late, but he saved my life !",5 ), null, MediaQuery.of(context).size.width),
+        getCard(Rating("Hatem Mamdoh", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felis, tristique vel fringilla sed, suscipit sit amet orci. Sed dapibus mass",5), null, MediaQuery.of(context).size.width),
+        getCard(Rating("Ehab Fawzy", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felci. Sed dapibus mass",5), null, MediaQuery.of(context).size.width),
       ];
 
 
@@ -29,7 +35,7 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
       setState((){});
     });
   }
-  Widget getCard(String name, String comment, Widget nextScreen, double rating, double width) {
+  Widget getCard(Rating rating, Widget nextScreen, double width) {
     return Card (
       elevation: 0,
       color: Colors.transparent,
@@ -47,13 +53,13 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
             children: <Widget>[
               ListTile(
                 contentPadding: EdgeInsets.fromLTRB(10,10,10,0),
-                leading: getTitle(name, 16, secondColor, TextAlign.center, true),
-                title: getTitle(comment, 16, secondColor, TextAlign.center, true),
+                leading: getTitle(rating.name, 16, secondColor, TextAlign.center, true),
+                title: getTitle(rating.comment, 16, secondColor, TextAlign.center, true),
 
               ),
               ListTile(
-                leading: getRatingBar(rating, 30, secondColor),
-                trailing: getTitle(rating.toString(), 16, secondColor, TextAlign.center, true),
+                leading: getRatingBar(rating.rate, 30, secondColor),
+                trailing: getTitle(rating.rate.toString(), 16, secondColor, TextAlign.center, true),
               ),
             ],
           ),
