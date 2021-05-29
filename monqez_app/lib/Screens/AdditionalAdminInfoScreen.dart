@@ -27,6 +27,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   var _cityController = TextEditingController();
   var _streetController = TextEditingController();
   var _buildNumberController = TextEditingController();
+  var _diseaseController = TextEditingController();
   var token;
   var uid;
   String _fullNameError = '';
@@ -104,6 +105,42 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       }
     });
     return;
+  }
+
+  Widget _buildDiseaseTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        getTitle("Diseases"),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            controller: _diseaseController,
+            style: TextStyle(
+              color: firstColor,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.accessibility_outlined,
+                color: firstColor,
+              ),
+              hintText: 'Enter any diseases',
+              hintStyle: TextStyle(
+                color: firstColor,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 5.0),
+      ],
+    );
   }
 
   Widget getTitle(String text) {
@@ -193,6 +230,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         'city': _cityController.text,
         'street': _streetController.text,
         'buildNumber': _buildNumberController.text,
+        'chronicDiseases': _diseaseController.text
       }),
     );
     if (response.statusCode == 200) {
@@ -590,6 +628,8 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                     height: 10.0,
                   ),
                   _buildDatePicker(context),
+                  SizedBox(height: 10.0),
+                  _buildDiseaseTF(),
                   SizedBox(height: 10.0),
                   _buildAddress(),
                   SizedBox(height: 20.0),
