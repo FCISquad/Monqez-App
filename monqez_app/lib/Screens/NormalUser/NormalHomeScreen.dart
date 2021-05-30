@@ -52,7 +52,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       user = new User.empty();
       user.setToken(token);
       await user.getUser();
-      _isLoading = false;
     });
   }
   Animation<double> animation;
@@ -67,12 +66,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
    */
   Completer<GoogleMapController> _controller = Completer();
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
   final Set<Marker> _markers = {};
-  LatLng _lastMapPosition = _center;
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
-  Item _selectedSeviirty;
   bool _radioValue;
   var _nameController = TextEditingController();
 
@@ -82,35 +78,40 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     const Item('Normal'),
   ];
 
-  static CameraPosition _position1 = CameraPosition(
-    bearing: 192.833,
-    target: LatLng(45.531563, -122.677433),
-    tilt: 59.440,
-    zoom: 11.0,
-  );
+  static CameraPosition _position1 ;
 
   Future<void> _goToPosition1() async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
 
+  showPinsOnMap(){
+    print (_newUserPosition) ;
+    _markers.add(
+      Marker(
+        markerId: MarkerId(_newUserPosition.toString()),
+        position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+        infoWindow: InfoWindow(
+          title: 'This is a Title',
+          snippet: 'This is a snippet',
+        ),
+        icon: BitmapDescriptor.defaultMarker,
+      ),
+    );
+  }
   _onMapCreated(GoogleMapController controller) async {
+    print (_position1) ;
+    await _getCurrentUserLocation() ;
+    await _goToPosition1() ;
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
           bearing: 192.833,
-          target: LatLng(37.0503, -95.7111),
+          target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           tilt: 59.440,
-          zoom: 11.0);
+          zoom: 11.0);;
     });
-    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
-    print(_position1.target);
   }
-
-  _onCameraMove(CameraPosition position) {
-    _lastMapPosition = _position1.target;
-  }
-
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
     Map<String, dynamic> body = {
@@ -354,65 +355,29 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-  PolylinePoints polylinePoints;
-
-  List<LatLng> polylineCoordinates = [];
-
-  Map<PolylineId, Polyline> polylines = {};
-  _createPolylines(Position start, Position destination) async {
-    polylinePoints = PolylinePoints();
-
-    // Generating the list of coordinates to be used for
-    // drawing the polylines
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo', // Google Maps API Key
-      PointLatLng(start.latitude, start.longitude),
-      PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.transit,
-    );
-
-    // Adding the coordinates to the list
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    }
-
-    // Defining an ID
-    PolylineId id = PolylineId('poly');
-
-    // Initializing Polyline
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 3,
-    );
-
-    // Adding the polyline to the map
-    polylines[id] = polyline;
-  }
-
-  _onMapTypeButtonPressed() {
+   _onMapTypeButtonPressed() {
     setState(() {
       _currentMapType = _currentMapType == MapType.normal
           ? MapType.satellite
           : MapType.normal;
     });
   }
-
   _getCurrentUserLocation() async {
     Position _newPosition;
     _newPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    setState(() {
       _newUserPosition = _newPosition;
       _position1 = CameraPosition(
           bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           tilt: 59.440,
           zoom: 11.0);
-    });
+      _isLoading = false;
+      setState(() {
+
+      });
+      print ("heeeeeeere") ;
+      print (_newPosition) ;
   }
 
   _onAddMarkerButtonPressed() async {
@@ -491,6 +456,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   void initState() {
     super.initState();
     bodyMap = 0;
+    //showPinsOnMap() ;
     _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
@@ -523,6 +489,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       isLoaded = true;
     }
     if (_isLoading) {
+      _getCurrentUserLocation() ;
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -536,7 +503,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       strokeWidth: 5,
                       valueColor:
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
-    } else
+    } else{
+      showPinsOnMap();
+
       return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
@@ -636,8 +605,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 initialCameraPosition: _position1,
                 mapType: _currentMapType,
                 markers: _markers,
-                onCameraMove: _onCameraMove,
-                polylines: Set<Polyline>.of(polylines.values),
               ),
               /*SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -680,11 +647,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       SizedBox(
                         height: 16.0,
                       ),
-                      button(_onAddMarkerButtonPressed, Icons.add_location,
-                          'marker'),
-                      SizedBox(
-                        height: 16.0,
-                      ),
                       button(
                           _goToPosition1, Icons.location_searching, 'position'),
                     ],
@@ -695,6 +657,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           ),
         ),
       );
+    }
   }
 
   Future<void> _handleCameraAndMic(Permission permission) async {
