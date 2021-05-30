@@ -5,6 +5,7 @@ import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
 import 'package:monqez_app/Screens/Instructions/InjuryScreen.dart';
 import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
 import 'package:provider/provider.dart';
+import 'Screens/ComplaintDialog.dart';
 import 'Screens/HelperUser/HelperRequestScreen.dart';
 import 'Screens/Model/Helper.dart';
 import 'Screens/SplashScreen.dart';
@@ -40,7 +41,7 @@ class MyApp extends StatelessWidget {
 
       routes: {
         //'/': (context) => HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
-        '/': (context) => HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
+        '/': (context) => Splash(),
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),

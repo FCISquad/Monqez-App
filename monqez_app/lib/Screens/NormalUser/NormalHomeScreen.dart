@@ -13,7 +13,6 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import '../Instructions/InstructionsScreen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
@@ -56,21 +55,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
   Animation<double> animation;
   AnimationController controller;
-  /*
-  void logout () async {
-    _prefs = await SharedPreferences.getInstance();
-    _prefs.remove('email');
-    _prefs.remove('userID');
-    _prefs.remove('userToken');
-    makeToast('Logged out!');
-  }
-   */
+
   Completer<GoogleMapController> _controller = Completer();
   final Set<Marker> _markers = {};
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   bool _radioValue;
-  var _nameController = TextEditingController();
 
   List<Item> users = <Item>[
     const Item('Very dangerous'),
@@ -81,6 +71,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   static CameraPosition _position1 ;
 
   Future<void> _goToPosition1() async {
+    _getCurrentUserLocation() ;
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
@@ -91,10 +82,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       Marker(
         markerId: MarkerId(_newUserPosition.toString()),
         position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-        infoWindow: InfoWindow(
-          title: 'This is a Title',
-          snippet: 'This is a snippet',
-        ),
+        // infoWindow: InfoWindow(
+        //   title: 'This is a Title',
+        //   snippet: 'This is a snippet',
+        // ),
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
@@ -109,7 +100,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           tilt: 59.440,
-          zoom: 11.0);;
+          zoom: 11.0);
     });
   }
   void _sendAdditionalInformation() async {
@@ -190,6 +181,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       SizedBox(height: 400, child: BodyMap()),
                       SizedBox(
                         width: 200,
+                        // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () {
                             bodyMap = BodyMap.getSelected();
@@ -210,7 +202,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
-
   _showMaterialDialog() {
     showDialog(
         context: context,
@@ -234,38 +225,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      // Container(
-                      //   child :Row(
-                      //     children: [
-                      //       Text("Severity  ") ,
-                      //       DropdownButton<Item>(
-                      //         hint: Text("Select item"),
-                      //         value: _selectedSeviirty,
-                      //         onChanged: (Item value) {
-                      //           setState(() {
-                      //             _selectedSeviirty = value;
-                      //             print(_selectedSeviirty.name) ;
-                      //           });
-                      //         },
-                      //         items: users.map((Item user) {
-                      //           return  DropdownMenuItem<Item>(
-                      //             value: user,
-                      //             child: Row(
-                      //               children: <Widget>[
-                      //                 SizedBox(width: 10,),
-                      //                 Text(
-                      //                   user.name,
-                      //                   style:  TextStyle(color: Colors.black),
-                      //                 ),
-                      //               ],
-                      //             ),
-                      //           );
-                      //         }).toList(),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-
                       Container(
                         child: Row(
                           children: [
@@ -314,6 +273,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _showAvatar();
@@ -328,6 +288,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               ),
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _sendAdditionalInformation();
@@ -376,26 +337,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       setState(() {
 
       });
-      print ("heeeeeeere") ;
-      print (_newPosition) ;
-  }
-
-  _onAddMarkerButtonPressed() async {
-    await _getCurrentUserLocation();
-    setState(() {
-      _markers.add(
-        Marker(
-          markerId: MarkerId(_newUserPosition.toString()),
-          position:
-              LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          infoWindow: InfoWindow(
-            title: 'This is a Title',
-            snippet: 'This is a snippet',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-      );
-    });
   }
 
   Widget button(Function function, IconData icon, String hero) {
@@ -407,47 +348,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       child: Icon(
         icon,
         size: 36.0,
-      ),
-    );
-  }
-
-  Widget _buildBtn(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () {
-          logout();
-          Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, animationTime, child) {
-                    return SlideTransition(
-                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                          .animate(CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.ease,
-                      )),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (context, animation, animationTime) {
-                    return LoginScreen();
-                  }));
-        },
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(text,
-            style: TextStyle(
-                color: Colors.deepOrange,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -505,8 +405,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
     } else{
       showPinsOnMap();
-
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
             title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
@@ -578,6 +478,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         child: Container(
                           height: 40,
                           width: 120,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
@@ -625,9 +526,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   child: SizedBox(
                     width: 200,
                     height: 50,
+                    // ignore: deprecated_member_use
                     child: RaisedButton(
                       onPressed: () async {
-                        //_createPolylines();
                         await _makeRequest();
                         if (firstStatusCode == 200) _showMaterialDialog();
                       },
@@ -710,15 +611,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             ));
       }
     }
-    /*
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VoicePage(channelName: "channelID"),
-        ));
-        */
   }
-
   _showCallDialog(String type) {
     showDialog(
         context: context,
@@ -756,6 +649,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     onJoin(type);
