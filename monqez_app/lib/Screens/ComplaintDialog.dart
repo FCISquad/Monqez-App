@@ -108,7 +108,7 @@ class _complaintDialogState extends State<complaintDialog> {
                                                   color: Colors.black,
                                                   width: 0.5)),
                                           child : TextField(
-                                              decoration: new InputDecoration.collapsed(
+                                              decoration: new InputDecoration.collapsed(hintText: ''
                                               )
                                           )),//.horizontal
                                       SizedBox(height:height*5,),
@@ -120,6 +120,7 @@ class _complaintDialogState extends State<complaintDialog> {
                                             color: Colors.deepOrange
 
                                           ),
+                                          // ignore: deprecated_member_use
                                           child: FlatButton(
                                             color: Colors.transparent,
                                             splashColor: Colors.black26,
@@ -145,15 +146,10 @@ class _complaintDialogState extends State<complaintDialog> {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       home: Scaffold(
           resizeToAvoidBottomInset :false,
-          body:  Center(
-            child: RaisedButton(
-              onPressed: _showMaterialDialog,
-            ),
-          )),
+          body: _showMaterialDialog()),
     );
   }
 }

@@ -1,8 +1,5 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:rating_dialog/rating_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +11,7 @@ class ratingDialog extends StatefulWidget {
   @override
   _ratingDialogState createState() => _ratingDialogState();
 }
+// ignore: camel_case_types
 class _ratingDialogState extends State<ratingDialog> {
   var _prefs;
 
@@ -27,12 +25,9 @@ class _ratingDialogState extends State<ratingDialog> {
       onCancelled: () => print('cancelled'),
       onSubmitted: (response) {
         _rateRequest (response) ;
-      },
+      }, image: null,
     );
   }
-  /*
-
-   */
   Future<void> _rateRequest(RatingDialogResponse dialogResponse) async {
     _prefs = await SharedPreferences.getInstance();
     String tempToken  = _prefs.getString("userToken");
