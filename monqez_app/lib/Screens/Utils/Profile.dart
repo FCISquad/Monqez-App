@@ -113,6 +113,8 @@ class _ProfileScreenState extends State<ProfileScreen>
     if (gender.isNotEmpty) user.gender = gender;
     if (_diseasesController.text.isNotEmpty)
       user.diseases = _diseasesController.text;
+    else
+      user.diseases = " ";
 
     bool success = await user.saveUser();
     if (success) {

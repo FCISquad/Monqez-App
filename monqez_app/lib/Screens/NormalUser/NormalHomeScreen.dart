@@ -331,8 +331,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(),
-                                        context, false);
+                                    navigate(
+                                        InstructionsScreen(), context, false);
                                   },
                                   child: Text(
                                     "Submit",
@@ -795,7 +795,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 width: 200,
                                 child: RaisedButton(
                                   onPressed: () {
-                                    onJoin(type);
+                                    if (_additionalInfoController
+                                        .text.isEmpty) {
+                                      makeToast(
+                                          "Please enter additional information");
+                                    } else
+                                      onJoin(type);
                                   },
                                   child: Text(
                                     "Submit",

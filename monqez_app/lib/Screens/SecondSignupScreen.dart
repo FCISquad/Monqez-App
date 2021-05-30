@@ -205,6 +205,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   }
 
   Future<void> _submit() async {
+    String chronic = " ";
+    if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
@@ -225,7 +227,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'city': _cityController.text,
         'street': _streetController.text,
         'buildNumber': _buildNumberController.text,
-        'chronicDiseases': _diseaseController.text
+        'chronicDiseases': chronic
       }),
     );
 
@@ -239,6 +241,8 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   }
 
   Future<void> _apply() async {
+    String chronic = " ";
+    if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
@@ -264,7 +268,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'certificate': base64Image,
         'certificateName': _fileName,
         'submissionDate': DateTime.now().toString(),
-        'chronicDiseases': _diseaseController.text
+        'chronicDiseases': chronic
       }),
     );
 

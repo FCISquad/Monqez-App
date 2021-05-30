@@ -207,6 +207,8 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   }
 
   Future<void> _adminData() async {
+    String chronic = " ";
+    if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
@@ -230,7 +232,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         'city': _cityController.text,
         'street': _streetController.text,
         'buildNumber': _buildNumberController.text,
-        'chronicDiseases': _diseaseController.text
+        'chronicDiseases': chronic
       }),
     );
     if (response.statusCode == 200) {

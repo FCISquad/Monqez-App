@@ -103,14 +103,20 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
   }
 
   Widget _myListView(BuildContext context) {
-    return ListView.builder(
-        scrollDirection: Axis.vertical,
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: complaintsList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return complaintsList[index];
-        });
+    return RefreshIndicator(
+      onRefresh: () async {
+        await getAllComplaints();
+        return true;
+      },
+      child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          physics: const AlwaysScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: complaintsList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return complaintsList[index];
+          }),
+    );
     // return ListView.separated(
     //   itemCount: 100,
     //   itemBuilder: (context, index) {
