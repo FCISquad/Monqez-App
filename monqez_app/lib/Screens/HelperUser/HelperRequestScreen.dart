@@ -153,7 +153,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
       _detailedAddress.text = mp["Address"];
       bodyMapValue = int.parse(mp["avatarBody"]);
       print(bodyMapValue);
-      avatar = BodyMap.init(bodyMapValue);
+      avatar = BodyMap.init(bodyMapValue, 200);
       return true;
     }
     else{

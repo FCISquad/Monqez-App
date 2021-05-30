@@ -23,24 +23,38 @@ class _Request {
   String date;
   String helperName;
   int bodyMap;
+  BodyMap avatar;
   String address;
   String forMe;
+  String info;
   bool isExpanded = false;
 
   _Request(String key) {
     this.date = key.split(" ")[0];
   }
 
+  setAvatar(int bodyMap) {
+    this.bodyMap = bodyMap;
+    avatar = BodyMap.init(bodyMap, 150);
+  }
+  getAvatar(){
+    return (avatar == null) ? BodyMap.init(0, 150) : avatar;
+  }
   getName(int size) {
     return helperName.substring(0, size);
   }
-
+  getAddress(){
+    return address == null ? "" : address;
+  }
+  getForMe(){
+    return forMe == null ? "" : forMe;
+  }
+  getInfo() {
+    return info == null ? "" : info;
+  }
   isValid() {
     return (date != null &&
-        helperName != null &&
-        bodyMap != null &&
-        address != null &&
-        forMe != null);
+        helperName != null);
   }
 
   show() {
@@ -68,6 +82,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
   }
 
   Widget getText(String text, double fontSize, bool isBold, Color color) {
+    print("Here: " + text);
     return AutoSizeText(text,
         textDirection: TextDirection.rtl,
         style: TextStyle(
@@ -91,7 +106,9 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
               else if (infoKey == "Address")
                 request.address = infoValue;
               else if (infoKey == "avatarBody")
-                request.bodyMap = int.parse(infoValue);
+                request.setAvatar(int.parse(infoValue));
+              else if (infoKey == "Additional Notes")
+                request.info = infoValue;
             });
           }
         });
@@ -100,7 +117,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
             request.helperName = value2.toString();
         });
 
-        request.show();
+        //request.show();
         if (request.isValid()) requests.add(request);
       }
     });
@@ -164,7 +181,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
           shadowColor: Colors.black,
           backgroundColor: firstColor,
           iconTheme: IconThemeData(color: secondColor),
-          elevation: 5,
+          elevation: 4,
         ),
         resizeToAvoidBottomInset: true,
         body: Stack(
@@ -176,29 +193,34 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                 child: Container(
                   width: width * 96,
                   height: height * 94,
-                  child: Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: ListView(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Color(0xFFF3F3F3),
-                                border: Border.all(
-                                    color: Color.fromRGBO(249, 249, 249, 1),
-                                    width: 2),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: ListView(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      children: [
+                        Align(
+                          alignment: Alignment.center,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF3F3F3),
+                              border: Border.all(
+                                  color: Color.fromRGBO(249, 249, 249, 1),
+                                  width: 2),
+                              borderRadius: BorderRadius.circular(5),
+                              /*boxShadow: [
+                                BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 3,
+                                blurRadius: 3,
+                                offset: Offset(0, 3), // changes position of shadow
+                              )],*/
+                            ),
+                            child: Card(
+                              margin: EdgeInsets.zero,
+                              elevation: 2,
                               child: ExpansionPanelList(
-                                elevation: 0,
+                                animationDuration: Duration(seconds: 1),
                                 dividerColor: Color.fromRGBO(249, 249, 249, 1),
                                 expansionCallback: (int i, bool isExpanded) {
                                   requests[i].isExpanded = !isExpanded;
@@ -228,9 +250,9 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                                     CrossAxisAlignment.center,
                                                 children: [
                                                   getText("Request Date", 11,
-                                                      false, Colors.black54),
+                                                      false, Colors.black87),
                                                   getText(req.date, 11, true,
-                                                      Colors.black54),
+                                                      Colors.black87),
                                                 ]),
                                             Column(
                                                 mainAxisAlignment:
@@ -239,96 +261,147 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                                     CrossAxisAlignment.start,
                                                 children: [
                                                   getText("Helper Name", 11,
-                                                      false, Colors.black54),
+                                                      false, Colors.black87),
                                                   getText(req.getName(10), 11,
-                                                      true, Colors.black54),
+                                                      true, Colors.black87),
                                                 ]),
-                                            Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  getText("Address", 11, false,
-                                                      Colors.black54),
-                                                  getText(req.address, 11, true,
-                                                      Colors.black54),
-                                                ]),
+                                            Visibility(
+                                              visible: req.address != null,
+                                              child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    getText("Address", 11, false,
+                                                        Colors.black87),
+                                                    getText(req.getAddress(), 11, true,
+                                                        Colors.black87),
+                                                  ]),
+                                            ),
                                           ],
                                         ),
                                       );
                                     },
                                     body: Padding(
-                                      padding: const EdgeInsets.all(10.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          print("VISA!");
-                                        },
-                                        child: Container(
-                                          color:
-                                              Color.fromRGBO(249, 249, 249, 1),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Align(
-                                                alignment: Alignment.center,
-                                                child: Container(
-                                                  height: 200,
-                                                  width: 200,
-                                                  child:
-                                                      BodyMap.init(req.bodyMap),
-                                                ),
-                                              ),
-                                              SizedBox(height: height*2,),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.spaceEvenly,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
-                                                    SizedBox(
-                                                      width: 100,
-                                                      // ignore: deprecated_member_use
-                                                      child: RaisedButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: Text(
-                                                          "Complain",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                        color:
-                                                            Colors.deepOrange,
-                                                      ),
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          SizedBox(height: 150, child: req.getAvatar()),
+                                          SizedBox(height: 4,),
+                                          Visibility(
+                                            visible: req.info != null,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Container(
+                                                    height: 25,
+                                                    width: 115,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.deepOrange,
+                                                      borderRadius: BorderRadius.circular(20.0),
                                                     ),
-                                                    SizedBox(
-                                                      width: 100,
-                                                      // ignore: deprecated_member_use
-                                                      child: RaisedButton(
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                        child: Text(
-                                                          "Rate",
-                                                          style: TextStyle(
-                                                              color:
-                                                                  Colors.white),
-                                                        ),
-                                                        color:
-                                                            Colors.deepOrange,
-                                                      ),
-                                                    )
-                                                  ])
-                                            ],
+                                                    child:Center(
+                                                      child: getText('Additional Notes', 11, true,
+                                                          Colors.black),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8,),
+                                                  getText(req.getInfo(), 11, true, Colors.black)
+                                                ],
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          //SizedBox(height: 4,),
+                                          SizedBox(height: 4,),
+                                          Visibility(
+                                            visible: req.address != null,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Container(
+                                                    height: 25 ,
+                                                    width: 115,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.deepOrange,
+                                                      borderRadius: BorderRadius.circular(20.0),
+                                                    ),
+                                                    child:Center(
+                                                      child: getText('Injury Type', 11, true,
+                                                          Colors.black),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8,),
+                                                  getText(req.getAddress(), 11, true, Colors.black)
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 4,) ,
+                                          Visibility(
+                                            visible: req.address != null,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Container(
+                                                    height: 25 ,
+                                                    width: 115,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.deepOrange,
+                                                      borderRadius: BorderRadius.circular(20.0),
+                                                    ),
+                                                    child:Center(
+                                                      child: getText('Gender', 11, true,
+                                                          Colors.black),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 8,),
+                                                  getText(req.getAddress(), 11, true, Colors.black)
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 4,),
+                                          Visibility(
+                                            visible: req.forMe != null,
+                                            child: Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Container(
+                                                    height: 25 ,
+                                                    width: 115,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.deepOrange,
+                                                      borderRadius: BorderRadius.circular(20.0),
+                                                    ),
+                                                    child:Center(
+                                                      child: getText(req.getForMe() == 'true' ? 'For You' : 'For another one', 11, true,
+                                                          Colors.black),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                     isExpanded: req.isExpanded,
@@ -337,8 +410,8 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

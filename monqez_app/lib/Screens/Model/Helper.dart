@@ -18,6 +18,12 @@ class Helper extends User with ChangeNotifier  {
 
   Helper.empty ():super.empty();
 
+  @override
+  Future<bool> saveUser() async {
+    bool ret = await super.saveUser();
+    notifyListeners();
+    return ret;
+  }
 
   Future<void> setToken(String token) async {
     super.setToken(token);

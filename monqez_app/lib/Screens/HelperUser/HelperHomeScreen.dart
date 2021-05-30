@@ -1,3 +1,4 @@
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -149,8 +150,23 @@ class HelperHomeScreen extends StatelessWidget {
                               secondColor,
                               TextAlign.start,
                               true),
-                          Icon(Icons.account_circle_rounded,
-                              size: 90, color: secondColor),
+                          Container(
+                            width: 90,
+                            height: 90,
+                            child: CircularProfileAvatar(
+                              null,
+                              child: Provider.of<Helper>(context, listen: true).image == null ? Icon(Icons.account_circle_rounded,
+                                  size: 90, color: secondColor): Image.memory(Provider.of<Helper>(context, listen: true).image.decode()),
+                              radius: 100,
+                              backgroundColor: Colors.transparent,
+                              borderColor: Provider.of<Helper>(context, listen: true).image == null ? firstColor : secondColor,
+                              elevation: 5.0,
+                              cacheImage: true,
+                              onTap: () {
+                                print('Tabbed');
+                              }, // sets on tap
+                            ),
+                          ),
                         ])),
                 decoration: BoxDecoration(
                   color: firstColor,

@@ -39,8 +39,11 @@ class BodyMap extends StatefulWidget {
 
   final ValueChanged<bool> onChange = null;
   String _selected;
-  BodyMap.init(int bodyValue) {
+  double _size;
+
+  BodyMap.init(int bodyValue, double size) {
     setSelected(bodyValue);
+    _size = size;
   }
 
   BodyMap();
@@ -85,6 +88,8 @@ class _BodyMapState extends State<BodyMap> {
         body: InteractiveViewer(
             child: Center(
                 child: Container(
+                    height: widget._size,
+                    width: widget._size,
                     child: FittedBox(
                         fit: BoxFit.contain,
                         child: ColumnSuper(innerDistance: -119, children: [

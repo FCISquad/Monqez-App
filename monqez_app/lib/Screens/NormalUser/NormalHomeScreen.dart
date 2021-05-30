@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
@@ -583,8 +584,23 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           children: [
                             getTitle(user.name, 26, secondColor,
                                 TextAlign.start, true),
-                            Icon(Icons.account_circle_rounded,
-                                size: 90, color: secondColor),
+                            Container(
+                              width: 90,
+                              height: 90,
+                              child: CircularProfileAvatar(
+                                null,
+                                child: user.image == null ? Icon(Icons.account_circle_rounded,
+                                    size: 90, color: secondColor): Image.memory(user.image.decode()),
+                                radius: 100,
+                                backgroundColor: Colors.transparent,
+                                borderColor: user.image == null ? firstColor : secondColor,
+                                elevation: 5.0,
+                                cacheImage: true,
+                                onTap: () {
+                                  print('Tabbed');
+                                }, // sets on tap
+                              ),
+                            ),
                           ])),
                   decoration: BoxDecoration(
                     color: firstColor,

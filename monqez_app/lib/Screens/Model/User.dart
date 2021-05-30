@@ -56,7 +56,8 @@ class User {
       this.street = parsed['street'];
       this.buildNumber = parsed['buildNumber'];
       this.gender = parsed['gender'];
-      this.image = parsed['image'].toString().length < 2 ? null : new ImageController.fromBase64(parsed['image']);
+      if (parsed['image'] != null)
+        this.image = parsed['image'].toString().length < 5 ? null : new ImageController.fromBase64(parsed['image']);
     } else {
       print(response2.statusCode);
       //makeToast("Error!");
