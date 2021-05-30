@@ -1,35 +1,34 @@
 import 'dart:async';
-import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:flutter/material.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Instructions/InstructionsScreen.dart';
+import 'Instructions/InstructionsScreen.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../CallPage.dart';
-import '../LoginScreen.dart';
-import '../VoicePage.dart';
-import 'NormalUserPreviousRequests.dart';
+import 'CallPage.dart';
+import 'LoginScreen.dart';
+import 'VoicePage.dart';
 
 // ignore: must_be_immutable
-class NormalHomeScreen extends StatefulWidget {
+class OneTimeRequestScreen extends StatefulWidget {
   String token;
-  NormalHomeScreen(String token) {
+  String uid;
+  OneTimeRequestScreen(String uid, String token) {
+    this.uid = uid;
     this.token = token;
   }
 
   @override
-  _NormalHomeScreenState createState() => _NormalHomeScreenState(token);
+  _OneTimeRequestScreenState createState() =>
+      _OneTimeRequestScreenState(uid, token);
 }
 
 class Item {
@@ -37,23 +36,21 @@ class Item {
   final String name;
 }
 
-class _NormalHomeScreenState extends State<NormalHomeScreen>
+class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
     with SingleTickerProviderStateMixin {
-  static User user;
   List<Icon> icons;
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   var _additionalInfoController = TextEditingController();
-  BodyMap avatar;
+  String uid;
+  String token;
+  int bodyMap;
   bool isLoaded = false;
   int firstStatusCode;
-  _NormalHomeScreenState(String token) {
-    Future.delayed(Duration.zero, () async {
-      user = new User.empty();
-      user.setToken(token);
-      await user.getUser();
-    });
+  _OneTimeRequestScreenState(String uid, String token) {
+    this.uid = uid;
+    this.token = token;
   }
   Animation<double> animation;
   AnimationController controller;
@@ -63,6 +60,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   bool _radioValue;
+  var _nameController = TextEditingController();
 
   List<Item> users = <Item>[
     const Item('Very dangerous'),
@@ -70,32 +68,32 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     const Item('Normal'),
   ];
 
-  static CameraPosition _position1 ;
+  static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
-    _getCurrentUserLocation() ;
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
 
-  showPinsOnMap(){
-    print (_newUserPosition) ;
+  showPinsOnMap() {
+    print(_newUserPosition);
     _markers.add(
       Marker(
         markerId: MarkerId(_newUserPosition.toString()),
         position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-        // infoWindow: InfoWindow(
-        //   title: 'This is a Title',
-        //   snippet: 'This is a snippet',
-        // ),
+        infoWindow: InfoWindow(
+          title: 'This is a Title',
+          snippet: 'This is a snippet',
+        ),
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
   }
+
   _onMapCreated(GoogleMapController controller) async {
-    print (_position1) ;
-    await _getCurrentUserLocation() ;
-    await _goToPosition1() ;
+    print(_position1);
+    await _getCurrentUserLocation();
+    await _goToPosition1();
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
@@ -103,16 +101,17 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           tilt: 59.440,
           zoom: 11.0);
+      ;
     });
   }
+
   void _sendAdditionalInformation() async {
-    print("Avatar:" + avatar.getSelected().toString());
-    String tempToken = user.token;
+    String tempToken = token;
     Map<String, dynamic> body = {
       'additionalInfo': {
         'Address': _detailedAddress.text,
         'Additional Notes': _aditionalNotes.text,
-        'avatarBody': avatar.getSelected().toString(),
+        'avatarBody': bodyMap.toString(),
         'forMe': _radioValue.toString()
       },
     };
@@ -135,7 +134,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
 
   Future<void> _makeRequest() async {
     await _getCurrentUserLocation();
-    String tempToken = user.token;
+    String tempToken = token;
     final http.Response response = await http.post(
       Uri.parse('$url/user/request/'),
       headers: <String, String>{
@@ -181,12 +180,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      SizedBox(height: 400, child: avatar),
+                      SizedBox(height: 400, child: BodyMap()),
                       SizedBox(
                         width: 200,
-                        // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () {
+                            bodyMap = BodyMap.getSelected();
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -204,6 +203,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
+
   _showMaterialDialog() {
     showDialog(
         context: context,
@@ -227,6 +227,38 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
+                      // Container(
+                      //   child :Row(
+                      //     children: [
+                      //       Text("Severity  ") ,
+                      //       DropdownButton<Item>(
+                      //         hint: Text("Select item"),
+                      //         value: _selectedSeviirty,
+                      //         onChanged: (Item value) {
+                      //           setState(() {
+                      //             _selectedSeviirty = value;
+                      //             print(_selectedSeviirty.name) ;
+                      //           });
+                      //         },
+                      //         items: users.map((Item user) {
+                      //           return  DropdownMenuItem<Item>(
+                      //             value: user,
+                      //             child: Row(
+                      //               children: <Widget>[
+                      //                 SizedBox(width: 10,),
+                      //                 Text(
+                      //                   user.name,
+                      //                   style:  TextStyle(color: Colors.black),
+                      //                 ),
+                      //               ],
+                      //             ),
+                      //           );
+                      //         }).toList(),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+
                       Container(
                         child: Row(
                           children: [
@@ -275,7 +307,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             children: [
                               SizedBox(
                                 width: 200,
-                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _showAvatar();
@@ -290,7 +321,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               ),
                               SizedBox(
                                 width: 200,
-                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _sendAdditionalInformation();
@@ -318,27 +348,46 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-   _onMapTypeButtonPressed() {
+  _onMapTypeButtonPressed() {
     setState(() {
       _currentMapType = _currentMapType == MapType.normal
           ? MapType.satellite
           : MapType.normal;
     });
   }
+
   _getCurrentUserLocation() async {
     Position _newPosition;
     _newPosition = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-      _newUserPosition = _newPosition;
-      _position1 = CameraPosition(
-          bearing: 192.833,
-          target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          tilt: 59.440,
-          zoom: 11.0);
-      _isLoading = false;
-      setState(() {
+    _newUserPosition = _newPosition;
+    _position1 = CameraPosition(
+        bearing: 192.833,
+        target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+        tilt: 59.440,
+        zoom: 11.0);
+    _isLoading = false;
+    setState(() {});
+    print("heeeeeeere");
+    print(_newPosition);
+  }
 
-      });
+  _onAddMarkerButtonPressed() async {
+    await _getCurrentUserLocation();
+    setState(() {
+      _markers.add(
+        Marker(
+          markerId: MarkerId(_newUserPosition.toString()),
+          position:
+              LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+          infoWindow: InfoWindow(
+            title: 'This is a Title',
+            snippet: 'This is a snippet',
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+        ),
+      );
+    });
   }
 
   Widget button(Function function, IconData icon, String hero) {
@@ -354,10 +403,52 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     );
   }
 
+  Widget _buildBtn(String text) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 25.0),
+      width: double.infinity,
+      child: RaisedButton(
+        elevation: 5.0,
+        onPressed: () {
+          logout();
+          Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder:
+                      (context, animation, animationTime, child) {
+                    return SlideTransition(
+                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+                          .animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.ease,
+                      )),
+                      child: child,
+                    );
+                  },
+                  pageBuilder: (context, animation, animationTime) {
+                    return LoginScreen();
+                  }));
+        },
+        padding: EdgeInsets.all(15.0),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        color: Colors.white,
+        child: Text(text,
+            style: TextStyle(
+                color: Colors.deepOrange,
+                fontSize: 16,
+                fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    avatar = BodyMap();
+    bodyMap = 0;
+    //showPinsOnMap() ;
     _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
@@ -390,7 +481,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       isLoaded = true;
     }
     if (_isLoading) {
-      _getCurrentUserLocation() ;
+      _getCurrentUserLocation();
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -404,10 +495,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       strokeWidth: 5,
                       valueColor:
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
-    } else{
+    } else {
       showPinsOnMap();
+
       return MaterialApp(
-        debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
             title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
@@ -444,59 +535,17 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
-                DrawerHeader(
-                  child: Container(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            getTitle(user.name, 26, secondColor,
-                                TextAlign.start, true),
-                            Container(
-                              width: 90,
-                              height: 90,
-                              child: CircularProfileAvatar(
-                                null,
-                                child: user.image == null ? Icon(Icons.account_circle_rounded,
-                                    size: 90, color: secondColor): Image.memory(user.image.decode()),
-                                radius: 100,
-                                backgroundColor: Colors.transparent,
-                                borderColor: user.image == null ? firstColor : secondColor,
-                                elevation: 5.0,
-                                cacheImage: true,
-                                onTap: () {
-                                  print('Tabbed');
-                                }, // sets on tap
-                              ),
-                            ),
-                          ])),
-                  decoration: BoxDecoration(
-                    color: firstColor,
-                  ),
-                ),
                 Container(
                   color: secondColor,
                   height: (MediaQuery.of(context).size.height) - 200,
                   child: Column(children: [
                     ListTile(
-                      title: getTitle(
-                          'My Profile', 18, firstColor, TextAlign.start, true),
+                      title: getTitle('Instructions', 18, firstColor,
+                          TextAlign.start, true),
                       leading: Icon(Icons.account_circle_rounded,
                           size: 30, color: firstColor),
                       onTap: () {
                         //Navigator.pop(context);
-                        navigate(ProfileScreen(user), context, false);
-                      },
-                    ),
-
-                    ListTile(
-                      title: getTitle(
-                          'My Requests', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.history,
-                          size: 30, color: firstColor),
-                      onTap: () {
-                        //Navigator.pop(context);
-                        navigate(NormalPreviousRequests(user), context, false);
                       },
                     ),
                     Expanded(
@@ -505,7 +554,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         child: Container(
                           height: 40,
                           width: 120,
-                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
@@ -553,12 +601,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   child: SizedBox(
                     width: 200,
                     height: 50,
-                    // ignore: deprecated_member_use
                     child: RaisedButton(
                       onPressed: () async {
+                        //_createPolylines();
                         await _makeRequest();
                         if (firstStatusCode == 200) _showMaterialDialog();
-                        //_showMaterialDialog();
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,
@@ -597,7 +644,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   Future<void> onJoin(String type) async {
     if (type == "video") await _handleCameraAndMic(Permission.camera);
     await _handleCameraAndMic(Permission.microphone);
-    String token = user.token;
     String channelID;
 
     final http.Response response = await http.post(Uri.parse('$url/user/call/'),
@@ -639,7 +685,15 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             ));
       }
     }
+    /*
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VoicePage(channelName: "channelID"),
+        ));
+        */
   }
+
   _showCallDialog(String type) {
     showDialog(
         context: context,
@@ -677,7 +731,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             children: [
                               SizedBox(
                                 width: 200,
-                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     if (_additionalInfoController

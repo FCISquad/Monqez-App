@@ -16,6 +16,8 @@ class User {
   String gender;
   String token;
   ImageController image;
+  String diseases = "";
+
   static FirebaseCloudMessaging fcm;
 
   User.empty();
@@ -35,6 +37,7 @@ class User {
     fcm = new FirebaseCloudMessaging(token);
     }*/
   }
+
   getUser() async {
     http.Response response2 = await http.get(
       Uri.parse('$url/user/getprofile/'),
@@ -58,7 +61,9 @@ class User {
       this.gender = parsed['gender'];
       if (parsed['image'] != null)
         this.image = parsed['image'].toString().length < 5 ? null : new ImageController.fromBase64(parsed['image']);
+      this.diseases = parsed['chronicDiseases'];
     } else {
+      print("HERE!");
       print(response2.statusCode);
       //makeToast("Error!");
     }
@@ -83,6 +88,7 @@ class User {
         'street': street,
         'buildNumber': buildNumber,
         'image': image == null ? '' : image.base_64
+        'chronicDiseases': diseases
       }),
     );
     if (response.statusCode == 200) {

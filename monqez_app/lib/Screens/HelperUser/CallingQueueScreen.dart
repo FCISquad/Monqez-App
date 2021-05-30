@@ -235,14 +235,21 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
                   vertical: 20.0,
                 ),
                 child: Column(children: [
-                  ListView.builder(
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await getAllCalls();
+                      return true;
+                    },
+                    child: ListView.builder(
                       scrollDirection: Axis.vertical,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const AlwaysScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemCount: _calls.length,
                       itemBuilder: (BuildContext context, int index) {
                         return _calls[index];
-                      })
+                      },
+                    ),
+                  )
                 ]),
               ),
             ),

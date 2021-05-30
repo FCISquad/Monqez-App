@@ -5,9 +5,11 @@ import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
 import 'package:monqez_app/Screens/Instructions/InjuryScreen.dart';
 import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
 import 'package:provider/provider.dart';
+import 'Screens/ComplaintDialog.dart';
 import 'Screens/HelperUser/HelperRequestScreen.dart';
 import 'Screens/Model/Helper.dart';
 import 'Screens/SplashScreen.dart';
+import 'Screens/rateDialog.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
