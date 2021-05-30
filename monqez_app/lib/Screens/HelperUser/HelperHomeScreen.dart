@@ -15,6 +15,8 @@ import 'package:provider/provider.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 
+import 'HelperUserPreviousRequests.dart';
+
 // ignore: must_be_immutable
 class HelperHomeScreen extends StatelessWidget {
   String token;
@@ -206,6 +208,16 @@ class HelperHomeScreen extends StatelessWidget {
                     onTap: () {
                       Navigator.pop(context);
                       navigate(ChatQueueScreen(), context, false);
+                    },
+                  ),
+                  ListTile(
+                    title: getTitle(
+                        'My Requests', 18, firstColor, TextAlign.start, true),
+                    leading: Icon(Icons.history,
+                        size: 30, color: firstColor),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      navigate(HelperPreviousRequests(Provider.of<Helper>(context, listen: false)), context, false);
                     },
                   ),
                   ListTile(

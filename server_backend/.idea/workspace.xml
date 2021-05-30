@@ -20,14 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/AdminUser/AdminHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/AdminUser/AdminHomeScreen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperUserPreviousRequests.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperHomeScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperRequestScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperRequestScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/Helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/Helper.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/User.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/User.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/BodyMap.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/BodyMap.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalHomeScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalUserPreviousRequests.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalUserPreviousRequests.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/RatingsScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/RatingsScreen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -134,6 +129,7 @@
       <workItem from="1622294919116" duration="707000" />
       <workItem from="1622311560689" duration="14000" />
       <workItem from="1622388846316" duration="605000" />
+      <workItem from="1622405950277" duration="931000" />
     </task>
     <servers />
   </component>
