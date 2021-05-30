@@ -9,13 +9,17 @@ import 'AdminHomeScreen.dart';
 
 // ignore: must_be_immutable
 class ViewComplaintScreen extends StatefulWidget {
-  String complaintID;
-  ViewComplaintScreen(String complaintID) {
-    this.complaintID = complaintID;
+  String complainerID;
+  String date;
+  String complainedID;
+  ViewComplaintScreen(String complainerID, String date, String complainedID) {
+    this.complainerID = complainerID;
+    this.date = date;
+    this.complainedID = complainedID;
   }
   @override
   _ViewComplaintScreenState createState() =>
-      _ViewComplaintScreenState(complaintID);
+      _ViewComplaintScreenState(complainerID, complainedID, date);
 }
 
 class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
@@ -29,6 +33,7 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
   String complainerUID;
   String complainedUID;
   String complaint;
+  String date;
 
   parseJson(var json) {
     var singleComplaint = jsonDecode(json).cast<String, dynamic>();
@@ -50,7 +55,11 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode(<String, String>{'complaintID': complaintID}),
+      body: jsonEncode(<String, String>{
+        'nuid': complainerUID,
+        'huid': complainedUID,
+        'date': date
+      }),
     );
     if (response.statusCode == 200) {
       print(response.body);
@@ -67,9 +76,13 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
     }
   }
 
-  _ViewComplaintScreenState(String complaintID) {
-    this.complaintID = complaintID;
+  _ViewComplaintScreenState(
+      String complainerID, String complainedID, String date) {
+    this.complainerUID = complainerID;
+    this.date = date;
+    this.complainedUID = complainedID;
     getComplaint();
+
 /*
     this.complainerName = "Hussien";
     this.complainedName = "Ehab";

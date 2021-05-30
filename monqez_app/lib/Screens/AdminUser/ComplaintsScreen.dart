@@ -21,17 +21,16 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
 
     complaints.forEach((complaint) {
       var singleComplaint = complaints as Map<String, dynamic>;
-      String uid = singleComplaint['uid'];
+      String nuid = singleComplaint['nuid'];
+      String helperUid = singleComplaint['huid'];
       String name = singleComplaint['name'];
       String date = singleComplaint['date'];
-      String complaintID = singleComplaint['complaintID'];
       complaintsList.add(ListTile(
-        title: Text('Complaint from $name'),
-        subtitle: Text("On $date"),
-        leading: Text('$counter'),
-        trailing: Icon(Icons.keyboard_arrow_right),
-        onTap: () => navigate(ViewComplaintScreen(complaintID)),
-      ));
+          title: Text('Complaint from $name'),
+          subtitle: Text("On $date"),
+          leading: Text('$counter'),
+          trailing: Icon(Icons.keyboard_arrow_right),
+          onTap: () => navigate(ViewComplaintScreen(nuid, date, helperUid))));
       counter++;
     });
   }
