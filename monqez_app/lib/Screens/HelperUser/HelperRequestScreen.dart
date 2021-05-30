@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:android_intent/android_intent.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -14,12 +15,14 @@ import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // ignore: must_be_immutable
 class HelperRequestScreen extends StatefulWidget {
   double reqLong;
   double reqLat;
   double helperLong;
   double helperLat;
+
   HelperRequestScreen(
       double latitude, double longitude, double helperLat, double helperLong) {
     this.reqLong = longitude;
@@ -42,6 +45,9 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   TextEditingController _additionalNotes;
   TextEditingController injuryTypeController;
   TextEditingController genderController;
+  Position helperLocation ;
+  var _prefs;
+
 
   int bodyMapValue;
   bool forMe;
@@ -53,7 +59,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     this.reqLong = reqLong;
     this.helperLat = helperLat;
     this.helperLong = helperLong;
-
     // calcualteDistance() ;
   }
   // LatLng initialLatLng = LatLng(30.029585, 31.022356);
@@ -98,8 +103,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   void showPinsOnMap() {
-    print("--------------");
-    print(initialLatLng.latitude);
     _markers.add(
       Marker(
         markerId: MarkerId(initialLatLng.toString()),
@@ -228,52 +231,125 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                 decoration: new BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
-                child: ListView(
-                  shrinkWrap: true,
-
-                  children: [
-                    SizedBox(height: 200, child: BodyMap()),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: ListView(
+                    shrinkWrap: true,
                     children: [
-                      _getText('Detailed Address', 16, FontWeight.normal,
-                          Colors.black, 1),
-                      _getText(_detailedAddress.text, 16, FontWeight.normal, Colors.black, 1)
+                      SizedBox(height: 250, child: BodyMap()),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 4,),
+                                Container(
+                                  height: 25 ,
+                                  width: 115,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child:Center(
+                                    child: _getText('Detailed Address', 15, FontWeight.normal,
+                                        Colors.white, 1),
+                                  ),
+                                ),
+                                SizedBox(width: 8,) ,
+                                _getText(_detailedAddress.text, 15, FontWeight.normal, Colors.black, 1)
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 4,),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 4,),
+                                Container(
+                                  height: 25 ,
+                                  width: 115,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child:Center(
+                                    child: _getText('Additional Notes', 15, FontWeight.normal,
+                                        Colors.white, 1),
+                                  ),
+                                ),
+                                SizedBox(width: 8,),
+                                _getText(_additionalNotes.text, 15, FontWeight.normal, Colors.black, 1)
+                              ],
+                            ),
+                          ),
+                          //SizedBox(height: 4,),
+                          SizedBox(height: 4,),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 4,),
+                                Container(
+                                  height: 25 ,
+                                  width: 115,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child:Center(
+                                    child: _getText('Injury Type', 15, FontWeight.normal,
+                                        Colors.white, 1),
+                                  ),
+                                ),
+                                SizedBox(width: 8,),
+                                _getText(injuryTypeController.text, 15, FontWeight.normal, Colors.black, 1)
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 4,) ,
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 4,),
+                                Container(
+                                  height: 25 ,
+                                  width: 115,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child:Center(
+                                    child: _getText('Gender', 15, FontWeight.normal,
+                                        Colors.white, 1),
+                                  ),
+                                ),
+                                SizedBox(width: 8,),
+                                _getText(genderController.text, 15, FontWeight.normal, Colors.black, 1)
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 4,),
+                        ],
+                      )
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _getText('Additional Notes', 16, FontWeight.normal,
-                          Colors.black, 1),
-                      _getText(_additionalNotes.text, 16, FontWeight.normal, Colors.black, 1)
-                    ],
-                  ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _getText('Gender', 16, FontWeight.normal,
-                            Colors.black, 1),
-                        _getText(genderController.text, 16, FontWeight.normal, Colors.black, 1)
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _getText('Injury Type', 16, FontWeight.normal,
-                            Colors.black, 1),
-                        _getText(injuryTypeController.text, 16, FontWeight.normal, Colors.black, 1)
-                      ],
-                    )
-                  ],
                 )),
           );
         });
@@ -287,6 +363,57 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
             '&travelmode=driving&dir_action=navigate'),
         package: 'com.google.android.apps.maps');
     intent.launch();
+  }
+  _getCurrentUserLocation() async {
+    helperLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+  Future<void> _completeRequest() async {
+    await _getCurrentUserLocation();
+    _prefs = await SharedPreferences.getInstance();
+    String tempToken  = _prefs.getString("userToken");
+
+    final http.Response response = await http.post(
+      Uri.parse('$url/helper/complete_request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+      body: jsonEncode(<String, double>{
+        'latitude': helperLocation.latitude,
+        'longitude': helperLocation.longitude
+      }),
+    );
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+  Future<void> _cancelRequest() async {
+    await _getCurrentUserLocation();
+    _prefs = await SharedPreferences.getInstance();
+    String tempToken  = _prefs.getString("userToken");
+
+    final http.Response response = await http.post(
+      Uri.parse('$url/helper/cancel_request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+
+    );
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
   }
 
   @override
@@ -317,7 +444,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                 polylines: _polylines,
                 onMapCreated: (GoogleMapController controller) {
                   _controller.complete(controller);
-
                   showPinsOnMap();
                   setPolylines();
                 },
@@ -332,24 +458,10 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                        width: 150,
+                        width: 100,
                         height: 50,
-                        decoration: BoxDecoration(color: Colors.deepOrange),
-                        child: FlatButton(
-                          color: Colors.transparent,
-                          splashColor: Colors.black26,
-                          onPressed: () async{
-                            await getAdditionalInformation();
-                            _modalBottomSheetMenu();
-                          },
-                          child: _getText('Additional Information', 14,
-                              FontWeight.w700, Colors.white, 2),
-                        ),
-                      ),
-                      Container(
-                        width: 150,
-                        height: 50,
-                        decoration: BoxDecoration(color: Colors.deepOrange),
+                        decoration: BoxDecoration(color: Colors.deepOrange,
+                            borderRadius: BorderRadius.circular(30.0)),
                         child: FlatButton(
                           color: Colors.transparent,
                           splashColor: Colors.black26,
@@ -358,6 +470,54 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           },
                           child: _getText(
                               'Navigate', 14, FontWeight.w700, Colors.white, 1),
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        height: 50,
+                        decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(30.0)),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          splashColor: Colors.black26,
+                          onPressed: () async {
+                           _completeRequest() ;
+                          },
+                          child: _getText(
+                              'Complete', 14, FontWeight.w700, Colors.white, 1),
+                        ),
+                      ),
+                      Container(
+                        width: 100,
+                        height: 50,
+                        decoration: BoxDecoration(color: Colors.red ,
+                            borderRadius: BorderRadius.circular(30.0) ),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          splashColor: Colors.black26,
+                          onPressed: () {
+                            _cancelRequest();
+                          },
+                          child: _getText(
+                              'Cancel', 14, FontWeight.w700, Colors.white, 1),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          child: FlatButton(
+                              color: Colors.transparent,
+                              splashColor: Colors.black26,
+                              onPressed: () async{
+                                await getAdditionalInformation();
+                                _modalBottomSheetMenu();
+                              },
+                              child: Icon(Icons.info,
+                              color: Colors.blueAccent)
+                          ),
                         ),
                       ),
                     ],

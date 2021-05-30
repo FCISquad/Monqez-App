@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'Screens/HelperUser/HelperRequestScreen.dart';
 import 'Screens/Model/Helper.dart';
 import 'Screens/SplashScreen.dart';
+import 'Screens/rateDialog.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
 
       routes: {
         //'/': (context) => HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
-        '/': (context) => Splash(),
+        '/': (context) => HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),
