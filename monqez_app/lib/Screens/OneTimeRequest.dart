@@ -71,7 +71,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
   static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
-    _getCurrentUserLocation() ;
+    _getCurrentUserLocation();
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
@@ -107,7 +107,8 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
         'Address': _detailedAddress.text,
         'Additional Notes': _aditionalNotes.text,
         'avatarBody': bodyMap.toString(),
-        'forMe': _radioValue.toString()
+        'forMe': _radioValue.toString(),
+        'oneTimeRequest': "true"
       },
     };
     final http.Response response = await http.post(
@@ -137,9 +138,10 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-      body: jsonEncode(<String, double>{
+      body: jsonEncode(<String, dynamic>{
         'latitude': _newUserPosition.latitude,
-        'longitude': _newUserPosition.longitude
+        'longitude': _newUserPosition.longitude,
+        'oneTimeRequest': "true"
       }),
     );
     firstStatusCode = response.statusCode;
@@ -151,7 +153,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
       makeToast('Failed to submit user.');
     }
   }
-
 
   void _showAvatar() {
     showDialog(
@@ -171,10 +172,10 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                     children: [
                       Center(
                           child: Text(
-                            "Injuries",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          )),
+                        "Injuries",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
                       SizedBox(height: 20),
                       SizedBox(height: 400, child: avatar),
                       SizedBox(
@@ -223,7 +224,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-
                       Container(
                         child: Row(
                           children: [
@@ -335,7 +335,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
     setState(() {});
   }
 
-
   Widget button(Function function, IconData icon, String hero) {
     return FloatingActionButton(
       heroTag: hero,
@@ -414,14 +413,13 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
             elevation: 5,
             actions: <Widget>[
               IconButton(
-                icon: Icon(
-                  Icons.call,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  _showCallDialog("voice");
-                }
-              ),
+                  icon: Icon(
+                    Icons.call,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    _showCallDialog("voice");
+                  }),
               IconButton(
                 icon: Icon(
                   Icons.video_call,
@@ -538,7 +536,8 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
     if (type == "video") await _handleCameraAndMic(Permission.camera);
     await _handleCameraAndMic(Permission.microphone);
     String channelID;
-
+    print("hussien");
+    print(token);
     final http.Response response = await http.post(Uri.parse('$url/user/call/'),
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -547,7 +546,8 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
         },
         body: jsonEncode(<String, String>{
           'data': _additionalInfoController.text,
-          'type': type
+          'type': type,
+          'oneTimeRequest': "true"
         }));
 
     if (response.statusCode == 200) {
