@@ -1,3 +1,4 @@
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
@@ -7,6 +8,7 @@ import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -25,10 +27,12 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
   User user;
   bool isLoading = true;
   int applicationNumber;
+  int complaintsNumber;
   static String token;
 
   AdminHomeScreenState() {
     applicationNumber = 0;
+    complaintsNumber = 0;
     checkNotification();
     getToken();
   }
@@ -36,6 +40,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
   Future<void> getState() async {
     String token = AdminHomeScreenState.token;
     user = new User.empty();
+    user.setToken(token);
     await user.getUser();
     final http.Response response = await http.post(
       Uri.parse('$url/admin/get_state/'),
@@ -49,6 +54,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     if (response.statusCode == 200) {
       var parsed = jsonDecode(response.body).cast<String, dynamic>();
       applicationNumber = parsed['snapshot'];
+      complaintsNumber = parsed['snapshot'];
       setState(() {
         isLoading = false;
       });
@@ -65,6 +71,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
   Future<void> getToken() async {
     var _prefs = await SharedPreferences.getInstance();
     AdminHomeScreenState.token = _prefs.getString("userToken");
+    //Provider.of<User>(context, listen: false).setToken(token);
     await getState();
   }
 
@@ -74,13 +81,15 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
         FirebaseMessaging.instance
             .getInitialMessage()
             .then((RemoteMessage message) {
-          FirebaseCloudMessaging.route = new AdminUserNotification(message, true);
+          FirebaseCloudMessaging.route =
+              new AdminUserNotification(message, true);
           navigate(NotificationRoute.selectNavigate, context, false);
         });
         return null;
       },
     );
   }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -118,8 +127,23 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                           children: [
                             getTitle(user.name, 26, secondColor,
                                 TextAlign.start, true),
-                            Icon(Icons.account_circle_rounded,
-                                size: 90, color: secondColor),
+                            Container(
+                              width: 90,
+                              height: 90,
+                              child: CircularProfileAvatar(
+                                null,
+                                child: user.image == null ? Icon(Icons.account_circle_rounded,
+                                    size: 90, color: secondColor): Image.memory(user.image.decode()),
+                                radius: 100,
+                                backgroundColor: Colors.transparent,
+                                borderColor: user.image == null ? firstColor : secondColor,
+                                elevation: 5.0,
+                                cacheImage: true,
+                                onTap: () {
+                                  print('Tabbed');
+                                }, // sets on tap
+                              ),
+                            ),
                           ])),
                   decoration: BoxDecoration(
                     color: firstColor,
@@ -209,8 +233,8 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                               "New Applications",
                               Icons.file_copy,
                               ApplicationsScreen()),
-                          _card("100", "New Complaints", Icons.thumb_down_sharp,
-                              ComplaintsScreen()),
+                          _card(complaintsNumber.toString(), "New Complaints",
+                              Icons.thumb_down_sharp, ComplaintsScreen()),
                         ],
                       ), /*
                     TableRow(

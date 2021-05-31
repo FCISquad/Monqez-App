@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:email_validator/email_validator.dart';
@@ -29,7 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     Firebase.initializeApp();
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: secondColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -48,7 +49,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   Text(
                     'Sign Up',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: firstColor,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -139,7 +140,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           'Email',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -153,30 +154,16 @@ class _SignupScreenState extends State<SignupScreen> {
             onChanged: _validateEmail,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.email,
-                color: Colors.deepOrange,
-              ),
-              enabledBorder: new OutlineInputBorder(
-                borderRadius: new BorderRadius.circular(10.0),
-                borderSide: new BorderSide(
-                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                    width: 3),
-              ),
-              focusedBorder: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(10.0),
-                  borderSide: new BorderSide(
-                      color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                      width: 3)),
+              prefixIcon: Icon(Icons.email, color: firstColor),
               hintText: 'Enter your Email',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -185,7 +172,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           _emailError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -200,7 +187,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           'Password',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -212,10 +199,12 @@ class _SignupScreenState extends State<SignupScreen> {
           child: TextFormField(
             controller: _passwordController,
             obscureText: !_showPassword,
-            onChanged: (String val) =>
-                {_validatePassword(val), _validateconfirmPassword(_confirmPasswordController.text)},
+            onChanged: (String val) => {
+              _validatePassword(val),
+              _validateconfirmPassword(_confirmPasswordController.text)
+            },
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -223,7 +212,7 @@ class _SignupScreenState extends State<SignupScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -233,12 +222,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
                 child: Icon(
                   Icons.remove_red_eye,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: 'Enter your Password',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -247,7 +236,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           _passwordError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -262,7 +251,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           'Confirm Password',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -276,7 +265,7 @@ class _SignupScreenState extends State<SignupScreen> {
             controller: _confirmPasswordController,
             onChanged: _validateconfirmPassword,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -284,7 +273,7 @@ class _SignupScreenState extends State<SignupScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -294,12 +283,12 @@ class _SignupScreenState extends State<SignupScreen> {
                 },
                 child: Icon(
                   Icons.remove_red_eye,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: 'Re-enter your Password',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -308,7 +297,7 @@ class _SignupScreenState extends State<SignupScreen> {
         Text(
           _confirmPasswordError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -338,11 +327,11 @@ class _SignupScreenState extends State<SignupScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: firstColor,
         child: Text(
           'SIGNUP',
           style: TextStyle(
-            color: Colors.deepOrange,
+            color: secondColor,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -379,7 +368,7 @@ class _SignupScreenState extends State<SignupScreen> {
             TextSpan(
               text: 'Have an Account? ',
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w400,
               ),
@@ -387,7 +376,7 @@ class _SignupScreenState extends State<SignupScreen> {
             TextSpan(
               text: 'Sign in',
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),

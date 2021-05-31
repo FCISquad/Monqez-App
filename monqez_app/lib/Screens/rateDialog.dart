@@ -13,7 +13,7 @@ class ratingDialog extends StatefulWidget {
 }
 // ignore: camel_case_types
 class _ratingDialogState extends State<ratingDialog> {
-  var _prefs;
+
 
   Widget buildScreen(){
     return RatingDialog(
@@ -29,7 +29,7 @@ class _ratingDialogState extends State<ratingDialog> {
     );
   }
   Future<void> _rateRequest(RatingDialogResponse dialogResponse) async {
-    _prefs = await SharedPreferences.getInstance();
+    var _prefs = await SharedPreferences.getInstance();
     String tempToken  = _prefs.getString("userToken");
 
     final http.Response response = await http.post(

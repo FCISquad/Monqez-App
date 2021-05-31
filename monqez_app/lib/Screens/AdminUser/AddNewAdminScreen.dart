@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import '../UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
-
 
 class AddNewAdminScreen extends StatefulWidget {
   @override
@@ -33,7 +33,10 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
   Widget build(BuildContext context) {
     Firebase.initializeApp();
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      appBar: AppBar(
+        title: Text('Monqez - Add New Admin'),
+      ),
+      backgroundColor: secondColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -49,15 +52,6 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
-                    'Add New Admin',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 30.0),
                   _buildEmailTF(),
                   SizedBox(height: 30.0),
                   _buildPasswordTF(),
@@ -142,7 +136,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         Text(
           'Email',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -156,7 +150,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
             onChanged: _validateEmail,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -164,22 +158,11 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.email,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
-              enabledBorder: new OutlineInputBorder(
-                borderRadius: new BorderRadius.circular(10.0),
-                borderSide: new BorderSide(
-                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                    width: 3),
-              ),
-              focusedBorder: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(10.0),
-                  borderSide: new BorderSide(
-                      color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                      width: 3)),
               hintText: 'Enter the Email',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -188,7 +171,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         Text(
           _emailError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -203,7 +186,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         Text(
           'Password',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -217,7 +200,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
             obscureText: !_showPassword,
             onChanged: _validatePassword,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -225,7 +208,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -235,12 +218,12 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
                 },
                 child: Icon(
                   Icons.remove_red_eye,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: 'Enter the Password',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -249,7 +232,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         Text(
           _passwordError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -264,7 +247,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         Text(
           'Confirm Password',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -278,7 +261,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
             controller: _confirmPasswordController,
             onChanged: _validateconfirmPassword,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -286,7 +269,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -296,12 +279,12 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
                 },
                 child: Icon(
                   Icons.remove_red_eye,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: 'Re-enter the Password',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -310,7 +293,7 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         Text(
           _confirmPasswordError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -326,7 +309,8 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
         elevation: 5.0,
         onPressed: () async {
           if (_correctEmail && _correctPassword && _correctConfirmPassword) {
-            UserCredential result = await newAdmin(_emailController, _passwordController);
+            UserCredential result =
+                await newAdmin(_emailController, _passwordController);
             //there could be an error here!!
             if (result != null) {
               bool isAdmin = await makeAdmin(result);
@@ -335,24 +319,22 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
                   context,
                   MaterialPageRoute(builder: (context) => AdminHomeScreen()),
                 );
-              }
-              else{
+              } else {
                 makeToast("Error making admin");
               }
             }
-          }
-          else {
+          } else {
             makeToast("Enter all fields correctly");
           }
         },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: firstColor,
         child: Text(
           'Add New Admin',
           style: TextStyle(
-            color: Colors.deepOrange,
+            color: secondColor,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -362,23 +344,19 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
     );
   }
 
-  Future<bool> makeAdmin(UserCredential newAdmin) async{
+  Future<bool> makeAdmin(UserCredential newAdmin) async {
     String token = AdminHomeScreenState.token;
-    final http.Response response = await http.post(
-        Uri.parse('$url/admin/add/'),
-        headers: <String, String> {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-        body: jsonEncode(<String, String>{
-          'newUserID': newAdmin.user.uid}
-        ));
-    if (response.statusCode == 200){
+    final http.Response response = await http.post(Uri.parse('$url/admin/add/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(<String, String>{'newUserID': newAdmin.user.uid}));
+    if (response.statusCode == 200) {
       makeToast("Admin Created Successfully!");
       return true;
-    }
-    else{
+    } else {
       print(response.statusCode);
       return false;
     }

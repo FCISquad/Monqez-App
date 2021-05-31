@@ -1,6 +1,13 @@
+import 'dart:io';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mime/mime.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/Instructions/ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 
@@ -17,7 +24,9 @@ enum ScreenState {
   Viewing,
   Editing,
 }
-class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProviderStateMixin {
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
   User user;
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
@@ -27,16 +36,19 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   TextEditingController _cityController = TextEditingController();
   TextEditingController _streetController = TextEditingController();
   TextEditingController _buildNumberController = TextEditingController();
+  TextEditingController _diseasesController = TextEditingController();
 
   String gender = "";
 
   ScreenState state = ScreenState.Viewing;
 
   bool _isLoading = true;
+  ImageController imageController ;
 
-  _ProfileScreenState(User user){
+  _ProfileScreenState(User user) {
     this.user = user;
     gender = user.gender;
+    imageController = user.image;
   }
 
   @override
@@ -44,7 +56,9 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     super.initState();
     _isLoading = false;
   }
-  Widget _buildField(String title, String value, TextEditingController textController, double width) {
+
+  Widget _buildField(String title, String value,
+      TextEditingController textController, double width, IconData icon) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -79,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
-                Icons.account_circle_sharp,
+                icon,
                 color: secondColor,
               ),
               hintText: value,
@@ -94,8 +108,72 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     );
   }
 
+  bool fileType(String path, String type) {
+    final mimeType = lookupMimeType(path);
+    return mimeType.startsWith(type + '/');
+  }
+
+  Future<ImageController> _uploadProfilePicture() async {
+    FilePickerResult _path;
+    try {
+      _path = (await FilePicker.platform.pickFiles());
+    } on PlatformException catch (e) {
+      makeToast("Unsupported operation" + e.toString());
+    } catch (ex) {
+      makeToast(ex);
+    }
+    if (_path != null && fileType(_path.files.single.path, "image"))
+      return ImageController(File(_path.files.single.path));
+    else {
+      makeToast("Please Upload a photo!");
+      return null;
+    }
+  }
+  Widget getText(String text, double fontSize, bool isBold, Color color) {
+    return AutoSizeText(text,
+        style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
+        maxLines: 3);
+  }
+  void _buildImagePicker(BuildContext context) async {
+    imageController = await _uploadProfilePicture();
+    setState(() {});
+  }
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                TextButton(
+                  child: getText('Replace', 22, true, Colors.green),
+                  onPressed: () {
+                    print("Replaced");
+                    Navigator.of(context).pop();
+                    _buildImagePicker(context);
+                  },
+                ), // button 1
+                TextButton(
+                  child: getText('Remove', 22, true, Color(0xFFF27169)),
+                  onPressed: () {
+                    imageController = null;
+                    setState(() {});
+                    Navigator.of(context).pop();
+                  },
+                ) // button 2
+              ]),
+        );
+      },
+    );
+  }
+
   Future<void> save() async {
-    print(_nameController == null);
+
     if (_nameController.text.isNotEmpty)        user.name = _nameController.text;
     if (_nationalIDController.text.isNotEmpty)  user.nationalID = _nationalIDController.text;
     if (_phoneController.text.isNotEmpty)       user.phone = _phoneController.text;
@@ -104,9 +182,15 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
     if (_streetController.text.isNotEmpty)      user.street = _streetController.text;
     if (_buildNumberController.text.isNotEmpty) user.buildNumber = _buildNumberController.text;
     if (gender.isNotEmpty)                      user.gender = gender;
+    user.image = imageController;
+
+    if (_diseasesController.text.isNotEmpty)
+      user.diseases = _diseasesController.text;
+    else
+      user.diseases = " ";
 
     bool success = await user.saveUser();
-    if ( success ) {
+    if (success) {
       state = ScreenState.Viewing;
       setState(() {});
     }
@@ -114,14 +198,14 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
 
   void edit() {
     state = ScreenState.Editing;
-    setState((){});
+    setState(() {});
   }
 
   Widget _buildSubmitBtn() {
     return Container(
-      //padding: EdgeInsets.symmetric(vertical: 25.0),
       width: MediaQuery.of(context).size.width / 2,
       height: 45,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () {
@@ -143,6 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       ),
     );
   }
+
   Color getMainColor() {
     return state == ScreenState.Editing ? firstColor : Colors.grey;
   }
@@ -156,8 +241,8 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Radio(
-          activeColor: Colors.blue,
-          focusColor: Colors.blue,
+          activeColor: firstColor,
+          focusColor: firstColor,
           value: title,
           groupValue: gender,
           onChanged: (value) {
@@ -176,29 +261,33 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
 
   Widget _addRadioGroup() {
-      return Row(
-          children: <Widget>[
-            addRadioButton(1, "Male"),
-            addRadioButton(2, "Female"),
-          ],
-      );
+    return Row(
+      children: <Widget>[
+        addRadioButton(1, "Male"),
+        addRadioButton(2, "Female"),
+      ],
+    );
   }
+
   @override
   Widget build(BuildContext context) {
-    if(_isLoading) {
+    if (_isLoading) {
       return CircularProgressIndicator();
-    } else return Scaffold(
-      backgroundColor: secondColor,
-      appBar: AppBar(
-        title: getTitle("Profile", 22.0, secondColor, TextAlign.start, true),
-        shadowColor: Colors.black,
-        backgroundColor: firstColor,
-        iconTheme: IconThemeData(color: secondColor),
-        elevation: 4,
-        leading: IconButton(icon:Icon(Icons.arrow_back),
-          onPressed:() => Navigator.pop(context, true),
+    } else
+      return Scaffold(
+        backgroundColor: secondColor,
+        appBar: AppBar(
+          title: getTitle("Profile", 22.0, secondColor, TextAlign.start, true),
+          shadowColor: Colors.black,
+          backgroundColor: firstColor,
+          iconTheme: IconThemeData(color: secondColor),
+          elevation: 4,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context, true),
+          ),
         ),
-      ),
+
 
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -221,15 +310,11 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                       children: [
                         Center(
                           child: CircularProfileAvatar(
-                            //'https://avatars0.githubusercontent.com/u/8264639?s=460&v=4',
                             null,
-                            child: Image(
-                              image: AssetImage('assets/images/logo.png'),
-                              fit: BoxFit.cover,
-                            ),
+                            child: imageController == null ? Container(): Image.memory(imageController.decode()),
                             radius: 100,
                             backgroundColor: Colors.transparent,
-                            borderColor: getMainColor(),
+                            borderColor: imageController == null ? getMainColor() : secondColor,
                             elevation: 5.0,
                             cacheImage: true,
                             onTap: () {
@@ -238,61 +323,115 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
                           ),
                         ),
                         Center(
-                          child: Container(
+                          child: Container (
                             height: 205,
                             width: 205,
                             alignment: Alignment.bottomRight,
-                            child: getIcon(Icons.add_a_photo, 26, getMainColor())
-                          ),
+                            child: GestureDetector(
+                              onTap: () {
+                                if (state == ScreenState.Editing)
+                                  if (imageController == null) {
+                                    _buildImagePicker(context);
+                                  } else {
+                                    _showMyDialog();
+                                  }
+                              },
+                              child: new Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Container(
+                                      child: getIcon(Icons.add_a_photo, 26, getMainColor())
+                                  )),
+                            ),
+
+
+                          )
                         )
                       ]
                     ),
                   ),
-                  SizedBox(height: 10.0),
-                  _buildField("Name", user.name, _nameController, MediaQuery.of(context).size.width),
-                  SizedBox(height: 20.0),
-                  _buildField("National ID", user.nationalID, _nationalIDController, MediaQuery.of(context).size.width),
-                  SizedBox(height: 20.0),
-                  _buildField("Phone Number", user.phone, _phoneController, MediaQuery.of(context).size.width),
-                  //_buildIDNumberTF(),
+				  SizedBox(height: 10.0),
+                      _buildField(
+                          "Name",
+                          user.name,
+                          _nameController,
+                          MediaQuery.of(context).size.width,
+                          Icons.account_circle_sharp),
+                      SizedBox(height: 20.0),
+                      _buildField(
+                          "National ID",
+                          user.nationalID,
+                          _nationalIDController,
+                          MediaQuery.of(context).size.width,
+                          Icons.assignment_ind_outlined),
+                      SizedBox(height: 20.0),
+                      _buildField("Phone Number", user.phone, _phoneController,
+                          MediaQuery.of(context).size.width, Icons.phone),
+                      //_buildIDNumberTF(),
+                      _buildField(
+                          "Diseases",
+                          user.diseases,
+                          _diseasesController,
+                          MediaQuery.of(context).size.width,
+                          Icons.accessibility_outlined),
+                      SizedBox(height: 15.0),
+				
 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildField(
+                              "Country",
+                              user.country,
+                              _countryController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop),
+                          _buildField(
+                              "City",
+                              user.city,
+                              _cityController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop)
+                        ],
+                      ),
+                      SizedBox(height: 15.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildField(
+                              "Street",
+                              user.street,
+                              _streetController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop),
+                          _buildField(
+                              "Build Number",
+                              user.buildNumber,
+                              _buildNumberController,
+                              (MediaQuery.of(context).size.width - 30) / 2,
+                              Icons.pin_drop)
+                        ],
+                      ),
+                      SizedBox(height: 15.0),
+                      Visibility(
+                          visible: state == ScreenState.Viewing,
+                          child: _buildField(
+                              "Gender",
+                              user.gender,
+                              _genderController,
+                              MediaQuery.of(context).size.width,
+                              Icons.account_circle_sharp)),
 
-                  SizedBox(height: 15.0),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildField("Country", user.country, _countryController, (MediaQuery.of(context).size.width-30)/2),
-                      _buildField("City", user.city, _cityController, (MediaQuery.of(context).size.width-30)/2)
-                    ],
-                  ),
-                  SizedBox(height: 15.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildField("Street", user.street, _streetController, (MediaQuery.of(context).size.width-30)/2),
-                      _buildField("Build Number", user.buildNumber, _buildNumberController, (MediaQuery.of(context).size.width-30)/2)
-                    ],
-                  ),
-                  SizedBox(height: 15.0),
-                  Visibility(
-                      visible: state == ScreenState.Viewing,
-                      child: _buildField("Gender", user.gender, _genderController, MediaQuery.of(context).size.width)
-                  ),
-
-                  Visibility(
-                    visible: state == ScreenState.Editing,
-                    child: _addRadioGroup(),
-                  ),
-                  SizedBox(height: 20.0),
-                  _buildSubmitBtn()
-                ]
+                      Visibility(
+                        visible: state == ScreenState.Editing,
+                        child: _addRadioGroup(),
+                      ),
+                      SizedBox(height: 20.0),
+                      _buildSubmitBtn()
+                    ]),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
   }
-
 }

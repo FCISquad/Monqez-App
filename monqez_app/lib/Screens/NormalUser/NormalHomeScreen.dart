@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -18,6 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
 import '../LoginScreen.dart';
 import '../VoicePage.dart';
+import 'NormalUserPreviousRequests.dart';
 
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
@@ -43,7 +45,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   var _additionalInfoController = TextEditingController();
-  int bodyMap;
+  BodyMap avatar;
   bool isLoaded = false;
   int firstStatusCode;
   _NormalHomeScreenState(String token) {
@@ -91,7 +93,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
   _onMapCreated(GoogleMapController controller) async {
     await _getCurrentUserLocation() ;
-    await _goToPosition1() ;
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
@@ -107,7 +110,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       'additionalInfo': {
         'Address': _detailedAddress.text,
         'Additional Notes': _aditionalNotes.text,
-        'avatarBody': bodyMap.toString(),
+        'avatarBody': avatar.getSelected().toString(),
         'forMe': _radioValue.toString()
       },
     };
@@ -176,13 +179,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      SizedBox(height: 400, child: BodyMap()),
+                      SizedBox(height: 400, child: avatar),
                       SizedBox(
                         width: 200,
                         // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () {
-                            bodyMap = BodyMap.getSelected();
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -291,8 +293,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(),
-                                        context, false);
+                                    navigate(
+                                        InstructionsScreen(), context, false);
                                   },
                                   child: Text(
                                     "Submit",
@@ -353,8 +355,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   @override
   void initState() {
     super.initState();
-    bodyMap = 0;
-    //showPinsOnMap() ;
+    avatar = BodyMap();
     _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
@@ -449,8 +450,23 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           children: [
                             getTitle(user.name, 26, secondColor,
                                 TextAlign.start, true),
-                            Icon(Icons.account_circle_rounded,
-                                size: 90, color: secondColor),
+                            Container(
+                              width: 90,
+                              height: 90,
+                              child: CircularProfileAvatar(
+                                null,
+                                child: user.image == null ? Icon(Icons.account_circle_rounded,
+                                    size: 90, color: secondColor): Image.memory(user.image.decode()),
+                                radius: 100,
+                                backgroundColor: Colors.transparent,
+                                borderColor: user.image == null ? firstColor : secondColor,
+                                elevation: 5.0,
+                                cacheImage: true,
+                                onTap: () {
+                                  print('Tabbed');
+                                }, // sets on tap
+                              ),
+                            ),
                           ])),
                   decoration: BoxDecoration(
                     color: firstColor,
@@ -468,6 +484,27 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       onTap: () {
                         //Navigator.pop(context);
                         navigate(ProfileScreen(user), context, false);
+                      },
+                    ),
+
+                    ListTile(
+                      title: getTitle(
+                          'My Requests', 18, firstColor, TextAlign.start, true),
+                      leading: Icon(Icons.history,
+                          size: 30, color: firstColor),
+                      onTap: () {
+                        //Navigator.pop(context);
+                        navigate(NormalPreviousRequests(user), context, false);
+                      },
+                    ),
+                    ListTile(
+                      title: getTitle(
+                          'Emergency Instructions', 18, firstColor, TextAlign.start, true),
+                      leading: Icon(Icons.history,
+                          size: 30, color: firstColor),
+                      onTap: () {
+                        //Navigator.pop(context);
+                        navigate(InstructionsScreen(false, user.token), context, false);
                       },
                     ),
                     Expanded(
@@ -529,6 +566,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       onPressed: () async {
                         await _makeRequest();
                         if (firstStatusCode == 200) _showMaterialDialog();
+                        //_showMaterialDialog();
                       },
                       child: Text('Get Help!'),
                       color: Colors.deepOrange,
@@ -650,7 +688,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
-                                    onJoin(type);
+                                    if (_additionalInfoController
+                                        .text.isEmpty) {
+                                      makeToast(
+                                          "Please enter additional information");
+                                    } else
+                                      onJoin(type);
                                   },
                                   child: Text(
                                     "Submit",

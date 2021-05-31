@@ -6,10 +6,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:monqez_app/Screens/AdditionalAdminInfoScreen.dart';
+import 'package:monqez_app/Screens/OneTimeRequest.dart';
 import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import '../Backend/Authentication.dart';
 import 'UI.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -27,8 +29,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool firstLogin;
 
   bool _showPassword = false;
+
   var _emailController = TextEditingController();
   var _passwordController = TextEditingController();
+  var _nationalIDController = TextEditingController();
   String _emailError = '';
   String _passwordError = '';
   bool correctPassword = false;
@@ -58,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     Firebase.initializeApp();
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: secondColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -77,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Sign In',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: firstColor,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -91,6 +95,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   _buildLoginBtn(),
                   _buildSignInWithText(),
                   _buildSocialBtnRow(),
+                  _buildOneTimeRequestBtn(),
+                  SizedBox(
+                    height: 10,
+                  ),
                   _buildSignupBtn(),
                 ],
               ),
@@ -166,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Email',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -180,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
             onChanged: validateLoginCredentials,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -188,23 +196,10 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.email,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
-              enabledBorder: new OutlineInputBorder(
-                borderRadius: new BorderRadius.circular(10.0),
-                borderSide: new BorderSide(
-                    color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                    width: 3),
-              ),
-              focusedBorder: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.circular(10.0),
-                  borderSide: new BorderSide(
-                      color: _emailError.isEmpty ? Colors.white : Colors.blue,
-                      width: 3)),
               hintText: 'Enter your Email',
-              hintStyle: TextStyle(
-                color: Colors.deepOrange,
-              ),
+              hintStyle: TextStyle(color: firstColor),
             ),
           ),
         ),
@@ -212,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           _emailError,
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -227,7 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Password',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -241,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
             obscureText: !_showPassword,
             onChanged: validatePassword,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -249,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.lock,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               suffixIcon: GestureDetector(
                 onTap: () {
@@ -259,19 +254,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 },
                 child: Icon(
                   Icons.remove_red_eye,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: 'Enter your Password',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
         ),
         SizedBox(height: 5.0),
         Text(_passwordError,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: TextStyle(color: firstColor, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -349,11 +344,11 @@ class _LoginScreenState extends State<LoginScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: firstColor,
         child: Text(
           'LOGIN',
           style: TextStyle(
-            color: Colors.deepOrange,
+            color: secondColor,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -425,7 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: 60.0,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white,
+          color: firstColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black26,
@@ -469,7 +464,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextSpan(
               text: 'Don\'t have an Account? ',
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.w400,
               ),
@@ -477,7 +472,142 @@ class _LoginScreenState extends State<LoginScreen> {
             TextSpan(
               text: 'Sign Up',
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  _showNationalIDDialog() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: Container(
+                height: 200,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(12.0, 0.0, 12.0, 12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                          child: Text(
+                        "National ID",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
+                      SizedBox(height: 20),
+                      TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                            border: InputBorder.none, hintText: 'National ID'),
+                        controller: _nationalIDController,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                width: 200,
+                                child: RaisedButton(
+                                  onPressed: () async {
+                                    if (_nationalIDController.text.isEmpty) {
+                                      makeToast(
+                                          "Please enter your national ID");
+                                    } else if (_nationalIDController
+                                            .text.length !=
+                                        14) {
+                                      makeToast(
+                                          "Your National ID is not correct");
+                                    } else {
+                                      UserCredential userCredential =
+                                          await FirebaseAuth.instance
+                                              .signInAnonymously();
+                                      var user = userCredential.user;
+                                      String uid = user.uid;
+                                      String token = user.refreshToken;
+                                      bool valid = await sendID(token);
+                                      if (valid) {
+                                        navigateReplacement(
+                                            OneTimeRequestScreen(uid, token));
+                                      }
+                                    }
+                                  },
+                                  child: Text(
+                                    "Submit",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  color: Colors.deepOrange,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            );
+          });
+        });
+  }
+
+  sendID(String token) async {
+    final http.Response response = await http.post(
+        Uri.parse('$url/user/check_national_ID/'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+          'oneTimeRequest': "True"
+        },
+        body: jsonEncode(
+            <String, String>{"nationalId": _nationalIDController.text}));
+
+    if (response.statusCode == 200) {
+      //var parsed = jsonDecode(response.body).cast<String, dynamic>();
+      return true;
+    } else if (response.statusCode == 403) {
+      makeToast("Error, National ID already exists!");
+      return false;
+    } else {
+      makeToast("An Error has occured");
+      return false;
+    }
+  }
+
+  Widget _buildOneTimeRequestBtn() {
+    return GestureDetector(
+      onTap: () async {
+        _showNationalIDDialog();
+      },
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: 'Emergency? ',
+              style: TextStyle(
+                color: firstColor,
+                fontSize: 18.0,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            TextSpan(
+              text: 'One Time Request!',
+              style: TextStyle(
+                color: firstColor,
                 fontSize: 18.0,
                 fontWeight: FontWeight.bold,
               ),
@@ -494,7 +624,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           '- OR -',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -502,7 +632,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           'Sign in with',
           style: TextStyle(
-            color: Colors.white,
+            color: firstColor,
             fontWeight: FontWeight.bold,
           ),
         ),

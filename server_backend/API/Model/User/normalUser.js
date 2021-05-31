@@ -8,32 +8,29 @@ const helper = require('../../Tools/RequestFunctions');
 class NormalUser extends User {
     constructor(userJson) {
         super(userJson);
-        //this.isBanned = userJson.isBanned;
-
-        // this.userID = userJson.id;
-        // this.userName = userJson.name;
-        // this.userEmail = userJson.email;
-        // this.userAddress = new Address(userJson.country , userJson.city , userJson.street , userJson.buildNumber);
-        // this.userNationalID = userJson.national_id;
-        // this.userPhoneNumber = userJson.phone_number;
-        // this.userGender = userJson.gender;
-        // this.userDOB = userJson.dob;
-        // this.isDisable = userJson.isDisable;
-        // this.isBanned = userJson.isBanned;
-        // this.#uid = userJson.uid;
     }
 
-    setIsBanend(isBanned) {
-        this.isBanned = isBanned;
+    checkOneTimeRequest(nationalId){
+        return new Promise( (resolve, reject) => {
+            User._database.checkNationalId(nationalId)
+                .then( function (){
+                    resolve();
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
     }
 
-    signUp() {
-        User._database.createUser(this)
-            .then(() => {
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    signUp(userId, userJson) {
+        return new Promise( (resolve, reject) => {
+            User._database.createUser(userId, userJson)
+                .then(() => {resolve();})
+                .catch((error) => {
+                    reject(error);
+                });
+        } );
+
     }
 
     request(userID, userJson, isFirst) {
@@ -84,7 +81,7 @@ class NormalUser extends User {
                     this.notify_monqez(min_three);
                 }
                 else{
-                    reject();
+                    reject('No avilabel helpers');
                 }
                 resolve(min_three);
             });
@@ -100,7 +97,6 @@ class NormalUser extends User {
             User._database.getFCMToken(min_three[i]).then((token) => {
                 // let registrationTokens = [];
                 // registrationTokens.push(token);
-
                 const payload = {
                     notification: {
                         title: 'Help is needed!',
@@ -134,6 +130,7 @@ class NormalUser extends User {
             });
         }
     }
+
     getLongLat(userId){
         return new Promise( (resolve, _) => {
             User._database.getLongLat(userId)
@@ -180,9 +177,42 @@ class NormalUser extends User {
                 });
         } );
     }
+
     logCallRequest(userJson){
         return new Promise( (resolve, _) => {
             User._database.archiveCallRequest(userJson).then(()=>{ resolve() });
+        } );
+    }
+
+    getRequestLog(userId){
+        return new Promise( (resolve, reject) => {
+            User._database.getRequests(userId)
+                .then( function (requestLog){
+                    resolve(requestLog);
+                } )
+                .catch( function (error){
+                    reject(error);
+                } );
+        } );
+    }
+
+    rate(userId, json){
+        return new Promise( (resolve, reject) => {
+            User._database.setRequestRate(userId, json).then( ()=>{resolve();} ).catch((error) => {reject(error);});
+            User._database.setMonqezRate(json)
+                .then( () => {resolve();} )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
+    }
+
+    addComplaint(userId, json){
+        return new Promise( (resolve, reject) => {
+            User._database.addComplaint(userId, json).then(() => {resolve();})
+                .catch( function (error){
+                    reject(error);
+                } )
         } );
     }
 }

@@ -93,14 +93,20 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
   }
 
   Widget _myListView(BuildContext context) {
-    return ListView.builder(
-        scrollDirection: Axis.vertical,
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: applicationsList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return applicationsList[index];
-        });
+    return RefreshIndicator(
+      onRefresh: () async {
+        await getAllApplications();
+        return true;
+      },
+      child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          physics: const AlwaysScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: applicationsList.length,
+          itemBuilder: (BuildContext context, int index) {
+            return applicationsList[index];
+          }),
+    );
     // return ListView.separated(
     //   itemCount: 100,
     //   itemBuilder: (context, index) {

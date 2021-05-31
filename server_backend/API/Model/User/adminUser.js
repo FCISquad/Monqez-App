@@ -73,6 +73,45 @@ class Admin extends User{
             } );
         } );
     }
+
+    banUser(userId){
+        return new Promise( (resolve, reject) => {
+            User._database.banUser(userId).then(function (){
+                resolve();
+            }).catch(function (error){
+                    reject(error);
+            })
+        } );
+    }
+
+    getAllComplaints(){
+        return new Promise( (resolve, reject) => {
+            User._database.getAllComplaints()
+                .then( function (comps){
+                    resolve(comps);
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
+    }
+
+    getComplaint(compJson){
+        return new Promise( (resolve, reject) => {
+            User._database.getComplaint(compJson)
+                .then(async function (complaint){
+                    complaint["complainerUID" ] = compJson["nuid"];
+                    complaint["complainerName"] = (await User._database.getuser(compJson["nuid"]))["name"];
+
+                    complaint["complainedUID" ] = compJson["huid"];
+                    complaint["complainedName"] = (await User._database.getuser(compJson["huid"]))["name"];
+                    resolve(complaint);
+                })
+                .catch(function (error){
+                    reject(error);
+                })
+        } );
+    }
 }
 
 module.exports = Admin;

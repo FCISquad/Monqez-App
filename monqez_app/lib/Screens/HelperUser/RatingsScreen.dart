@@ -1,12 +1,27 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class HelperRatingsScreen extends StatefulWidget {
   @override
   _HelperHomeScreenState createState() => _HelperHomeScreenState();
 }
 
+class _Rating {
+  _Rating();
+  _Rating.init(this.name, this.comment, this.rate);
+  String name;
+  String comment;
+  double rate;
+  isValid(){
+    return name != null && comment != null && rate != null;
+  }
+}
 
 class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTickerProviderStateMixin {
   List<Widget> _ratingsList;
@@ -18,10 +33,10 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
     super.initState();
     Future.delayed(Duration.zero, () {
       _ratingsList = <Widget>[
-        getCard("Khaled Ezzat", "Great Person! I suggest him.", null, 5, MediaQuery.of(context).size.width ),
-        getCard("Hussien Ashraf", "He was late, but he saved my life !", null, 4, MediaQuery.of(context).size.width),
-        getCard("Hatem Mamdoh", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felis, tristique vel fringilla sed, suscipit sit amet orci. Sed dapibus mass", null, 4, MediaQuery.of(context).size.width),
-        getCard("Ehab Fawzy", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felci. Sed dapibus mass", null, 4, MediaQuery.of(context).size.width),
+        getCard(_Rating.init("Khaled Ezzat", "Great Person! I suggest him.",5), null, MediaQuery.of(context).size.width ),
+        getCard(_Rating.init("Hussien Ashraf", "He was late, but he saved my life !",5 ), null, MediaQuery.of(context).size.width),
+        getCard(_Rating.init("Hatem Mamdoh", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felis, tristique vel fringilla sed, suscipit sit amet orci. Sed dapibus mass",5), null, MediaQuery.of(context).size.width),
+        getCard(_Rating.init("Ehab Fawzy", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felci. Sed dapibus mass",5), null, MediaQuery.of(context).size.width),
       ];
 
 
@@ -29,7 +44,52 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
       setState((){});
     });
   }
-  Widget getCard(String name, String comment, Widget nextScreen, double rating, double width) {
+
+  void _iterateJson(String jsonStr) {
+    Map<String, dynamic> requestsJson = json.decode(jsonStr);
+    requestsJson.forEach((key, value) {
+      if (value["accepted"]["Counter"] != 0) {
+        _Rating rating = _Rating();
+        value.forEach((requestKey, requestValue) {
+          if (requestKey == "additionalInfo") {
+            requestValue.forEach((infoKey, infoValue) {
+              if (infoKey == "forMe")
+                rating.comment = infoValue;
+              else if (infoKey == "Address")
+                rating.name = infoValue;
+            });
+          }
+        });
+
+        if (rating.isValid()) _ratingsList.add(getCard(rating, null, MediaQuery.of(context).size.width));
+      }
+    });
+  }
+
+  getRatings() {
+    // will be http request
+    String token = Provider.of<Helper>(context, listen: false).token;
+    Future.delayed(Duration.zero, () async {
+      http.Response response = await http.post(
+        Uri.parse('$url/user/get_requests'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        _iterateJson(response.body);
+        setState(() {
+          _isLoading = false;
+        });
+      } else {
+        print(response.statusCode);
+        makeToast("Error!");
+      }
+    });
+  }
+  Widget getCard(_Rating rating, Widget nextScreen, double width) {
     return Card (
       elevation: 0,
       color: Colors.transparent,
@@ -47,13 +107,13 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
             children: <Widget>[
               ListTile(
                 contentPadding: EdgeInsets.fromLTRB(10,10,10,0),
-                leading: getTitle(name, 16, secondColor, TextAlign.center, true),
-                title: getTitle(comment, 16, secondColor, TextAlign.center, true),
+                leading: getTitle(rating.name, 16, secondColor, TextAlign.center, true),
+                title: getTitle(rating.comment, 16, secondColor, TextAlign.center, true),
 
               ),
               ListTile(
-                leading: getRatingBar(rating, 30, secondColor),
-                trailing: getTitle(rating.toString(), 16, secondColor, TextAlign.center, true),
+                leading: getRatingBar(rating.rate, 30, secondColor),
+                trailing: getTitle(rating.rate.toString(), 16, secondColor, TextAlign.center, true),
               ),
             ],
           ),

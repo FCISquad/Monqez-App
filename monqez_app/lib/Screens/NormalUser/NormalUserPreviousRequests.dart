@@ -81,6 +81,7 @@ class _Request {
 
 class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     with SingleTickerProviderStateMixin {
+
   var rate ;
   final _commentController = TextEditingController() ;
   final _subjectController = TextEditingController() ;
@@ -256,6 +257,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
           });
         });
   }
+  
   Widget buildScreen2(_Request req){
     double width = MediaQuery.of(context).size.width / 100;
     double height =
@@ -407,7 +409,6 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         'complaint': message,
         'time' :req.dateId,
         'uid' : req.helperUid
-
       }),
     );
     if (response.statusCode == 200) {
@@ -420,10 +421,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
   void _iterateJson(String jsonStr) {
     Map<String, dynamic> requestsJson = json.decode(jsonStr);
     requestsJson.forEach((key, value) {
-      print ("yarb n5ls");
-      print (value["accepted"].toString());
       if (value["accepted"]["Counter"] != 0) {
-
         _Request request = _Request(key);
         value.forEach((requestKey, requestValue) {
           if (requestKey == "additionalInfo") {
@@ -441,6 +439,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         value["accepted"].forEach((key2, value2) {
           if (key2.toString().startsWith("uid"))
             request.helperUid = value2.toString();
+
         });
 
         //request.show();
@@ -793,6 +792,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                                 child: RaisedButton(
                                                   onPressed: () {
                                                     _showMaterialDialog(req);
+
                                                   },
                                                   shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
                                                   color: firstColor,
@@ -813,6 +813,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                                 child: RaisedButton(
                                                   onPressed: () {
                                                     buildScreen2(req);
+
                                                   },
                                                   color: firstColor,
                                                   shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),

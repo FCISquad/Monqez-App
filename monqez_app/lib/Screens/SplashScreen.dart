@@ -47,7 +47,7 @@ class _SplashState extends State<Splash> {
     } else if (response2.statusCode == 403) {
       if (once) {
         once = false;
-        token = await FirebaseAuth.instance.currentUser.getIdToken();
+        token = await FirebaseAuth.instance.currentUser.getIdToken(true);
         print("HERE");
         saveUserToken(token, uid);
         setState(() {});
@@ -56,6 +56,7 @@ class _SplashState extends State<Splash> {
         token = null;
         makeToast("Error!");
         makeToast(response2.statusCode.toString());
+        setState(() {});
       }
     } else {
       logout();
@@ -71,7 +72,7 @@ class _SplashState extends State<Splash> {
     var _prefs = await SharedPreferences.getInstance();
     token = _prefs.getString("userToken");
     uid = _prefs.getString("userID");
-    Widget _navigate;
+    Widget _navigate = LoginScreen();
 
     bool enter = true;
     /*await FirebaseMessaging.instance
@@ -102,10 +103,13 @@ class _SplashState extends State<Splash> {
       } else {
         await checkUser(uid);
         if (isDisabled) {
-          if (type == 0)
+          if (type == 0) {
             makeToast("Account is banned!");
-          else if (type == 1)
+            logout();
+          } else if (type == 1) {
             makeToast("Please wait while your application is reviewed");
+            logout();
+          }
         } else if (firstLogin) {
           saveUserToken(token, uid);
           _navigate = SecondSignupScreen();
@@ -115,7 +119,6 @@ class _SplashState extends State<Splash> {
           if (type == 0) {
             _navigate = NormalHomeScreen(token);
           } else if (type == 1) {
-            print("IF");
             _navigate = HelperHomeScreen(token);
           } else if (type == 2) {
             _navigate = AdminHomeScreen();

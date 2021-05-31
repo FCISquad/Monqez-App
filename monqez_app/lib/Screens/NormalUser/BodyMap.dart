@@ -1,10 +1,8 @@
-
 import 'package:flutter/material.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 
-void main() =>
-    runApp(BodyMapPage());
+void main() => runApp(BodyMapPage());
 
 class BodyMapPage extends StatelessWidget {
   @override
@@ -20,35 +18,53 @@ class BodyMapPage extends StatelessWidget {
   }
 }
 
-
+// ignore: must_be_immutable
 class BodyMap extends StatefulWidget {
-  static var injury = {'head':false, 'neck':false, 'chest':false, 'shoulderR':false, 'shoulderL':false, 'armR':false, 'armL':false,
-  'handR':false, 'handL':false, 'stomach':false, 'legR':false, 'legL':false, 'footR':false, 'footL':false};
+  var injury = {
+    'head': false,
+    'neck': false,
+    'chest': false,
+    'shoulderR': false,
+    'shoulderL': false,
+    'armR': false,
+    'armL': false,
+    'handR': false,
+    'handL': false,
+    'stomach': false,
+    'legR': false,
+    'legL': false,
+    'footR': false,
+    'footL': false
+  };
 
-  static _BodyMapState _bodyMapState;
   final ValueChanged<bool> onChange = null;
-  static String _selected = null;
+  String _selected;
+  double _size;
 
-  @override
-  _BodyMapState createState() {
-    return _bodyMapState = new _BodyMapState(_selected);
+  BodyMap.init(int bodyValue, double size) {
+    setSelected(bodyValue);
+    _size = size;
   }
 
-  static void setSelected(int selected) {
+  BodyMap();
+  @override
+  _BodyMapState createState() {
+    return _BodyMapState();
+  }
+
+  void setSelected(int selected) {
     _selected = selected.toRadixString(2);
-    print("Selected: " + _selected);
     //_bodyMapState.setSelected(_selected);
   }
 
-  static int getSelected() {
+  int getSelected() {
     List<int> binary = [];
     List<String> selected = [];
-    for (String key in BodyMap.injury.keys) {
-      if(BodyMap.injury[key] == true) {
+    for (String key in this.injury.keys) {
+      if (this.injury[key] == true) {
         selected.add(key);
         binary.add(1);
-      }
-      else
+      } else
         binary.add(0);
     }
     print(selected);
@@ -63,201 +79,275 @@ class BodyMap extends StatefulWidget {
 }
 
 class _BodyMapState extends State<BodyMap> {
-  String _selected;
-  _BodyMapState(this._selected);
-
-
   @override
   Widget build(BuildContext context) {
-    if (_selected != null)
-      setSelected(_selected);
+    if (widget._selected != null) setSelected(widget._selected);
 
     return new Scaffold(
-      backgroundColor: Colors.white,
-      body: InteractiveViewer(child:Center(
-          child: Container(
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: ColumnSuper(
-                    innerDistance: -119,
-                    children: [
-                      ColumnSuper(
-                        innerDistance: -19,
-                        children: [
-                        ColumnSuper(
-                            innerDistance: -35,
-                            children: [
+        backgroundColor: Colors.white,
+        body: InteractiveViewer(
+            child: Center(
+                child: Container(
+                    height: widget._size,
+                    width: widget._size,
+                    child: FittedBox(
+                        fit: BoxFit.contain,
+                        child: ColumnSuper(innerDistance: -119, children: [
+                          ColumnSuper(innerDistance: -19, children: [
+                            ColumnSuper(innerDistance: -35, children: [
                               InkWell(
-                                  onTap: (){_changeColor('head');},
+                                  onTap: () {
+                                    _changeColor('head');
+                                  },
                                   child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(BodyMap.injury['head']? Colors.red:Colors.white, BlendMode.modulate),
-                                      child: Tooltip(message:"Head",child: Image.asset('images/BodyMap/head.png'))
-                                  )
-                              ),
+                                      colorFilter: ColorFilter.mode(
+                                          widget.injury['head']
+                                              ? Colors.red
+                                              : Colors.white,
+                                          BlendMode.modulate),
+                                      child: Tooltip(
+                                          message: "Head",
+                                          child: Image.asset(
+                                              'images/BodyMap/head.png')))),
                               InkWell(
-                                  onTap: (){_changeColor('neck');},
+                                  onTap: () {
+                                    _changeColor('neck');
+                                  },
                                   child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(BodyMap.injury['neck']? Colors.red:Colors.white, BlendMode.modulate),
-                                      child: Tooltip(message:"Neck",child: Image.asset('images/BodyMap/neck.png'))
-                                  )
-                              )
+                                      colorFilter: ColorFilter.mode(
+                                          widget.injury['neck']
+                                              ? Colors.red
+                                              : Colors.white,
+                                          BlendMode.modulate),
+                                      child: Tooltip(
+                                          message: "Neck",
+                                          child: Image.asset(
+                                              'images/BodyMap/neck.png'))))
                             ]),
+                            ColumnSuper(
+                              innerDistance: -60,
+                              children: [
+                                RowSuper(innerDistance: -49, children: [
+                                  InkWell(
+                                      onTap: () {
+                                        _changeColor('shoulderR');
+                                      },
+                                      child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['shoulderR']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Right Shoulder",
+                                              child: Image.asset(
+                                                  'images/BodyMap/shoulderR.png')))),
+                                  InkWell(
+                                      onTap: () {
+                                        _changeColor('chest');
+                                      },
+                                      child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['chest']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Chest",
+                                              child: Image.asset(
+                                                  'images/BodyMap/chest.png')))),
+                                  InkWell(
+                                      onTap: () {
+                                        _changeColor('shoulderL');
+                                      },
+                                      child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['shoulderL']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Left Shoulder",
+                                              child: Image.asset(
+                                                  'images/BodyMap/shoulderL.png'))))
+                                ]),
+                                RowSuper(
+                                  innerDistance: -10,
+                                  children: [
+                                    ColumnSuper(innerDistance: -15, children: [
+                                      InkWell(
+                                          onTap: () {
+                                            _changeColor('armR');
+                                          },
+                                          child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  widget.injury['armR']
+                                                      ? Colors.red
+                                                      : Colors.white,
+                                                  BlendMode.modulate),
+                                              child: Tooltip(
+                                                  message: "Right Arm",
+                                                  child: Image.asset(
+                                                      'images/BodyMap/armR.png')))),
+                                      InkWell(
+                                          onTap: () {
+                                            _changeColor('handR');
+                                          },
+                                          child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  widget.injury['handR']
+                                                      ? Colors.red
+                                                      : Colors.white,
+                                                  BlendMode.modulate),
+                                              child: Tooltip(
+                                                  message: "Right Hand",
+                                                  child: Image.asset(
+                                                      'images/BodyMap/handR.png'))))
+                                    ]),
+                                    InkWell(
+                                        onTap: () {
+                                          _changeColor('stomach');
+                                        },
+                                        child: ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                                widget.injury['stomach']
+                                                    ? Colors.red
+                                                    : Colors.white,
+                                                BlendMode.modulate),
+                                            child: Tooltip(
+                                                message: "Stomach",
+                                                child: Image.asset(
+                                                    'images/BodyMap/stomach.png')))),
+                                    ColumnSuper(innerDistance: -15, children: [
+                                      InkWell(
+                                          onTap: () {
+                                            _changeColor('armL');
+                                          },
+                                          child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  widget.injury['armL']
+                                                      ? Colors.red
+                                                      : Colors.white,
+                                                  BlendMode.modulate),
+                                              child: Tooltip(
+                                                  message: "Left Arm",
+                                                  child: Image.asset(
+                                                      'images/BodyMap/armL.png')))),
+                                      InkWell(
+                                          onTap: () {
+                                            _changeColor('handL');
+                                          },
+                                          child: ColorFiltered(
+                                              colorFilter: ColorFilter.mode(
+                                                  widget.injury['handL']
+                                                      ? Colors.red
+                                                      : Colors.white,
+                                                  BlendMode.modulate),
+                                              child: Tooltip(
+                                                  message: "Left Hand",
+                                                  child: Image.asset(
+                                                      'images/BodyMap/handL.png'))))
+                                    ]),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ]),
                           ColumnSuper(
-                            innerDistance: -60,
+                            innerDistance: -28,
                             children: [
                               RowSuper(
-                                innerDistance: -49,
+                                innerDistance: 0.5,
                                 children: [
                                   InkWell(
-                                      onTap: (){_changeColor('shoulderR');},
+                                      onTap: () {
+                                        _changeColor('legR');
+                                      },
                                       child: ColorFiltered(
-                                          colorFilter: ColorFilter.mode(BodyMap.injury['shoulderR']? Colors.red:Colors.white, BlendMode.modulate),
-                                          child: Tooltip(message:"Right Shoulder",child: Image.asset('images/BodyMap/shoulderR.png'))
-                                      )
-                                  ),
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['legR']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Right Leg",
+                                              child: Image.asset(
+                                                  'images/BodyMap/legR.png')))),
                                   InkWell(
-                                      onTap: (){_changeColor('chest');},
+                                      onTap: () {
+                                        _changeColor('legL');
+                                      },
                                       child: ColorFiltered(
-                                          colorFilter: ColorFilter.mode(BodyMap.injury['chest']? Colors.red:Colors.white, BlendMode.modulate),
-                                          child: Tooltip(message:"Chest",child: Image.asset('images/BodyMap/chest.png'))
-                                      )
-                                  ),
-                                  InkWell(
-                                      onTap: (){_changeColor('shoulderL');},
-                                      child: ColorFiltered(
-                                          colorFilter: ColorFilter.mode(BodyMap.injury['shoulderL']? Colors.red:Colors.white, BlendMode.modulate),
-                                          child: Tooltip(message:"Left Shoulder",child: Image.asset('images/BodyMap/shoulderL.png'))
-                                      )
-                                  )
-                                ]
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['legL']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Left Leg",
+                                              child: Image.asset(
+                                                  'images/BodyMap/legL.png')))),
+                                ],
                               ),
                               RowSuper(
-                                innerDistance: -10,
+                                innerDistance: -1,
                                 children: [
-                                  ColumnSuper(
-                                      innerDistance: -15,
-                                      children: [
-                                        InkWell(
-                                            onTap: (){_changeColor('armR');},
-                                            child: ColorFiltered(
-                                                colorFilter: ColorFilter.mode(BodyMap.injury['armR']? Colors.red:Colors.white, BlendMode.modulate),
-                                                child: Tooltip(message:"Right Arm",child: Image.asset('images/BodyMap/armR.png'))
-                                            )
-                                        ),
-                                        InkWell(
-                                            onTap: (){_changeColor('handR');},
-                                            child: ColorFiltered(
-                                                colorFilter: ColorFilter.mode(BodyMap.injury['handR']? Colors.red:Colors.white, BlendMode.modulate),
-                                                child: Tooltip(message:"Right Hand",child: Image.asset('images/BodyMap/handR.png'))
-                                            )
-                                        )
-                                      ]
-                                  ),
                                   InkWell(
-                                      onTap: (){_changeColor('stomach');},
+                                      onTap: () {
+                                        _changeColor('footR');
+                                      },
                                       child: ColorFiltered(
-                                          colorFilter: ColorFilter.mode(BodyMap.injury['stomach']? Colors.red:Colors.white, BlendMode.modulate),
-                                          child: Tooltip(message:"Stomach",child: Image.asset('images/BodyMap/stomach.png'))
-                                      )
-                                  ),
-                                  ColumnSuper(
-                                      innerDistance: -15,
-                                      children: [
-                                        InkWell(
-                                            onTap: (){_changeColor('armL');},
-                                            child: ColorFiltered(
-                                                colorFilter: ColorFilter.mode(BodyMap.injury['armL']? Colors.red:Colors.white, BlendMode.modulate),
-                                                child: Tooltip(message:"Left Arm",child: Image.asset('images/BodyMap/armL.png'))
-                                            )
-                                        ),
-                                        InkWell(
-                                            onTap: (){_changeColor('handL');},
-                                            child: ColorFiltered(
-                                                colorFilter: ColorFilter.mode(BodyMap.injury['handL']? Colors.red:Colors.white, BlendMode.modulate),
-                                                child: Tooltip(message:"Left Hand",child: Image.asset('images/BodyMap/handL.png'))
-                                            )
-                                        )
-                                      ]
-                                  ),
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['footR']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Right Foot",
+                                              child: Image.asset(
+                                                  'images/BodyMap/footR.png')))),
+                                  InkWell(
+                                      onTap: () {
+                                        _changeColor('footL');
+                                      },
+                                      child: ColorFiltered(
+                                          colorFilter: ColorFilter.mode(
+                                              widget.injury['footL']
+                                                  ? Colors.red
+                                                  : Colors.white,
+                                              BlendMode.modulate),
+                                          child: Tooltip(
+                                              message: "Left Foot",
+                                              child: Image.asset(
+                                                  'images/BodyMap/footL.png')))),
                                 ],
                               )
                             ],
-                          ),
-                      ]),
-                      ColumnSuper(
-                        innerDistance: -28,
-                        children: [
-                          RowSuper(
-                            innerDistance: 0.5,
-                            children: [
-                              InkWell(
-                                  onTap: (){_changeColor('legR');},
-                                  child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(BodyMap.injury['legR']? Colors.red:Colors.white, BlendMode.modulate),
-                                      child: Tooltip(message:"Right Leg",child: Image.asset('images/BodyMap/legR.png'))
-                                  )
-                              ),
-                              InkWell(
-                                  onTap: (){_changeColor('legL');},
-                                  child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(BodyMap.injury['legL']? Colors.red:Colors.white, BlendMode.modulate),
-                                      child: Tooltip(message:"Left Leg",child: Image.asset('images/BodyMap/legL.png'))
-                                  )
-                              ),
-                            ],
-                          ),
-                          RowSuper(
-                            innerDistance: -1,
-                            children: [
-                              InkWell(
-                                  onTap: (){_changeColor('footR');},
-                                  child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(BodyMap.injury['footR']? Colors.red:Colors.white, BlendMode.modulate),
-                                      child: Tooltip(message:"Right Foot",child: Image.asset('images/BodyMap/footR.png'))
-                                  )
-                              ),
-                              InkWell(
-                                  onTap: (){_changeColor('footL');},
-                                  child: ColorFiltered(
-                                      colorFilter: ColorFilter.mode(BodyMap.injury['footL']? Colors.red:Colors.white, BlendMode.modulate),
-                                      child: Tooltip(message:"Left Foot",child: Image.asset('images/BodyMap/footL.png'))
-                                  )
-                              ),
-                            ],
                           )
-                        ],
-                      )
-                    ]
-                )
-              )
-          )
-      )
-    ));
+                        ]))))));
   }
 
   void setSelected(String s) {
     if (_BodyMapState != null) {
-      for (String key in BodyMap.injury.keys) {
-        BodyMap.injury[key] = false;
+      for (String key in widget.injury.keys) {
+        widget.injury[key] = false;
       }
       for (int i = 0; i < s.length; i++)
         // True  1 don't'
         // False 1 change
         // True  0 change
         // False 0 change
-        if (BodyMap.injury.values.elementAt(i) != (s[i] == "1")) {
-          _changeColor(BodyMap.injury.keys.elementAt(i));
+        if (widget.injury.values.elementAt(i) != (s[i] == "1")) {
+          _changeColor(widget.injury.keys.elementAt(i));
         }
     }
   }
-  void _changeColor(var key){
 
-    BodyMap.injury[key] = !BodyMap.injury[key];
+  void _changeColor(var key) {
+    widget.injury[key] = !widget.injury[key];
     if (mounted) {
       setState(() {});
     }
-    if ( widget.onChange != null)
-      widget.onChange?.call(BodyMap.injury[key]);
-
+    if (widget.onChange != null) widget.onChange?.call(widget.injury[key]);
   }
 }
