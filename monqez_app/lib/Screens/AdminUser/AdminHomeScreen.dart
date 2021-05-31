@@ -8,7 +8,6 @@ import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -54,7 +53,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
     if (response.statusCode == 200) {
       var parsed = jsonDecode(response.body).cast<String, dynamic>();
       applicationNumber = parsed['snapshot'];
-      complaintsNumber = parsed['snapshot'];
+      complaintsNumber = parsed['complaints'];
       setState(() {
         isLoading = false;
       });
@@ -132,11 +131,15 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                               height: 90,
                               child: CircularProfileAvatar(
                                 null,
-                                child: user.image == null ? Icon(Icons.account_circle_rounded,
-                                    size: 90, color: secondColor): Image.memory(user.image.decode()),
+                                child: user.image == null
+                                    ? Icon(Icons.account_circle_rounded,
+                                        size: 90, color: secondColor)
+                                    : Image.memory(user.image.decode()),
                                 radius: 100,
                                 backgroundColor: Colors.transparent,
-                                borderColor: user.image == null ? firstColor : secondColor,
+                                borderColor: user.image == null
+                                    ? firstColor
+                                    : secondColor,
                                 elevation: 5.0,
                                 cacheImage: true,
                                 onTap: () {

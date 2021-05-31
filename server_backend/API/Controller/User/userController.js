@@ -11,6 +11,26 @@ const tracker = require('../../Tools/debugger');
 const controllerType = "normal";
 const freeForAll = "all";
 
+app.post('/khaled', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    // console.log("*INFO", request.body["oneTimeRequest"]);
+    // response.send(200);
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            response.send(200);
+        }
+    })
+});
+
+
 app.post('/signup' , (request , response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
@@ -220,6 +240,7 @@ app.post('/check_national_ID', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
+    tracker.track(request.body["nationalId"]);
     new NormalUser().checkOneTimeRequest(request.body["nationalId"])
         .then( function (){
             tracker.track("request finished without errors");
@@ -438,6 +459,29 @@ app.post('/complaint', function (request, response){
                 .catch( function (error){
                     tracker.error(error);
                     response.status(503).send(error);
+                } );
+        }
+    })
+});
+
+app.get('/get_instructions', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            User.getInstructions()
+                .then( (userJson) => {
+                    response.send(userJson);
+                } )
+                .catch( (error) => {
+                    console.log(error);
+                    response.send(error);
                 } );
         }
     })

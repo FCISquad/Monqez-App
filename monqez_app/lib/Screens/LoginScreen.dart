@@ -536,7 +536,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                               .signInAnonymously();
                                       var user = userCredential.user;
                                       String uid = user.uid;
-                                      String token = user.refreshToken;
+                                      String token = await FirebaseAuth
+                                          .instance.currentUser
+                                          .getIdToken();
+
+                                      print("HEEEEE" + token);
                                       bool valid = await sendID(token);
                                       if (valid) {
                                         navigateReplacement(
@@ -571,7 +575,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
-          'oneTimeRequest': "True"
+          'oneTimeRequest': "true"
         },
         body: jsonEncode(
             <String, String>{"nationalId": _nationalIDController.text}));

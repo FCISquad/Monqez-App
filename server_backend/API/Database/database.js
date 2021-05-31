@@ -84,12 +84,23 @@ class Database {
     }
 
     getState() { //to be continued
+        async function getComplaintsSize() {
+            return await admin.database().ref('complaints/').once("value")
+                .then( function (snapShot){
+                    return Object.keys(snapShot.val()).length;
+                } )
+                .catch( function (){
+                    return 0;
+                } );
+        }
+
         return new Promise(((resolve, reject) => {
             admin.database().ref('applicationQueue/')
                 .once("value")
-                .then((snapshot) => {
+                .then( async (snapshot) => {
                     resolve({
-                        snapshot: snapshot.numChildren()
+                        "snapshot": snapshot.numChildren(),
+                        "complaints": await getComplaintsSize()
                     });
                 })
                 .catch((error) => {
@@ -103,6 +114,9 @@ class Database {
             return await admin.database().ref('callsQueue/').once("value")
                 .then( function (snapShot){
                     return Object.keys(snapShot.val()).length;
+                } )
+                .catch( function (){
+                    return 0;
                 } );
         }
 
@@ -232,13 +246,18 @@ class Database {
 
     banUser(userId){
         return new Promise( (resolve, reject) => {
-            admin.database().ref('user/' + userId).update({"disable": "true"})
+            admin.database().ref('user/' + userId).transaction( function (snapShot){
+                if (snapShot !== null){
+                    snapShot["disable"] = "true";
+                }
+                return snapShot;
+            } )
                 .then( function (){
                     resolve();
                 } )
                 .catch( function (error){
                     reject(error);
-                } )
+                } );
         } );
     }
 
@@ -673,21 +692,35 @@ class Database {
 
     setRequestRate(uid, json){
         return new Promise( (resolve, reject) => {
-            admin.database().ref('requests/' + uid + '/' + json["time"]).once('value')
-                .then(function(snapshot) {
-                    snapshot.forEach(function(childSnapshot) {
-                        admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
-                            .update({
-                                "rate" : json["rate"]
-                            })
-                            .then( function () {
-                                resolve();
-                            } )
-                            .catch( function (error){
-                                reject(error);
-                            } )
-                    });
-                });
+
+            console.log("*INFO", uid);
+            console.log("*INFO", json["time"]);
+            console.log("*INFO", json);
+
+            admin.database().ref('requests/' + uid + '/' + json["time"])
+                .update({"rate" : json["rate"]})
+                .then( function () {
+                    resolve();
+                } )
+                .catch( function (error){
+                    reject(error);
+                } );
+
+            // admin.database().ref('requests/' + uid + '/' + json["time"]).once('value')
+            //     .then(function(snapshot) {
+            //         snapshot.forEach(function(childSnapshot) {
+            //             admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
+            //                 .update({
+            //                     "rate" : json["rate"]
+            //                 })
+            //                 .then( function () {
+            //                     resolve();
+            //                 } )
+            //                 .catch( function (error){
+            //                     reject(error);
+            //                 } )
+            //         });
+            //     });
         } );
     }
 
@@ -696,13 +729,13 @@ class Database {
             admin.database().ref('monqez/' + json["uid"]).transaction(function(current_value){
                 if (current_value !== null) {
                     current_value["sum"] = current_value["sum"] + json["rate"];
-                    current_value["total"] = current_value["sum"] + 1;
-                    return current_value;
+                    current_value["total"] = current_value["total"] + 1;
                 }
+                return current_value;
             })
                 .then(() => {
-                resolve(allDecline);
-            })
+                    resolve();
+                 })
                 .catch((error) => {reject(error)});
         } );
     }
@@ -789,6 +822,20 @@ class Database {
                 } )
         } );
     }
+
+    getInstructions() {
+        return new Promise(((resolve, reject) => {
+            admin.database().ref('injuries/')
+                .once("value", function (snapshot){
+                    resolve(JSON.stringify(snapshot));
+                })
+                .then((userInfo) => {})
+                .catch((error) => {
+                    reject(error);
+                })
+        }));
+    }
+
 
     insertDummy(monqezId, userJson){
         return new Promise( (resolve, reject) => {

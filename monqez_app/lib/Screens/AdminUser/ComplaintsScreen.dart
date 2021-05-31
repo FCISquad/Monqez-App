@@ -20,11 +20,11 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
     int counter = 1;
 
     complaints.forEach((complaint) {
-      var singleComplaint = complaints as Map<String, dynamic>;
-      String nuid = singleComplaint['nuid'];
-      String helperUid = singleComplaint['huid'];
-      String name = singleComplaint['name'];
-      String date = singleComplaint['date'];
+      //var singleComplaint = complaints as Map<String, dynamic>;
+      String nuid = complaint['nuid'];
+      String helperUid = complaint['huid'];
+      String name = complaint['name'];
+      String date = complaint['date'];
       complaintsList.add(ListTile(
           title: Text('Complaint from $name'),
           subtitle: Text("On $date"),
@@ -39,7 +39,7 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
     isLoading = true;
     String token = AdminHomeScreenState.token;
     final http.Response response = await http.post(
-      Uri.parse('$url/admin/get_all_complaints/'),
+      Uri.parse('$url/admin/getComplaints/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',

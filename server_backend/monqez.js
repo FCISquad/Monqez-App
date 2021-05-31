@@ -18,6 +18,7 @@ app.use(session({
 app.use(bodyParser.urlencoded({parameterLimit: 100000,limit: '50mb', extended : true}));
 app.use(bodyParser.json({limit: '50mb'}));
 
+
 const userRoute = require('./API/Controller/User/userController');
 app.use('/user' , userRoute);
 

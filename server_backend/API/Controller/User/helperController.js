@@ -76,7 +76,7 @@ app.post('/decline_request', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
-    helper.verifyToken(request , (monqezId) => {
+    helper.verifyToken(request, controllerType, (monqezId) => {
         if ( monqezId === null ){
             // Forbidden
             tracker.error("Auth error, null userId");
@@ -246,7 +246,8 @@ app.get('/get_requests', function (request, response){
 
                         let json = {
                             "request" : requestJson,
-                            "user": userJson
+                            "user": userJson,
+                            "time": time
                         }
 
                         requestsPool.push(json);
