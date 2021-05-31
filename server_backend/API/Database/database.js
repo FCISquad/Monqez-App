@@ -1,48 +1,64 @@
-
-
 const admin = require('firebase-admin');
 const mailer = require('../Tools/nodeMailer');
 
 class Database {
-    createUser(userObject) {
-        return new Promise((resolve, reject) => {
-            admin.database().ref('user/' + userObject.userID).set({
-                name: userObject.userName,
-                national_id: userObject.userNationalID,
-                phone: userObject.userPhoneNumber,
-                gender: userObject.userGender,
-                birthdate: userObject.userDOB,
-                country: userObject.userAddress.country,
-                city: userObject.userAddress.city,
-                street: userObject.userAddress.street,
-                buildNumber: userObject.userAddress.buildNumber,
-                chronicDiseases: "",
-                type: "0"
-            })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
+    checkNationalId(nationalId){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('oneTimeRequest/' + nationalId).once("value")
+                .then( function (snapshot){
+                    if (snapshot.val() === null){
+                        admin.database().ref('oneTimeRequest/' + nationalId).set("").then(()=>{});
+                        resolve();
+                    }
+                    else{
+                        reject('free requests is used');
+                    }
+                } )
+                .catch( function (error){
                     reject(error);
-                });
+                } )
+        } );
+    }
+
+    createUser(userId, userObject) {
+        return new Promise((resolve, reject) => {
+            admin.database().ref('user/' + userId).update({
+                "name": userObject["name"],
+                "national_id": userObject["national_id"],
+                "phone": userObject["phone_number"],
+                "gender": userObject["gender"],
+                "birthdate": userObject["dob"],
+                "country": userObject["country"],
+                "city": userObject["city"],
+                "street": userObject["street"],
+                "buildNumber": userObject["buildNumber"],
+                "chronicDiseases": userObject["chronicDiseases"],
+                "type": "0"
+            })
+                .then(()=>{resolve();})
+                .catch((error)=>{reject(error);});
         });
     }
 
-    changeToMonqez(userObject, subDate) {
-        admin.database().ref('monqez/' + userObject.userID).set({
-            certificate: userObject.certificate,
-            certificateName: userObject.certificateName
-        }).then(() => {
-        });
-        admin.database().ref('user/' + userObject.userID).update({
-            "type": "1",
-            "disable": "true"
-        }).then(() => {
-        });
-        admin.database().ref('applicationQueue/' + userObject.userID).set({
-            "date": subDate
-        }).then(() => {
-        });
+    changeToMonqez(userId, userObject) {
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('monqez/' + userId).update({
+                certificate: userObject["certificate"],
+                certificateName: userObject["certificateName"],
+                sum: 0,
+                total: 0
+            }).catch((error) => {reject(error);});
+
+            admin.database().ref('user/' + userId).update({
+                "type": "1",
+                "disable": "true"
+            }).catch((error) => {reject(error);});
+            admin.database().ref('applicationQueue/' + userId).update({
+                "date": userObject["submissionDate"]
+            }).catch((error) => {reject(error);});
+            resolve();
+        } );
+
     }
 
     getApplicationQueue(callback) {
@@ -83,18 +99,50 @@ class Database {
     }
 
     getMonqezState(userID) { //to be continued
+        async function getCallQueueSize() {
+            return await admin.database().ref('callsQueue/').once("value")
+                .then( function (snapShot){
+                    return Object.keys(snapShot.val()).length;
+                } );
+        }
+
         return new Promise((resolve, reject) => {
             admin.database().ref('monqez/' + userID)
                 .once("value")
-                .then((userInfo) => {
+                .then( async function (userInfo) {
+                    let callNumber = await getCallQueueSize();
+
                     resolve({
-                        status: userInfo.val().status
+                        "status": userInfo.val()["status"],
+                        "sum": userInfo.val()["sum"],
+                        "total": userInfo.val()["total"],
+                        "calls": callNumber
                     })
                 })
                 .catch((error) => {
                     reject(error);
                 })
         });
+    }
+
+    getUserType(userID){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('user/' + userID).once("value")
+                .then( function(snapShot){
+                    if (snapShot.val()["type"] === "0") {
+                        resolve("normal");
+                    }
+                    else if (snapShot.val()["type"] === "1"){
+                        resolve("helper");
+                    }
+                    else{
+                        resolve("admin");
+                    }
+                } )
+                .catch( function(error){
+                    reject(error);
+                } )
+        } );
     }
 
     getUser(userID) {
@@ -109,16 +157,16 @@ class Database {
                             firstLogin: "true"
                         });
                     } else {
-                        if (userInfo.val().type === "2") {
+                        if (userInfo.val()["type"] === "2") {
                             resolve({
-                                type: userInfo.val().type,
-                                isDisabled: userInfo.val().disable,
-                                firstLogin: userInfo.val().firstLogin
+                                type: userInfo.val()["type"],
+                                isDisabled: userInfo.val()["disable"],
+                                firstLogin: userInfo.val()["firstLogin"]
                             });
                         } else {
                             resolve({
-                                type: userInfo.val().type,
-                                isDisabled: userInfo.val().disable,
+                                type: userInfo.val()["type"],
+                                isDisabled: userInfo.val()["disable"],
                                 firstLogin: "false"
                             });
                         }
@@ -151,16 +199,17 @@ class Database {
                 .once("value")
                 .then((userInfo) => {
                     resolve({
-                        name: userInfo.val().name,
-                        national_id: userInfo.val().national_id,
-                        phone: userInfo.val().phone,
-                        birthdate: userInfo.val().birthdate,
-                        country: userInfo.val().country,
-                        city: userInfo.val().city,
-                        street: userInfo.val().street,
-                        buildNumber: userInfo.val().buildNumber,
-                        gender: userInfo.val().gender,
-                        image: userInfo.val().image
+                        "name": userInfo.val()["name"],
+                        "national_id": userInfo.val()["national_id"],
+                        "phone": userInfo.val()["phone"],
+                        "birthdate": userInfo.val()["birthdate"],
+                        "country": userInfo.val()["country"],
+                        "city": userInfo.val()["city"],
+                        "street": userInfo.val()["street"],
+                        "buildNumber": userInfo.val()["buildNumber"],
+                        "gender": userInfo.val()["gender"],
+                        "image": userInfo.val()["image"],
+                        "chronicDiseases": userInfo.val()["chronicDiseases"]
                     });
                 })
                 .catch((error) => {
@@ -179,6 +228,18 @@ class Database {
                     reject(error);
                 });
         });
+    }
+
+    banUser(userId){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('user/' + userId).update({"disable": "true"})
+                .then( function (){
+                    resolve();
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
     }
 
     addAdmin(userID, databaseJson) {
@@ -222,19 +283,20 @@ class Database {
         });
     }
 
-    editAccount(userID, userInfo) {
+    editAccount(userID, userObject) {
         return new Promise((resolve, reject) => {
             admin.database().ref('user/' + userID).update({
-                name: userInfo.name,
-                national_id: userInfo.national_id,
-                phone: userInfo.phone,
-                birthdate: userInfo.birthdate,
-                country: userInfo.country,
-                city: userInfo.city,
-                street: userInfo.street,
-                buildNumber: userInfo.buildNumber,
-                gender: userInfo.gender,
-                image: userInfo.image
+                "name": userObject["name"],
+                "national_id": userObject["national_id"],
+                "phone": userObject["phone_number"],
+                "gender": userObject["gender"],
+                "birthdate": userObject["dob"],
+                "country": userObject["country"],
+                "city": userObject["city"],
+                "street": userObject["street"],
+                "buildNumber": userObject["buildNumber"],
+                "image": userObject["image"],
+                "chronicDiseases": userObject["chronicDiseases"]
             }).then(() => {
                 resolve();
             }).catch((error) => {
@@ -288,10 +350,10 @@ class Database {
             });
     }
 
-    updateLocation(userID, longitude, latitude) {
+    updateLocation(userID, userJson) {
         admin.database().ref('activeMonqez/' + userID).update({
-            "longitude": longitude,
-            "latitude": latitude
+            "longitude": userJson["longitude"],
+            "latitude": userJson["latitude"]
         }).then(() => {
         });
     }
@@ -357,14 +419,12 @@ class Database {
     }
 
     insertRequestAdditional(uid, request) {
-        console.log(request);
         admin.database().ref('requests/' + uid).limitToLast(1).once('value')
             .then(function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
                     admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
                     .update(request)
                     .then( () => {} ) ;
-                    //console.log(childSnapshot.key);
                 });
             });
     }
@@ -372,6 +432,16 @@ class Database {
     getRequests(userID){
         return new Promise((resolve, reject) => {
             admin.database().ref('requests/' + userID).once("value", function (snapshot) {
+                resolve(snapshot.val());
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
+
+    getRequestsHelper(helperId){
+        return new Promise((resolve, reject) => {
+            admin.database().ref('monqezRequests/' + helperId).once("value", function (snapshot) {
                 resolve(snapshot.val());
             }).catch((error) => {
                 reject(error);
@@ -416,12 +486,12 @@ class Database {
 
     }
 
-    requestAccept(monqezId, userJson){
+    requestAccept(monqezId, monqezName, userJson){
         return new Promise( (resolve, reject) => {
             admin.database().ref('requests/' + userJson["uid"]).limitToLast(1).once('value')
                 .then(function(snapshot) {
                     snapshot.forEach(function(childSnapshot) {
-                        console.log('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted");
+                        // console.log('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted");
                         admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
                             .transaction(function(current_value){
                                 if ( current_value !== null ){
@@ -437,6 +507,14 @@ class Database {
                                             current_value["counter"]++;
                                             current_value['uid_' + current_value["counter"]] = monqezId;
                                             current_value["status"] = "Accepted";
+                                            current_value["name"] = monqezName;
+
+                                            admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
+                                                .set(childSnapshot.key)
+                                                .then(() => {resolve();})
+                                                .catch( function (error){
+                                                    reject(error);
+                                                } );
                                         }
                                     }
                                 }
@@ -593,29 +671,136 @@ class Database {
         } );
     }
 
-    saveInstructions(adminID, instructionJson) {
-        return new Promise((resolve, reject) => {
-            admin.database().ref('injuries').update({
-                injuries: instructionJson,
-                edited_by: adminID
-            }).then(() => {
-                resolve();
-            }).catch((error) => {
-                reject(error);
-            });
-        });
+    setRequestRate(uid, json){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + uid + '/' + json["time"]).once('value')
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        admin.database().ref('requests/' + uid + '/' + childSnapshot.key)
+                            .update({
+                                "rate" : json["rate"]
+                            })
+                            .then( function () {
+                                resolve();
+                            } )
+                            .catch( function (error){
+                                reject(error);
+                            } )
+                    });
+                });
+        } );
     }
-    getInstructions() {
-        return new Promise(((resolve, reject) => {
-            admin.database().ref('injuries/')
-                .once("value", function (snapshot){
-                    resolve(JSON.stringify(snapshot));
-                })
-                .then((userInfo) => {})
-                .catch((error) => {
+
+    setMonqezRate(json){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('monqez/' + json["uid"]).transaction(function(current_value){
+                if (current_value !== null) {
+                    current_value["sum"] = current_value["sum"] + json["rate"];
+                    current_value["total"] = current_value["sum"] + 1;
+                    return current_value;
+                }
+            })
+                .then(() => {
+                resolve(allDecline);
+            })
+                .catch((error) => {reject(error)});
+        } );
+    }
+
+    addComplaint(userId, json){
+        return new Promise( (resolve, reject) => {
+
+            let uid  = json["uid"];
+            delete json["uid"];
+
+            let time = json["time"];
+            delete json["time"];
+
+            admin.database().ref('complaints/' + userId + '/' + uid + '/' + time).set(json)
+                .then( function (){
+                    resolve();
+                } )
+                .catch( function (error){
                     reject(error);
-                })
-        }));
+                } )
+        } );
+    }
+
+    async getRequestBody(normalUserId, time){
+        return await admin.database().ref('requests/' + normalUserId + '/' + time).once("value")
+            .then( function (snapShot){
+                return snapShot.val();
+            } )
+    }
+    async getuser(userId){
+        return await admin.database().ref('user/' + userId).once("value")
+            .then( function (snapShot){
+                return snapShot.val();
+            } )
+    }
+
+    getAllComplaints(){
+        async function getNormalName(normalUid) {
+            return await admin.database().ref('user/' + normalUid).once("value")
+                .then( function (snapShot){
+                    return snapShot.val()["name"];
+                } );
+        }
+
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('complaints').once("value")
+                .then( async function (snapShot){
+                    let complaints = [];
+
+                    for (let normalUid in snapShot.val()){
+                        let name = await getNormalName(normalUid);
+
+                        for (let helperUid in snapShot.val()[normalUid]){
+                            for (let time in snapShot.val()[normalUid][helperUid]){
+
+                                let currentComp = {
+                                    "nuid": normalUid,
+                                    "huid": helperUid,
+                                    "date": time,
+                                    "name": name
+                                };
+
+                                complaints.push(currentComp);
+                            }
+                        }
+                    }
+
+                    resolve(complaints);
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
+    }
+
+    getComplaint(compJson){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('complaints/' + compJson["nuid"] + '/' + compJson["huid"] + '/' + compJson["date"]).once("value")
+                .then( function (complaint){
+                    resolve(complaint.val());
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
+    }
+
+    insertDummy(monqezId, userJson){
+        return new Promise( (resolve, reject) => {
+            console.log("*INFO", userJson["time"]);
+
+            admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
+                .set(userJson["time"])
+                .then(() => {resolve()})
+                .catch( function (error){
+                    reject(error);
+                } );
+        } );
     }
 
 }

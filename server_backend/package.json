@@ -18,9 +18,15 @@
     "haversine-geolocation": "^1.5.0",
     "localtunnel": "^2.0.1",
     "nodemailer": "^6.4.17",
+    "request": "^2.88.2",
     "spherical-geometry-js": "^2.0.0"
   },
   "engines": {
     "node": "14.15.0"
+  },
+  "devDependencies": {
+    "config": "^3.3.6",
+    "firebase-service": "^5.0.3",
+    "request-promise": "^4.2.6"
   }
 }
