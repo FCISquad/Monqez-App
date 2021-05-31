@@ -6,198 +6,297 @@ const helper = require('../../Tools/RequestFunctions');
 const NormalUser = require("../../Model/User/normalUser");
 const HelperUser = require("../../Model/User/helperUser");
 const User = require("../../Model/User/user");
+const tracker = require('../../Tools/debugger');
+
+const controllerType = "normal";
+const freeForAll = "all";
 
 app.post('/signup' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, freeForAll , (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
-            request.body.userID = userId;
-            let user = new NormalUser(request.body);
-            user.signUp();
-            response.sendStatus(200);
+            tracker.track("good Auth - start process");
+
+            new NormalUser().signUp(userId, request.body)
+                .then( function (){
+                    tracker.track("request finished without errors");
+                    response.sendStatus(200);
+                } )
+                .then( function(error){
+                    tracker.error(error);
+                    response.status(400).send(error);
+                } );
         }
     });
+
 });
 
 app.post('/apply' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, freeForAll , (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
             /**
              discuss error here , see => submitApplication => user.submitApplication();
              */
-            request.body.userID = userId;
-            let user = new HelperUser(request.body);
-            user.submitApplication(request.body.submissionDate);
-            response.sendStatus(200);
+
+            tracker.track("good Auth - start process");
+            new HelperUser(request.body).submitApplication(userId, request.body)
+                .then( function (){
+                    tracker.track("request finished without errors");
+                    response.sendStatus(200);
+                } )
+                .catch( function (error){
+                    tracker.error(error);
+                    response.status(400).send(error);
+                } )
         }
     });
 });
 
 app.get( '/get' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, freeForAll, (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
             /**
              discuss error here , see => submitApplication => user.submitApplication();
              */
-            request.body.userID = userId;
+            tracker.track("good Auth - start process");
             User.getUser(userId)
                 .then( (userJson) => {
+                    tracker.track("request finished without errors");
                     response.send(userJson);
                 } )
                 .catch( (error) => {
-                    console.log(error);
-                    response.send(error);
+                    tracker.error(error);
+                    response.status(400).send(error);
                 } );
         }
     });
+
 } );
 
 app.get( '/getprofile' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, freeForAll ,(userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
+            tracker.track("good Auth - start process");
+
             User.getProfile(userId)
                 .then( (userJson) => {
+                    tracker.track("request finished without errors");
                     response.send(userJson);
                 } )
                 .catch( (error) => {
-                    console.log(error);
-                    response.send(error);
+                    tracker.error(error);
+                    response.status(400).send(error);
                 } );
         }
     });
 } );
 
 app.post( '/edit' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, freeForAll, (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
+            tracker.track("good Auth - start process");
             User.editAccount(userId, request.body)
                 .then( (userJson) => {
+                    tracker.track("request finished without errors");
                     response.send(userJson);
                 } )
                 .catch( (error) => {
-                    console.log(error);
+                    tracker.error(error);
                     response.send(error);
                 } );
         }
     });
+
 } );
 
+/*
+        need to discuss (delete !)
+        need to discuss (delete !)
+        need to discuss (delete !)
+        need to discuss (delete !)
+        need to discuss (delete !)
+        need to discuss (delete !)
+ */
 app.post('/update_registration_token', (request, response)=>{
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, freeForAll, (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
+            tracker.track("good Auth - start process");
             User.registrationToken(userId, request.body)
                 .then( () => {
+                    tracker.track("request finished without errors");
                     response.sendStatus(200);
                 } )
                 .catch( (error) => {
-                    console.log(error);
-                    response.send(error);
+                    tracker.error(error);
+                    response.status(400).send(error);
                 } );
         }
     });
+
+    tracker.end();
 });
 
 function requestTimeOut(userId, monqezIDs){
+    tracker.track("Time is finished - check the request state");
     new NormalUser().isTimeOut(userId).then( (acceptCount) => {
         if (acceptCount === 0){
+            tracker.track("No helper accept the request");
             for (let i = 3; i < monqezIDs.length; ++i){
                 let user = new NormalUser({});
                 user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
                     if (allDecline === true){
+                        tracker.track("all decline - call re request function");
                         re_request({"uid" : userId});
                     }
                 } )
             }
         }
+        else{
+            tracker.track("request is accepted by some helper");
+        }
     } );
 }
 
+app.post('/check_national_ID', (request, response) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    new NormalUser().checkOneTimeRequest(request.body["nationalId"])
+        .then( function (){
+            tracker.track("request finished without errors");
+            response.send(200);
+        } )
+        .catch( function (error){
+            tracker.error(error);
+            response.status(403).send(error);
+        } )
+});
+
 app.post('/request', (request, response) => {
-    helper.verifyToken(request , (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
-           let user = new NormalUser(request.body);
-           user.request(userId, request.body, true).then((monqezIDs) => {
-               response.sendStatus(200);
-               setTimeout(function (){
-                   requestTimeOut(userId, monqezIDs);
-               }, 30000);
-               //setTimeout(30000, requestTimeOut, userId, monqezIDs);
-           })
-           .catch(() => {
-               // service unavailable
-               response.sendStatus(503);
-           });
+            tracker.track("good Auth - start process");
+
+            new NormalUser().request(userId, request.body, true).then((monqezIDs) => {
+                response.sendStatus(200);
+
+                tracker.track("request is send");
+                tracker.track("start timer");
+
+                setTimeout(function (){
+                    requestTimeOut(userId, monqezIDs);
+                }, 30000);
+            })
+            .catch((error) => {
+                // service unavailable
+                tracker.error(error);
+                response.sendStatus(503);
+            });
         }
     });
+
+    tracker.end();
 })
 
 app.post('/request_information', (request, response) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
 
-    // let user = new NormalUser(request.body);
-    // user.request_additional("ehabfawzy", request.body);
-    // response.sendStatus(200);
-
-    helper.verifyToken(request , (userId) => {
+    helper.verifyToken(request, controllerType, (userId) => {
         if ( userId === null ){
             // Forbidden
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
-            let user = new NormalUser(request.body);
-            user.request_additional(userId, request.body);
+            tracker.track("good Auth - start process");
+            new NormalUser().request_additional(userId, request.body);
             response.sendStatus(200);
+            tracker.track("request finished without errors");
         }
     });
+
+    tracker.end();
 });
 
 app.post('/call', (request, response) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
 
-    // let user = new NormalUser(request.body);
-    // user.insertCall( "ehabID" , request.body).then( (channelId) => {
-    //     response.status(200).send(channelId);
-    // } );
-
-    helper.verifyToken(request, (userId) => {
+    helper.verifyToken(request, controllerType, (userId) => {
         if (userId === null){
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
-            let user = new NormalUser(request.body);
-            user.insertCall(userId , request.body).then( (channelId) => {
+            tracker.track("good Auth - start process");
+            new NormalUser().insertCall(userId , request.body).then( (channelId) => {
                 response.status(200).send(channelId);
+                tracker.track("request finished without errors");
             } );
         }
     });
+
+    requestTimeOut()
 });
 
 function re_request(userJson){
+    tracker.track("start re-request function");
     let user = new NormalUser(userJson);
     user.getLongLat(userJson["uid"]).then( (locationJson) => {
         if (locationJson["isFirst"] === true){
@@ -210,26 +309,108 @@ function re_request(userJson){
                 .catch(() => {});
         }
     } );
+    tracker.track("END re-request function");
 }
 
 app.post( '/call_out' , (request, response) => {
-    console.log(11);
-    helper.verifyToken(request, (userId) => {
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
         if (userId === null){
+            tracker.error("Auth error, null userId");
             response.sendStatus(403);
         }
         else{
-            let user = new NormalUser(request.body);
-            console.log(22);
-            user.callOut(userId).then( () => {
+            tracker.track("good Auth - start process");
+            new NormalUser().callOut(userId).then( () => {
                 response.sendStatus(200);
-                console.log(33);
-                user.logCallRequest({"uid" : userId}).then(() => {});
+
+                tracker.track("archive call");
+                new NormalUser().logCallRequest({"uid" : userId}).then(() => {});
+                tracker.track("request finished without errors");
             } );
         }
     });
+    tracker.end();
 } );
 
 module.exports.re_request = re_request;
+
+app.get('/get_requests', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new NormalUser().getRequestLog(userId)
+                .then( function (requestLog){
+                    tracker.track("request finished without errors");
+                    response.status(200).send(requestLog);
+                } )
+                .catch( function (error){
+                    tracker.error(error);
+                    response.send(503);
+                } );
+        }
+    })
+});
+
+app.post('/rate', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new NormalUser().rate(userId, request.body)
+                .then( () => {
+                    tracker.track("request finished without errors");
+                    response.send(200);
+                } )
+                .catch( function ( error) {
+                    tracker.error(error);
+                    response.status(503).send(error);
+                });
+        }
+    })
+});
+
+app.post('/complaint', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new NormalUser().addComplaint(userId, request.body)
+                .then( function (){
+                    tracker.track("request finished without errors");
+                    response.send(200);
+                } )
+                .catch( function (error){
+                    tracker.error(error);
+                    response.status(503).send(error);
+                } );
+        }
+    })
+});
+
 
 module.exports = app;

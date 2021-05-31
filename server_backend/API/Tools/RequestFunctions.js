@@ -1,4 +1,7 @@
 const admin = require('firebase-admin');
+const Database = require('../Database/database');
+const database = new Database();
+const rp = require('request-promise');
 
 module.exports = {
     RequestToJson(request){
@@ -15,14 +18,48 @@ module.exports = {
         });
     },
 
-    verifyToken(requestJson , callback){
-        const bearerHeader = requestJson.headers['authorization'];
+    // verifyToken(requestJson , callback){
+    //     const bearerHeader = requestJson.headers['authorization'];
+    //
+    //     if (bearerHeader) {
+    //         const bearer = bearerHeader.split(' ');
+    //         const bearerToken = bearer[1];
+    //         admin.auth().verifyIdToken(bearerToken).then((decodedToken) => {
+    //             callback(decodedToken.uid);
+    //         }).catch((error) => {
+    //             callback(null);
+    //         })
+    //     }
+    //     else{
+    //         callback(null);
+    //     }
+    // },
+
+    verifyToken(requestJson, controllerType , callback){
+        let bearerHeader = requestJson.headers['authorization'];
 
         if (bearerHeader) {
             const bearer = bearerHeader.split(' ');
             const bearerToken = bearer[1];
             admin.auth().verifyIdToken(bearerToken).then((decodedToken) => {
-                callback(decodedToken.uid);
+
+                if (controllerType === "all" || requestJson.hasOwnProperty("oneTimeRequest")){
+                    callback(decodedToken.uid);
+                }
+                else{
+                    database.getUserType(decodedToken.uid)
+                        .then( function (userType){
+                            if (userType === controllerType){
+                                callback(decodedToken.uid);
+                            }
+                            else{
+                                callback(null);
+                            }
+                        } )
+                        .catch( function(error){
+                            callback(null);
+                        } )
+                }
             }).catch((error) => {
                 callback(null);
             })
@@ -48,5 +85,31 @@ module.exports = {
                     console.log('Error sending message:', error);
                 });
         });
+    },
+
+    getToken(userId){
+        return new Promise( (resolve, reject) => {
+
+            admin.auth().createCustomToken(userId)
+                .then(async (customToken)=>{
+
+                    let FIREBASE_API_KEY = "AIzaSyAV1jNma63PVN33-FvVFWSN2hMqqAJH_zU";
+                    rp({
+                        url: `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=${FIREBASE_API_KEY}`,
+                        method: 'POST',
+                        body: {
+                            token: customToken,
+                            returnSecureToken: true
+                        },
+                        json: true,
+                    }).then((idToken)=>{
+                        resolve(idToken);
+                    })
+
+                })
+                .catch( (error) => {
+                    reject(error);
+                })
+        } );
     }
 }
