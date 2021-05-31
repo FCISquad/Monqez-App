@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
@@ -20,17 +22,14 @@ class HelperPreviousRequests extends StatefulWidget {
 
 class _Request {
   String date;
-  String helperName;
+  String username;
   int bodyMap;
   BodyMap avatar;
   String address;
   String forMe;
   String info;
+  String gender;
   bool isExpanded = false;
-
-  _Request(String key) {
-    this.date = key.split(" ")[0];
-  }
 
   setAvatar(int bodyMap) {
     this.bodyMap = bodyMap;
@@ -42,7 +41,7 @@ class _Request {
   }
 
   getName(int size) {
-    return helperName.substring(0, size);
+    return username.substring(0, min(username.length, size));
   }
 
   getAddress() {
@@ -58,13 +57,16 @@ class _Request {
   }
 
   isValid() {
-    return (date != null && helperName != null);
+    return (date != null && username != null);
   }
 
+  setDate(String date) {
+    this.date = date.split(" ")[0];
+  }
   show() {
     print("\n\n\n-------------------------------------------");
     print((date == null) ? "Null" : date.toString());
-    print((helperName == null) ? "Null" : helperName);
+    print((username == null) ? "Null" : username);
     print((bodyMap == null) ? "Null" : bodyMap);
     print((address == null) ? "Null" : address);
     print((forMe == null) ? "Null" : forMe);
@@ -86,7 +88,6 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
   }
 
   Widget getText(String text, double fontSize, bool isBold, Color color) {
-    print("Here: " + text);
     return AutoSizeText(text,
         textDirection: TextDirection.rtl,
         style: TextStyle(
@@ -98,46 +99,54 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
   }
 
   void _iterateJson(String jsonStr) {
+    _Request request = _Request();
     if (jsonStr.isNotEmpty) {
-      Map<String, dynamic> requestsJson = json.decode(jsonStr);
-      requestsJson.forEach((key, value) {
-        if (value["accepted"]["Counter"] != 0) {
-          _Request request = _Request(key);
-          value.forEach((requestKey, requestValue) {
-            if (requestKey == "additionalInfo") {
-              requestValue.forEach((infoKey, infoValue) {
-                if (infoKey == "forMe")
-                  request.forMe = infoValue;
-                else if (infoKey == "Address")
-                  request.address = infoValue;
+      List<dynamic> requestsJson = json.decode(jsonStr);
+      requestsJson[0].forEach((key, value) {
+        if (key == 'request') {
+          value.forEach((reqKey, reqVal){
+            if (reqKey == 'additionalInfo') {
+              reqVal.forEach((infoKey, infoVal){
+                if (infoKey == "Address")
+                  request.address = infoVal;
+                else if (infoKey == "forMe")
+                  request.forMe = infoVal;
                 else if (infoKey == "avatarBody")
-                  request.setAvatar(int.parse(infoValue));
+                  request.setAvatar(int.parse(infoVal));
                 else if (infoKey == "Additional Notes")
-                  request.info = infoValue;
+                  request.info = infoVal;
               });
             }
           });
-          value["accepted"].forEach((key2, value2) {
-            if (key2.toString().startsWith("uid"))
-              request.helperName = value2.toString();
-          });
-
-          //request.show();
-          if (request.isValid()) requests.add(request);
+        } else if (key == 'user') {
+          request.username = value['name'];
+          request.gender = value['gender'];
+        } else if (key == 'time') {
+          request.setDate(value);
         }
-      });
+
+          request.show();
+          if (request.isValid()) requests.add(request);
+      }
+      );
     }
   }
 
   getRequests() {
     // will be http request
+    _iterateJson('[{"request":{"accepted":{"counter":1,"name":"helper","status":"Accepted","uid_1":"7ebzDMMcWzUpJpBJzqYsajHFelg2"},"additionalInfo":{"Additional Notes":"juuuuuu","Address":"hggghh","avatarBody":"2184","forMe":"true"},"isFirst":true,"latitude":30.0101056,"longitude":31.1760987,"monqezCounter":1,"rejected":{"counter":0}},"user":{"birthdate":"2021-05-10 00:00:00.000","buildNumber":"b","chronicDiseases":"cgsjk","city":"vbj","country":"hh","gender":"Male","name":"normal","national_id":"56466469619499","phone":"67669400496","street":"nkn","token":"ei9g-LWmSz6MDulQx0teWG:APA91bEsD8Bo3d2IL4j165TFlM3b43WFnEJcsd3ZDgAVH7L9gbfJYxXguvhazFOqzfPCuoE5GC02jRpYw77NIqlvaf3a0H7WQnYDd8u0Fd9BqhuAdMIER8yzVQIFjBQ6zlPk1AftNBzf","type":"0"},"time":"2021-05-31 03:58:38"}]');
+    setState(() {
+      isLoaded = true;
+    });
+    return;
     String token = user.token;
     Future.delayed(Duration.zero, () async {
-      http.Response response = await http.post(
-        Uri.parse('$url/user/get_requests'),
+      http.Response response = await http.get(
+        Uri.parse('$url/helper/get_requests'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+
           'Authorization': 'Bearer $token',
         },
       );
@@ -214,13 +223,6 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
                                   color: Color.fromRGBO(249, 249, 249, 1),
                                   width: 2),
                               borderRadius: BorderRadius.circular(5),
-                              /*boxShadow: [
-                                BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 3,
-                                blurRadius: 3,
-                                offset: Offset(0, 3), // changes position of shadow
-                              )],*/
                             ),
                             child: Card(
                               margin: EdgeInsets.zero,
@@ -229,8 +231,8 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
                                 animationDuration: Duration(seconds: 1),
                                 dividerColor: Color.fromRGBO(249, 249, 249, 1),
                                 expansionCallback: (int i, bool isExpanded) {
+                                  print(requests.length);
                                   requests[i].isExpanded = !isExpanded;
-
                                   setState(() {
                                     print(i.toString() +
                                         ": " +
@@ -266,7 +268,7 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
                                                 children: [
-                                                  getText("Helper Name", 11,
+                                                  getText("User Name", 11,
                                                       false, Colors.black87),
                                                   getText(req.getName(10), 11,
                                                       true, Colors.black87),
@@ -421,47 +423,8 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
                                                   SizedBox(
                                                     width: 8,
                                                   ),
-                                                  getText(req.getAddress(), 11,
+                                                  getText(req.gender, 11,
                                                       true, Colors.black)
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            height: 4,
-                                          ),
-                                          Visibility(
-                                            visible: req.forMe != null,
-                                            child: Align(
-                                              alignment: Alignment.centerLeft,
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Container(
-                                                    height: 25,
-                                                    width: 115,
-                                                    decoration: BoxDecoration(
-                                                      color: Colors.deepOrange,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20.0),
-                                                    ),
-                                                    child: Center(
-                                                      child: getText(
-                                                          req.getForMe() ==
-                                                                  'true'
-                                                              ? 'For You'
-                                                              : 'For another one',
-                                                          11,
-                                                          true,
-                                                          Colors.black),
-                                                    ),
-                                                  ),
                                                 ],
                                               ),
                                             ),

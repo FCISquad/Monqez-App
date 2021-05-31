@@ -6,7 +6,9 @@ import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
+import 'package:rating_dialog/rating_dialog.dart';
 
+import '../rateDialog.dart';
 import 'BodyMap.dart';
 
 // ignore: must_be_immutable
@@ -37,24 +39,29 @@ class _Request {
     this.bodyMap = bodyMap;
     avatar = BodyMap.init(bodyMap, 150);
   }
-  getAvatar(){
+
+  getAvatar() {
     return (avatar == null) ? BodyMap.init(0, 150) : avatar;
   }
+
   getName(int size) {
     return helperName.substring(0, size);
   }
-  getAddress(){
+
+  getAddress() {
     return address == null ? "" : address;
   }
-  getForMe(){
+
+  getForMe() {
     return forMe == null ? "" : forMe;
   }
+
   getInfo() {
     return info == null ? "" : info;
   }
+
   isValid() {
-    return (date != null &&
-        helperName != null);
+    return (date != null && helperName != null);
   }
 
   show() {
@@ -93,6 +100,197 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         maxLines: 1);
   }
 
+  Widget _getText(
+      String text, double fontSize, Color color, FontWeight fontWeight) {
+    return AutoSizeText(
+      text,
+      textDirection: TextDirection.ltr,
+      style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontFamily: 'Cairo',
+          fontWeight: fontWeight),
+    );
+  }
+
+  Widget _showMaterialDialog() {
+    double width = MediaQuery.of(context).size.width / 100;
+    double height =
+        (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
+            100;
+    showDialog(
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Dialog(
+              insetPadding: EdgeInsets.all(10),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)), //this right here
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Container(
+                    height: height * 65,
+                    width: width * 80,
+                    child: Column(
+                      //mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Container(
+                            height: 7.5 * height,
+                            width: 60 * width,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(237, 237, 237, 1),
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'images/users.png',
+                                ),
+                                SizedBox(
+                                  width: 2.5 * width,
+                                ),
+                                _getText("Make a complaint", 18, Colors.black,
+                                    FontWeight.w600),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: height * 2),
+                        Container(
+                          width: 60 * width,
+                          height: 50 * height,
+                          child: Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Column(
+                                    children: [
+                                      Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: _getText("Subject", 16,
+                                              Colors.black, FontWeight.w600)),
+                                      TextField(
+                                          //autofocus: true,
+                                          decoration: InputDecoration(
+                                              hintText: "Subject",
+                                              hintStyle: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 10,
+                                                fontFamily: 'Cairo',
+                                                fontWeight: FontWeight.w300,
+                                              ),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color:
+                                                              Colors.black)))),
+                                      SizedBox(
+                                        height: height * 2,
+                                      ),
+                                      Align(
+                                          alignment: Alignment.topLeft,
+                                          child: _getText("Message Details", 16,
+                                              Colors.black, FontWeight.w600)),
+                                      SizedBox(height: 2 * height),
+                                      Container(
+                                          height: height * 17,
+                                          width: width * 80,
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(5)),
+                                              color: Color.fromRGBO(
+                                                  237, 237, 237, 1),
+                                              shape: BoxShape.rectangle,
+                                              border: new Border.all(
+                                                  color: Colors.black,
+                                                  width: 0.5)),
+                                          child: TextField(
+                                              decoration:
+                                                  new InputDecoration.collapsed(
+                                                      hintText:
+                                                          ''))), //.horizontal
+                                      SizedBox(
+                                        height: height * 5,
+                                      ),
+                                      Container(
+                                          height: 5 * height,
+                                          width: 40 * width,
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(50.0),
+                                              color: Colors.deepOrange),
+                                          // ignore: deprecated_member_use
+                                          child: FlatButton(
+                                            color: Colors.transparent,
+                                            splashColor: Colors.black26,
+                                            onPressed: () {
+                                              print('done');
+                                            },
+                                            child: _getText('Submit', 16,
+                                                Colors.white, FontWeight.w600),
+                                          ))
+                                    ],
+                                  ))),
+                        )
+                      ],
+                    ),
+                  )),
+            );
+          });
+        });
+  }
+
+  void buildRatingScreen() {
+    showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          backgroundColor: Colors.transparent,
+                insetPadding: EdgeInsets.all(0), //this right here
+                child: Container(
+                  width: 450,
+                  height: 500,
+                  child: RatingDialog(
+                    ratingColor: Colors.amber,
+                    title: 'Rate your monqez',
+                    message: 'Rating your monqez and tell us what you think.'
+                        ' Add more description here if you want.',
+                    submitButton: 'Submit',
+                    onCancelled: () => print('cancelled'),
+                    onSubmitted: (response) {
+                      _rateRequest(response);
+                    },
+                    image: null,
+                  ),
+                ))
+    );
+  }
+
+  Future<void> _rateRequest(RatingDialogResponse dialogResponse) async {
+    String token = user.token;
+
+    final http.Response response = await http.post(
+      Uri.parse('$url/helper/rate_request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(<String, int>{
+        'rate': dialogResponse.rating,
+      }),
+    );
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else {
+      makeToast('Failed to submit rating.');
+    }
+  }
+
   void _iterateJson(String jsonStr) {
     Map<String, dynamic> requestsJson = json.decode(jsonStr);
     requestsJson.forEach((key, value) {
@@ -107,8 +305,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                 request.address = infoValue;
               else if (infoKey == "avatarBody")
                 request.setAvatar(int.parse(infoValue));
-              else if (infoKey == "Additional Notes")
-                request.info = infoValue;
+              else if (infoKey == "Additional Notes") request.info = infoValue;
             });
           }
         });
@@ -127,7 +324,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     // will be http request
     String token = user.token;
     Future.delayed(Duration.zero, () async {
-      http.Response response = await http.post(
+      http.Response response = await http.get(
         Uri.parse('$url/user/get_requests'),
         headers: <String, String>{
           'Content-Type': 'application/json',
@@ -153,11 +350,6 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     double height =
         (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
             100;
-    if (width > height) {
-      double temp = width;
-      width = height;
-      height = temp;
-    }
 
     if (!isLoaded) {
       return Scaffold(
@@ -273,9 +465,12 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   children: [
-                                                    getText("Address", 11, false,
-                                                        Colors.black87),
-                                                    getText(req.getAddress(), 11, true,
+                                                    getText("Address", 11,
+                                                        false, Colors.black87),
+                                                    getText(
+                                                        req.getAddress(),
+                                                        11,
+                                                        true,
                                                         Colors.black87),
                                                   ]),
                                             ),
@@ -286,18 +481,27 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                     body: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: [
-                                          SizedBox(height: 150, child: req.getAvatar()),
-                                          SizedBox(height: 4,),
+                                          SizedBox(
+                                              height: 150,
+                                              child: req.getAvatar()),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
                                           Visibility(
                                             visible: req.info != null,
                                             child: Align(
                                               alignment: Alignment.centerLeft,
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Container(
@@ -305,95 +509,142 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                                     width: 115,
                                                     decoration: BoxDecoration(
                                                       color: Colors.deepOrange,
-                                                      borderRadius: BorderRadius.circular(20.0),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
                                                     ),
-                                                    child:Center(
-                                                      child: getText('Additional Notes', 11, true,
+                                                    child: Center(
+                                                      child: getText(
+                                                          'Additional Notes',
+                                                          11,
+                                                          true,
                                                           Colors.black),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 8,),
-                                                  getText(req.getInfo(), 11, true, Colors.black)
+                                                  SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  getText(req.getInfo(), 11,
+                                                      true, Colors.black)
                                                 ],
                                               ),
                                             ),
                                           ),
                                           //SizedBox(height: 4,),
-                                          SizedBox(height: 4,),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
                                           Visibility(
                                             visible: req.address != null,
                                             child: Align(
                                               alignment: Alignment.centerLeft,
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Container(
-                                                    height: 25 ,
+                                                    height: 25,
                                                     width: 115,
                                                     decoration: BoxDecoration(
                                                       color: Colors.deepOrange,
-                                                      borderRadius: BorderRadius.circular(20.0),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
                                                     ),
-                                                    child:Center(
-                                                      child: getText('Injury Type', 11, true,
+                                                    child: Center(
+                                                      child: getText(
+                                                          'Injury Type',
+                                                          11,
+                                                          true,
                                                           Colors.black),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 8,),
-                                                  getText(req.getAddress(), 11, true, Colors.black)
+                                                  SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  getText(req.getAddress(), 11,
+                                                      true, Colors.black)
                                                 ],
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 4,) ,
+                                          SizedBox(
+                                            height: 4,
+                                          ),
                                           Visibility(
                                             visible: req.address != null,
                                             child: Align(
                                               alignment: Alignment.centerLeft,
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Container(
-                                                    height: 25 ,
+                                                    height: 25,
                                                     width: 115,
                                                     decoration: BoxDecoration(
                                                       color: Colors.deepOrange,
-                                                      borderRadius: BorderRadius.circular(20.0),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
                                                     ),
-                                                    child:Center(
-                                                      child: getText('Gender', 11, true,
+                                                    child: Center(
+                                                      child: getText(
+                                                          'Gender',
+                                                          11,
+                                                          true,
                                                           Colors.black),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 8,),
-                                                  getText(req.getAddress(), 11, true, Colors.black)
+                                                  SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  getText(req.getAddress(), 11,
+                                                      true, Colors.black)
                                                 ],
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 4,),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
                                           Visibility(
                                             visible: req.forMe != null,
                                             child: Align(
                                               alignment: Alignment.centerLeft,
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Container(
-                                                    height: 25 ,
+                                                    height: 25,
                                                     width: 115,
                                                     decoration: BoxDecoration(
                                                       color: Colors.deepOrange,
-                                                      borderRadius: BorderRadius.circular(20.0),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20.0),
                                                     ),
-                                                    child:Center(
-                                                      child: getText(req.getForMe() == 'true' ? 'For You' : 'For another one', 11, true,
+                                                    child: Center(
+                                                      child: getText(
+                                                          req.getForMe() ==
+                                                                  'true'
+                                                              ? 'For You'
+                                                              : 'For another one',
+                                                          11,
+                                                          true,
                                                           Colors.black),
                                                     ),
                                                   ),
@@ -401,6 +652,54 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                               ),
                                             ),
                                           ),
+                                          SizedBox(
+                                            height: 4,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Container(
+                                                width: 110,
+                                                // ignore: deprecated_member_use
+                                                child: RaisedButton(
+                                                  onPressed: () {
+                                                    _showMaterialDialog();
+                                                  },
+                                                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                                                  color: firstColor,
+                                                  child: Text(
+                                                    'Complain',
+                                                    style: TextStyle(
+                                                      color: Colors.black87,
+                                                      letterSpacing: 1,
+                                                      fontSize: 16.0,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                width: 110,
+                                                // ignore: deprecated_member_use
+                                                child: RaisedButton(
+                                                  onPressed: () {
+                                                    buildRatingScreen();
+                                                  },
+                                                  color: firstColor,
+                                                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                                                  child: Text(
+                                                    'Rate',
+                                                    style: TextStyle(
+                                                      color: Colors.black87,
+                                                      letterSpacing: 1,
+                                                      fontSize: 16.0,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                          )
                                         ],
                                       ),
                                     ),

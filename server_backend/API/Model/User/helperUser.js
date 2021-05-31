@@ -5,34 +5,21 @@ const helper = require('../../Tools/RequestFunctions');
 class HelperUser extends User{
     constructor(userJson) {
         super(userJson);
-        this.rates = [];
-        this.longitude = userJson.longitude;
-        this.latitude  = userJson.latitude;
-
-        this.certificate = userJson.certificate;
-        this.certificateName = userJson.certificateName
-    }
-    setIsApproval(isApproval){
-        this.isApproval = isApproval;
-    }
-    setIsBanend(isBanned){
-        this.isBanned = isBanned;
-    }
-    setLongitude(longitude){
-        this.longitude = longitude;
-    }
-    setLongitude(latitude){
-        this.latitude = latitude;
     }
 
-    submitApplication(subDate){
-        User._database.createUser(this)
-            .then( () => {
-                User._database.changeToMonqez(this , subDate);
-            } )
-            .catch((error) => {
+    submitApplication(userId, userObject){
+        return new Promise( (resolve, reject) => {
+            User._database.createUser(userId, userObject)
+                .then( () => {
+                    User._database.changeToMonqez(userId, userObject)
+                        .then(()=>{resolve();})
+                        .catch( (error) => {reject(error);} )
+                } )
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
 
-            })
     }
     setStatus(userID , status){
         return new Promise( (resolve, reject) => {
@@ -68,8 +55,8 @@ class HelperUser extends User{
         } );
     }
 
-    updateLocation(userID){
-        User._database.updateLocation(userID, this.longitude, this.latitude);
+    updateLocation(userID, userJson){
+        User._database.updateLocation(userID, userJson);
     }
 
     requestDecline(monqezId, userJson){
@@ -83,9 +70,15 @@ class HelperUser extends User{
     }
     requestAccept(monqezId, userJson){
         return new Promise( ((resolve, reject) => {
-            User._database.requestAccept(monqezId, userJson)
-                .then( () => { resolve() } )
-                .catch( () => { reject() } );
+            User._database.getProfile(monqezId)
+                .then( function (snapShot){
+                    User._database.requestAccept(monqezId, snapShot["name"], userJson)
+                        .then( () => { resolve() } )
+                        .catch( () => { reject() } );
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
         }) );
     }
     rerequest(userJson){
@@ -153,6 +146,36 @@ class HelperUser extends User{
     logCallRequest(userJson){
         return new Promise( (resolve, _) => {
             User._database.archiveCallRequest(userJson).then(()=>{ resolve() });
+        } );
+    }
+
+    getRequests(monqezId){
+        return new Promise( (resolve, reject) => {
+            User._database.getRequestsHelper(monqezId)
+                .then( function (snapShot){
+                    resolve(snapShot);
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
+    }
+
+
+    async getRequestBody(userId, time){
+        return await User._database.getRequestBody(userId, time);
+    }
+    async getUser(userId){
+        return await User._database.getuser(userId);
+    }
+
+
+    insertDummy(monqezId, userJson){
+        return new Promise( (resolve, reject) => {
+            User._database.insertDummy(monqezId, userJson).then( ()=>{resolve();} )
+                .catch( function (error){
+                    reject(error);
+                } );
         } );
     }
 }
