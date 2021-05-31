@@ -280,7 +280,7 @@ class HelperHomeScreen extends StatelessWidget {
                   children: <Widget>[
                     getCard(
                         "Call Queue",
-                        "4",
+                        Provider.of<Helper>(context, listen: true).callCount.toString(),
                         CallingQueueScreen(),
                         Icons.call,
                         MediaQuery.of(context).size.width,
@@ -294,7 +294,7 @@ class HelperHomeScreen extends StatelessWidget {
                         context),
                     getCard(
                         "My Ratings",
-                        "4.4",
+                        Provider.of<Helper>(context, listen: true).ratings.toString(),
                         HelperRatingsScreen(),
                         Icons.star_rate,
                         MediaQuery.of(context).size.width,

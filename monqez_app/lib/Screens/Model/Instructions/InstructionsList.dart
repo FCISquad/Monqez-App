@@ -12,12 +12,10 @@ class InstructionsList with ChangeNotifier {
   List<Injury> _injuries = [];
   int selected;
   bool edit = false;
-  String token;
 
   InstructionsList() {
     _injuries = [];
     selected = -1;
-    loadInjuries();
   }
 
   addInjury(Injury injury) {
@@ -42,7 +40,7 @@ class InstructionsList with ChangeNotifier {
       _injuries.add(i);
     });
   }
-  loadInjuries() {
+  loadInjuries(token) {
     // will be http request
     Future.delayed(Duration.zero, () async {
       http.Response response = await http.get(

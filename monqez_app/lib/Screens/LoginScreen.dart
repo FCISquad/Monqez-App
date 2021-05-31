@@ -574,7 +574,7 @@ class _LoginScreenState extends State<LoginScreen> {
           'oneTimeRequest': "True"
         },
         body: jsonEncode(
-            <String, String>{"NationalD": _nationalIDController.text}));
+            <String, String>{"nationalId": _nationalIDController.text}));
 
     if (response.statusCode == 200) {
       //var parsed = jsonDecode(response.body).cast<String, dynamic>();

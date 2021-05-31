@@ -499,6 +499,16 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         navigate(NormalPreviousRequests(user), context, false);
                       },
                     ),
+                    ListTile(
+                      title: getTitle(
+                          'Emergency Instructions', 18, firstColor, TextAlign.start, true),
+                      leading: Icon(Icons.history,
+                          size: 30, color: firstColor),
+                      onTap: () {
+                        //Navigator.pop(context);
+                        navigate(InstructionsScreen(false, user.token), context, false);
+                      },
+                    ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
