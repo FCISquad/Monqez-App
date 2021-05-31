@@ -87,7 +87,7 @@ class User {
         'city': city,
         'street': street,
         'buildNumber': buildNumber,
-        'image': image == null ? '' : image.base_64
+        'image': image == null ? '' : image.base_64,
         'chronicDiseases': diseases
       }),
     );

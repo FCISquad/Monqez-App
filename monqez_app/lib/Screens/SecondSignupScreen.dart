@@ -828,11 +828,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: secondColor,
+        color: firstColor,
         child: Text(
           'Submit',
           style: TextStyle(
-            color: firstColor,
+            color: secondColor,
             letterSpacing: 1,
             fontSize: 20.0,
             fontWeight: FontWeight.bold,

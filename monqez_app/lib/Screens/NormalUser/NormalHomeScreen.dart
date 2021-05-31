@@ -95,7 +95,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   _onMapCreated(GoogleMapController controller) async {
     print (_position1) ;
     await _getCurrentUserLocation() ;
-    await _goToPosition1() ;
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
@@ -106,7 +107,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     });
   }
   void _sendAdditionalInformation() async {
-    print("Avatar:" + avatar.getSelected().toString());
     String tempToken = user.token;
     Map<String, dynamic> body = {
       'additionalInfo': {

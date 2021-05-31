@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
-import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
@@ -48,6 +48,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
   int bodyMap;
   bool isLoaded = false;
   int firstStatusCode;
+  BodyMap avatar;
   _OneTimeRequestScreenState(String uid, String token) {
     this.uid = uid;
     this.token = token;
@@ -60,7 +61,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   bool _radioValue;
-  var _nameController = TextEditingController();
 
   List<Item> users = <Item>[
     const Item('Very dangerous'),
@@ -71,29 +71,25 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
   static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
+    _getCurrentUserLocation() ;
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
 
   showPinsOnMap() {
-    print(_newUserPosition);
     _markers.add(
       Marker(
         markerId: MarkerId(_newUserPosition.toString()),
         position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-        infoWindow: InfoWindow(
-          title: 'This is a Title',
-          snippet: 'This is a snippet',
-        ),
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
   }
 
   _onMapCreated(GoogleMapController controller) async {
-    print(_position1);
     await _getCurrentUserLocation();
-    await _goToPosition1();
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
@@ -101,7 +97,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           tilt: 59.440,
           zoom: 11.0);
-      ;
     });
   }
 
@@ -157,6 +152,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
     }
   }
 
+
   void _showAvatar() {
     showDialog(
         context: context,
@@ -175,17 +171,17 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Injuries",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      )),
+                            "Injuries",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          )),
                       SizedBox(height: 20),
-                      SizedBox(height: 400, child: BodyMap()),
+                      SizedBox(height: 400, child: avatar),
                       SizedBox(
                         width: 200,
+                        // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () {
-                            bodyMap = BodyMap.getSelected();
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -227,37 +223,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      // Container(
-                      //   child :Row(
-                      //     children: [
-                      //       Text("Severity  ") ,
-                      //       DropdownButton<Item>(
-                      //         hint: Text("Select item"),
-                      //         value: _selectedSeviirty,
-                      //         onChanged: (Item value) {
-                      //           setState(() {
-                      //             _selectedSeviirty = value;
-                      //             print(_selectedSeviirty.name) ;
-                      //           });
-                      //         },
-                      //         items: users.map((Item user) {
-                      //           return  DropdownMenuItem<Item>(
-                      //             value: user,
-                      //             child: Row(
-                      //               children: <Widget>[
-                      //                 SizedBox(width: 10,),
-                      //                 Text(
-                      //                   user.name,
-                      //                   style:  TextStyle(color: Colors.black),
-                      //                 ),
-                      //               ],
-                      //             ),
-                      //           );
-                      //         }).toList(),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
 
                       Container(
                         child: Row(
@@ -269,7 +234,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                               onChanged: (value) {
                                 setState(() {
                                   _radioValue = value;
-                                  print(_radioValue);
                                 });
                               },
                             ),
@@ -280,7 +244,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                               onChanged: (value) {
                                 setState(() {
                                   _radioValue = value;
-                                  print(_radioValue);
                                 });
                               },
                             ),
@@ -307,6 +270,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _showAvatar();
@@ -321,6 +285,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                               ),
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _sendAdditionalInformation();
@@ -368,27 +333,8 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
         zoom: 11.0);
     _isLoading = false;
     setState(() {});
-    print("heeeeeeere");
-    print(_newPosition);
   }
 
-  _onAddMarkerButtonPressed() async {
-    await _getCurrentUserLocation();
-    setState(() {
-      _markers.add(
-        Marker(
-          markerId: MarkerId(_newUserPosition.toString()),
-          position:
-              LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          infoWindow: InfoWindow(
-            title: 'This is a Title',
-            snippet: 'This is a snippet',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-      );
-    });
-  }
 
   Widget button(Function function, IconData icon, String hero) {
     return FloatingActionButton(
@@ -399,47 +345,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
       child: Icon(
         icon,
         size: 36.0,
-      ),
-    );
-  }
-
-  Widget _buildBtn(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () {
-          logout();
-          Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, animationTime, child) {
-                    return SlideTransition(
-                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                          .animate(CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.ease,
-                      )),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (context, animation, animationTime) {
-                    return LoginScreen();
-                  }));
-        },
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(text,
-            style: TextStyle(
-                color: Colors.deepOrange,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -499,6 +404,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
       showPinsOnMap();
 
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
             title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
@@ -515,8 +421,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                 onPressed: () {
                   _showCallDialog("voice");
                 }
-                // do something
-                ,
               ),
               IconButton(
                 icon: Icon(
@@ -554,6 +458,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                         child: Container(
                           height: 40,
                           width: 120,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
@@ -582,18 +487,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                 mapType: _currentMapType,
                 markers: _markers,
               ),
-              /*SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: SearchMapPlaceWidget(
-                  hasClearButton: true,
-                  placeType: PlaceType.address,
-                  placeholder: "Enter the location",
-                  apiKey: 'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo',
-                  onSelected: (Place place) async {
-                    Geolocation geoLocation = await place.geolocation;
-                  },
-                ),
-              ),*/
               Padding(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                 child: Align(
@@ -601,6 +494,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                   child: SizedBox(
                     width: 200,
                     height: 50,
+                    // ignore: deprecated_member_use
                     child: RaisedButton(
                       onPressed: () async {
                         //_createPolylines();
@@ -637,8 +531,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
   }
 
   Future<void> _handleCameraAndMic(Permission permission) async {
-    final status = await permission.request();
-    print(status);
+    await permission.request();
   }
 
   Future<void> onJoin(String type) async {
@@ -658,7 +551,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
         }));
 
     if (response.statusCode == 200) {
-      //var parsed = jsonDecode(response.body).cast<String, dynamic>();
       channelID = response.body;
     } else {
       print(response.statusCode);
@@ -685,13 +577,6 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
             ));
       }
     }
-    /*
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VoicePage(channelName: "channelID"),
-        ));
-        */
   }
 
   _showCallDialog(String type) {
@@ -731,6 +616,7 @@ class _OneTimeRequestScreenState extends State<OneTimeRequestScreen>
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     if (_additionalInfoController

@@ -16,6 +16,7 @@ import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 // ignore: must_be_immutable
 class HelperRequestScreen extends StatefulWidget {
   double reqLong;
@@ -45,9 +46,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   TextEditingController _additionalNotes;
   TextEditingController injuryTypeController;
   TextEditingController genderController;
-  Position helperLocation ;
+  Position helperLocation;
   var _prefs;
-
 
   int bodyMapValue;
   bool forMe;
@@ -138,19 +138,18 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         '&travelmode=driving&dir_action=navigate';
   }
 
-  Future<bool> getAdditionalInformation() async{
+  Future<bool> getAdditionalInformation() async {
     String token = Provider.of<Helper>(context, listen: false).token;
     final http.Response response = await http.post(
         Uri.parse('$url/helper/get_additional_information/'),
-        headers: <String, String> {
+        headers: <String, String>{
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(<String, String>{
-          'uid': "trdLyxPx9XPhRANKVzfmjK5Vkuy2"}
-        ));
-    if (response.statusCode == 200){
+        body: jsonEncode(
+            <String, String>{'uid': "trdLyxPx9XPhRANKVzfmjK5Vkuy2"}));
+    if (response.statusCode == 200) {
       Map mp = jsonDecode(response.body);
       _additionalNotes.text = mp["Additional Notes"];
       _detailedAddress.text = mp["Address"];
@@ -158,12 +157,12 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
       print(bodyMapValue);
       avatar = BodyMap.init(bodyMapValue, 200);
       return true;
-    }
-    else{
+    } else {
       print(response.statusCode);
       return false;
     }
   }
+
   Widget _getText(String text, double fontSize, FontWeight fontWeight,
       Color color, int lines) {
     return AutoSizeText(text,
@@ -203,19 +202,20 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
   Widget getTextField(TextEditingController controller) {
     return Container(
-      height: 50,
+        height: 50,
         child: TextField(
-      controller: controller,
-      style: TextStyle(
-        color: Colors.deepOrange,
-        fontFamily: 'OpenSans',
-      ),
-      decoration: InputDecoration(
-        border: InputBorder.none,
-        contentPadding: EdgeInsets.only(top: 14.0),
-      ),
-    ));
+          controller: controller,
+          style: TextStyle(
+            color: Colors.deepOrange,
+            fontFamily: 'OpenSans',
+          ),
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            contentPadding: EdgeInsets.only(top: 14.0),
+          ),
+        ));
   }
+
   void _modalBottomSheetMenu() {
     showModalBottomSheet(
         shape: RoundedRectangleBorder(
@@ -231,15 +231,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                 decoration: new BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
-
-                child: ListView(
-                  shrinkWrap: true,
-
-                  children: [
-                    SizedBox(height: 200, child: avatar),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                child: ListView(shrinkWrap: true, children: [
+                  SizedBox(height: 200, child: avatar),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(height: 250, child: BodyMap()),
@@ -254,25 +250,32 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(width: 4,),
+                                SizedBox(
+                                  width: 4,
+                                ),
                                 Container(
-                                  height: 25 ,
+                                  height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                  child:Center(
-                                    child: _getText('Detailed Address', 15, FontWeight.normal,
-                                        Colors.white, 1),
+                                  child: Center(
+                                    child: _getText('Detailed Address', 15,
+                                        FontWeight.normal, Colors.white, 1),
                                   ),
                                 ),
-                                SizedBox(width: 8,) ,
-                                _getText(_detailedAddress.text, 15, FontWeight.normal, Colors.black, 1)
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                _getText(_detailedAddress.text, 15,
+                                    FontWeight.normal, Colors.black, 1)
                               ],
                             ),
                           ),
-                          SizedBox(height: 4,),
+                          SizedBox(
+                            height: 4,
+                          ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
@@ -280,26 +283,33 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(width: 4,),
+                                SizedBox(
+                                  width: 4,
+                                ),
                                 Container(
-                                  height: 25 ,
+                                  height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                  child:Center(
-                                    child: _getText('Additional Notes', 15, FontWeight.normal,
-                                        Colors.white, 1),
+                                  child: Center(
+                                    child: _getText('Additional Notes', 15,
+                                        FontWeight.normal, Colors.white, 1),
                                   ),
                                 ),
-                                SizedBox(width: 8,),
-                                _getText(_additionalNotes.text, 15, FontWeight.normal, Colors.black, 1)
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                _getText(_additionalNotes.text, 15,
+                                    FontWeight.normal, Colors.black, 1)
                               ],
                             ),
                           ),
                           //SizedBox(height: 4,),
-                          SizedBox(height: 4,),
+                          SizedBox(
+                            height: 4,
+                          ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
@@ -307,25 +317,32 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(width: 4,),
+                                SizedBox(
+                                  width: 4,
+                                ),
                                 Container(
-                                  height: 25 ,
+                                  height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                  child:Center(
-                                    child: _getText('Injury Type', 15, FontWeight.normal,
-                                        Colors.white, 1),
+                                  child: Center(
+                                    child: _getText('Injury Type', 15,
+                                        FontWeight.normal, Colors.white, 1),
                                   ),
                                 ),
-                                SizedBox(width: 8,),
-                                _getText(injuryTypeController.text, 15, FontWeight.normal, Colors.black, 1)
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                _getText(injuryTypeController.text, 15,
+                                    FontWeight.normal, Colors.black, 1)
                               ],
                             ),
                           ),
-                          SizedBox(height: 4,) ,
+                          SizedBox(
+                            height: 4,
+                          ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
@@ -333,30 +350,37 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(width: 4,),
+                                SizedBox(
+                                  width: 4,
+                                ),
                                 Container(
-                                  height: 25 ,
+                                  height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
                                     borderRadius: BorderRadius.circular(20.0),
                                   ),
-                                  child:Center(
-                                    child: _getText('Gender', 15, FontWeight.normal,
-                                        Colors.white, 1),
+                                  child: Center(
+                                    child: _getText('Gender', 15,
+                                        FontWeight.normal, Colors.white, 1),
                                   ),
                                 ),
-                                SizedBox(width: 8,),
-                                _getText(genderController.text, 15, FontWeight.normal, Colors.black, 1)
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                _getText(genderController.text, 15,
+                                    FontWeight.normal, Colors.black, 1)
                               ],
                             ),
                           ),
-                          SizedBox(height: 4,),
+                          SizedBox(
+                            height: 4,
+                          ),
                         ],
                       )
                     ],
                   ),
-                )),
+                ])),
           );
         });
   }
@@ -370,14 +394,16 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         package: 'com.google.android.apps.maps');
     intent.launch();
   }
+
   _getCurrentUserLocation() async {
     helperLocation = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
   }
+
   Future<void> _completeRequest() async {
     await _getCurrentUserLocation();
     _prefs = await SharedPreferences.getInstance();
-    String tempToken  = _prefs.getString("userToken");
+    String tempToken = _prefs.getString("userToken");
 
     final http.Response response = await http.post(
       Uri.parse('$url/helper/complete_request/'),
@@ -399,10 +425,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
       makeToast('Failed to submit user.');
     }
   }
+
   Future<void> _cancelRequest() async {
     await _getCurrentUserLocation();
     _prefs = await SharedPreferences.getInstance();
-    String tempToken  = _prefs.getString("userToken");
+    String tempToken = _prefs.getString("userToken");
 
     final http.Response response = await http.post(
       Uri.parse('$url/helper/cancel_request/'),
@@ -411,7 +438,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-
     );
     if (response.statusCode == 200) {
       makeToast("Submitted");
@@ -466,7 +492,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                       Container(
                         width: 100,
                         height: 50,
-                        decoration: BoxDecoration(color: Colors.deepOrange,
+                        decoration: BoxDecoration(
+                            color: Colors.deepOrange,
                             borderRadius: BorderRadius.circular(30.0)),
                         child: FlatButton(
                           color: Colors.transparent,
@@ -488,7 +515,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           color: Colors.transparent,
                           splashColor: Colors.black26,
                           onPressed: () async {
-                           _completeRequest() ;
+                            _completeRequest();
                           },
                           child: _getText(
                               'Complete', 14, FontWeight.w700, Colors.white, 1),
@@ -497,8 +524,9 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                       Container(
                         width: 100,
                         height: 50,
-                        decoration: BoxDecoration(color: Colors.red ,
-                            borderRadius: BorderRadius.circular(30.0) ),
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(30.0)),
                         child: FlatButton(
                           color: Colors.transparent,
                           splashColor: Colors.black26,
@@ -517,13 +545,12 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           child: FlatButton(
                               color: Colors.transparent,
                               splashColor: Colors.black26,
-                              onPressed: () async{
+                              onPressed: () async {
                                 await getAdditionalInformation();
                                 _modalBottomSheetMenu();
                               },
-                              child: Icon(Icons.info,
-                              color: Colors.blueAccent)
-                          ),
+                              child:
+                                  Icon(Icons.info, color: Colors.blueAccent)),
                         ),
                       ),
                     ],
