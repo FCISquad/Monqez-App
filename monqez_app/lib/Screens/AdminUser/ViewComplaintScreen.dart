@@ -34,6 +34,7 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
   String complainedUID;
   String complaint;
   String date;
+  String subject;
 
   parseJson(var json) {
     var singleComplaint = jsonDecode(json).cast<String, dynamic>();
@@ -43,6 +44,7 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
     complainerUID = singleComplaint['complainerUID'];
     complainedUID = singleComplaint['complainedUID'];
     complaint = singleComplaint['complaint'];
+    subject = singleComplaint['subject'];
   }
 
   Future<void> getComplaint() async {
@@ -237,6 +239,29 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     )
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    AutoSizeText(
+                      "Subject: ",
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: Colors.black,
+                        letterSpacing: 1,
+                        fontSize: 20.0,
+                      ),
+                    ),
+                    AutoSizeText(subject,
+                        maxLines: 1,
+                        style: TextStyle(
+                            color: firstColor,
+                            letterSpacing: 1,
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.bold))
                   ],
                 ),
               ),
