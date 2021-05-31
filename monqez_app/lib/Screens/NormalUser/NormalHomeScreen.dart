@@ -79,7 +79,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
 
   showPinsOnMap(){
-    print (_newUserPosition) ;
     _markers.add(
       Marker(
         markerId: MarkerId(_newUserPosition.toString()),
@@ -93,7 +92,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     );
   }
   _onMapCreated(GoogleMapController controller) async {
-    print (_position1) ;
     await _getCurrentUserLocation() ;
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
