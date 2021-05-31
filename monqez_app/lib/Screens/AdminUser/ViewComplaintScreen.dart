@@ -51,7 +51,7 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
     String token = AdminHomeScreenState.token;
 
     final http.Response response = await http.post(
-      Uri.parse('$url/admin/get_complaint/'),
+      Uri.parse('$url/admin/getComplaint/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -142,15 +142,14 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
   ban() async {
     String token = AdminHomeScreenState.token;
     final http.Response response = await http.post(
-      Uri.parse('$url/admin/ban_user/'),
+      Uri.parse('$url/admin/ban/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'complaintID': complaintID,
-        'complainedUID': complainedUID,
+        'uid': complainedUID,
       }),
     );
     if (response.statusCode == 200) {
