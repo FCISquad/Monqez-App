@@ -166,7 +166,7 @@ class HelperUser extends User{
         return await User._database.getRequestBody(userId, time);
     }
     async getUser(userId){
-        return await User._database.getUser(userId);
+        return await User._database.getuser(userId);
     }
 
 

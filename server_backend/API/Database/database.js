@@ -732,7 +732,7 @@ class Database {
                 return snapShot.val();
             } )
     }
-    async getUser(userId){
+    async getuser(userId){
         return await admin.database().ref('user/' + userId).once("value")
             .then( function (snapShot){
                 return snapShot.val();
@@ -782,7 +782,7 @@ class Database {
         return new Promise( (resolve, reject) => {
             admin.database().ref('complaints/' + compJson["nuid"] + '/' + compJson["huid"] + '/' + compJson["date"]).once("value")
                 .then( function (complaint){
-                    resolve(complaint);
+                    resolve(complaint.val());
                 } )
                 .catch( function (error){
                     reject(error);

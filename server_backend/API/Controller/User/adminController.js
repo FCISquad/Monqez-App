@@ -163,7 +163,7 @@ app.post('/ban', function (request, response){
     })
 });
 
-app.get('/getComplaints', function (request, response){
+app.post('/getComplaints', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
@@ -187,7 +187,7 @@ app.get('/getComplaints', function (request, response){
     })
 });
 
-app.get('/getComplaint', function (request, response){
+app.post('/getComplaint', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 

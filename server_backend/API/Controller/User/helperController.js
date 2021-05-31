@@ -220,7 +220,7 @@ app.post('/get_additional_information', (request, response) => {
 //     })
 // });
 
-app.get('/getRequests', function (request, response){
+app.get('/get_requests', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
