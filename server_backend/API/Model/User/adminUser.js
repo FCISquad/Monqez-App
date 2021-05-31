@@ -40,6 +40,7 @@ class Admin extends User{
     }
 
     getState(){
+
         return new Promise( (resolve, reject) => {
             User._database.getState().then( (stateJSON) => {
                 resolve(stateJSON);
