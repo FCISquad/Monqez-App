@@ -133,7 +133,7 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
     // will be http request
     String token = user.token;
     Future.delayed(Duration.zero, () async {
-      http.Response response = await http.post(
+      http.Response response = await http.get(
         Uri.parse('$url/user/get_requests'),
         headers: <String, String>{
           'Content-Type': 'application/json',

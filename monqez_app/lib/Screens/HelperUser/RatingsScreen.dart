@@ -31,7 +31,7 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
   @override
   void initState() {
     super.initState();
-    /*Future.delayed(Duration.zero, () {
+    Future.delayed(Duration.zero, () {
       _ratingsList = <Widget>[
         getCard(_Rating.init("Khaled Ezzat", "Great Person! I suggest him.",5), null, MediaQuery.of(context).size.width ),
         getCard(_Rating.init("Hussien Ashraf", "He was late, but he saved my life !",5 ), null, MediaQuery.of(context).size.width),
@@ -42,7 +42,7 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
 
       _isLoading = false;
       setState((){});
-    });*/
+    });
   }
 
   void _iterateJson(String jsonStr) {
