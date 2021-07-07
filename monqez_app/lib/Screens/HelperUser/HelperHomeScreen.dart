@@ -226,7 +226,7 @@ class HelperHomeScreen extends StatelessWidget {
                     leading: Icon(Icons.star_rate, size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(HelperRatingsScreen(), context, false);
+                      navigate(HelperRatingsScreen(Provider.of<Helper>(context, listen: false).ratings), context, false);
                     },
                   ),
                   Expanded(
@@ -294,8 +294,9 @@ class HelperHomeScreen extends StatelessWidget {
                         context),
                     getCard(
                         "My Ratings",
-                        Provider.of<Helper>(context, listen: true).ratings.toString(),
-                        HelperRatingsScreen(),
+                        Provider.of<Helper>(context, listen: true).ratings.toStringAsFixed(2),
+                        HelperRatingsScreen(Provider.of<Helper>(context, listen: false)
+                            .ratings),
                         Icons.star_rate,
                         MediaQuery.of(context).size.width,
                         context),
@@ -303,7 +304,7 @@ class HelperHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          )
         ),
       );
   }

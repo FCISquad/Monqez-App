@@ -99,46 +99,47 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
   }
 
   void _iterateJson(String jsonStr) {
-    _Request request = _Request();
     if (jsonStr.isNotEmpty) {
       List<dynamic> requestsJson = json.decode(jsonStr);
-      requestsJson[0].forEach((key, value) {
-        if (key == 'request') {
-          value.forEach((reqKey, reqVal){
-            if (reqKey == 'additionalInfo') {
-              reqVal.forEach((infoKey, infoVal){
-                if (infoKey == "Address")
-                  request.address = infoVal;
-                else if (infoKey == "forMe")
-                  request.forMe = infoVal;
-                else if (infoKey == "avatarBody")
-                  request.setAvatar(int.parse(infoVal));
-                else if (infoKey == "Additional Notes")
-                  request.info = infoVal;
-              });
-            }
-          });
-        } else if (key == 'user') {
-          request.username = value['name'];
-          request.gender = value['gender'];
-        } else if (key == 'time') {
-          request.setDate(value);
-        }
-
-          request.show();
-          if (request.isValid()) requests.add(request);
+      for (int i=0 ; i<requestsJson.length ; i++) {
+        _Request request = _Request();
+        requestsJson[i].forEach((key, value) {
+          if (key == 'request') {
+            value.forEach((reqKey, reqVal){
+              if (reqKey == 'additionalInfo') {
+                reqVal.forEach((infoKey, infoVal){
+                  if (infoKey == "Address")
+                    request.address = infoVal;
+                  else if (infoKey == "forMe")
+                    request.forMe = infoVal;
+                  else if (infoKey == "avatarBody")
+                    request.setAvatar(int.parse(infoVal));
+                  else if (infoKey == "Additional Notes")
+                    request.info = infoVal;
+                });
+              }
+            });
+          } else if (key == 'user') {
+            request.username = value['name'];
+            request.gender = value['gender'];
+          } else if (key == 'time') {
+            request.setDate(value);
+          }
+          //request.show();
+        });
+        if (request.isValid()) requests.add(request);
       }
-      );
+
     }
   }
 
   getRequests() {
     // will be http request
-    _iterateJson('[{"request":{"accepted":{"counter":1,"name":"helper","status":"Accepted","uid_1":"7ebzDMMcWzUpJpBJzqYsajHFelg2"},"additionalInfo":{"Additional Notes":"juuuuuu","Address":"hggghh","avatarBody":"2184","forMe":"true"},"isFirst":true,"latitude":30.0101056,"longitude":31.1760987,"monqezCounter":1,"rejected":{"counter":0}},"user":{"birthdate":"2021-05-10 00:00:00.000","buildNumber":"b","chronicDiseases":"cgsjk","city":"vbj","country":"hh","gender":"Male","name":"normal","national_id":"56466469619499","phone":"67669400496","street":"nkn","token":"ei9g-LWmSz6MDulQx0teWG:APA91bEsD8Bo3d2IL4j165TFlM3b43WFnEJcsd3ZDgAVH7L9gbfJYxXguvhazFOqzfPCuoE5GC02jRpYw77NIqlvaf3a0H7WQnYDd8u0Fd9BqhuAdMIER8yzVQIFjBQ6zlPk1AftNBzf","type":"0"},"time":"2021-05-31 03:58:38"}]');
-    setState(() {
-      isLoaded = true;
-    });
-    return;
+    //_iterateJson('[{"request":{"accepted":{"counter":1,"name":"helper","status":"Accepted","uid_1":"7ebzDMMcWzUpJpBJzqYsajHFelg2"},"additionalInfo":{"Additional Notes":"juuuuuu","Address":"hggghh","avatarBody":"2184","forMe":"true"},"isFirst":true,"latitude":30.0101056,"longitude":31.1760987,"monqezCounter":1,"rejected":{"counter":0}},"user":{"birthdate":"2021-05-10 00:00:00.000","buildNumber":"b","chronicDiseases":"cgsjk","city":"vbj","country":"hh","gender":"Male","name":"normal","national_id":"56466469619499","phone":"67669400496","street":"nkn","token":"ei9g-LWmSz6MDulQx0teWG:APA91bEsD8Bo3d2IL4j165TFlM3b43WFnEJcsd3ZDgAVH7L9gbfJYxXguvhazFOqzfPCuoE5GC02jRpYw77NIqlvaf3a0H7WQnYDd8u0Fd9BqhuAdMIER8yzVQIFjBQ6zlPk1AftNBzf","type":"0"},"time":"2021-05-31 03:58:38"}]');
+    //setState(() {
+      //isLoaded = true;
+    //});
+    //return;
     String token = user.token;
     Future.delayed(Duration.zero, () async {
       http.Response response = await http.get(

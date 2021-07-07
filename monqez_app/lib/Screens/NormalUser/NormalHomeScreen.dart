@@ -19,6 +19,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
 import '../LoginScreen.dart';
 import '../VoicePage.dart';
+import 'Chatbot.dart';
 import 'NormalUserPreviousRequests.dart';
 
 // ignore: must_be_immutable
@@ -500,11 +501,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     ListTile(
                       title: getTitle(
                           'Emergency Instructions', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.history,
+                      leading: Icon(Icons.help_center_outlined,
                           size: 30, color: firstColor),
                       onTap: () {
                         //Navigator.pop(context);
                         navigate(InstructionsScreen(false, user.token), context, false);
+                      },
+                    ),
+                    ListTile(
+                      title: getTitle(
+                          'Chatbot', 18, firstColor, TextAlign.start, true),
+                      leading: Icon(Icons.history,
+                          size: 30, color: firstColor),
+                      onTap: () {
+                        //Navigator.pop(context);
+                        navigate(ChatbotScreen(), context, false);
                       },
                     ),
                     Expanded(
