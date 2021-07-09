@@ -40,7 +40,7 @@ class Item {
 
 class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
-  bool firstTimeLocation = true ;
+  bool firstTimeLocation = true;
   static User user;
   List<Icon> icons;
   bool _isLoading = true;
@@ -74,45 +74,45 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     const Item('Normal'),
   ];
 
-  static CameraPosition _position1 ;
+  static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
-    _getCurrentUserLocation() ;
+    _getCurrentUserLocation();
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
 
-  showPinsOnMap(){
-    _marker =
-        Marker(
-          markerId: MarkerId(_newUserPosition.toString()),
-          position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          draggable: true,
-          onDragEnd: ((newPosition) {
-            print(newPosition.latitude);
-            print(newPosition.longitude);
-          }),
-          // infoWindow: InfoWindow(
-          //   title: 'This is a Title',
-          //   snippet: 'This is a snippet',
-          // ),
-          icon: BitmapDescriptor.defaultMarker,
-        );
+  showPinsOnMap() {
+    _marker = Marker(
+      markerId: MarkerId(_newUserPosition.toString()),
+      position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+      draggable: true,
+      onDragEnd: ((newPosition) {
+        print(newPosition.latitude);
+        print(newPosition.longitude);
+      }),
+      // infoWindow: InfoWindow(
+      //   title: 'This is a Title',
+      //   snippet: 'This is a snippet',
+      // ),
+      icon: BitmapDescriptor.defaultMarker,
+    );
   }
+
   _onMapCreated(GoogleMapController controller) async {
-    await _getCurrentUserLocation() ;
+    await _getCurrentUserLocation();
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
-        // bearing: 192.833,
+          // bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           // tilt: 59.440,
           zoom: 17.0);
     });
-
   }
+
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
     Map<String, dynamic> body = {
@@ -203,10 +203,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                            "Injuries",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          )),
+                        "Injuries",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
                       SizedBox(height: 20),
                       SizedBox(height: 400, child: avatar),
                       SizedBox(
@@ -231,7 +231,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           });
         });
   }
-  _showMaterialDialog() {
+
+  _showMaterialDialog([String notes = ""]) {
+    _aditionalNotes.clear();
+    _detailedAddress.clear();
+    _aditionalNotes.text = notes;
     showDialog(
         context: context,
         builder: (context) {
@@ -249,10 +253,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                            "Additional details",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          )),
+                        "Additional details",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
                       SizedBox(height: 20),
                       Container(
                         child: Row(
@@ -352,19 +356,20 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           : MapType.normal;
     });
   }
+
   _getCurrentUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
         .then((Position position) {
       _newUserPosition = position;
       _position1 = CameraPosition(
-        // bearing: 192.833,
+          // bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           // tilt: 59.440,
           zoom: 17.0);
       _isLoading = false;
-      setState(() { // to check if that step is valid or not
+      setState(() {
+        // to check if that step is valid or not
       });
-
     }).catchError((e) {
       navigate(LoginScreen(), context, true);
     });
@@ -406,7 +411,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         .then((RemoteMessage message) {
       if (message != null) {
         FirebaseCloudMessaging.route =
-        new NormalUserNotification(message, true);
+            new NormalUserNotification(message, true);
         navigate(NotificationRoute.selectNavigate, context, false);
       }
     });
@@ -419,10 +424,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       isLoaded = true;
     }
     if (_isLoading) {
-      if (firstTimeLocation){
-        firstTimeLocation =false ;
-        Future.delayed(Duration.zero, ()async{
-          await _getCurrentUserLocation() ;
+      if (firstTimeLocation) {
+        firstTimeLocation = false;
+        Future.delayed(Duration.zero, () async {
+          await _getCurrentUserLocation();
           showPinsOnMap();
         });
       }
@@ -438,8 +443,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       backgroundColor: secondColor,
                       strokeWidth: 5,
                       valueColor:
-                      new AlwaysStoppedAnimation<Color>(firstColor)))));
-    } else{
+                          new AlwaysStoppedAnimation<Color>(firstColor)))));
+    } else {
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -492,11 +497,15 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               height: 90,
                               child: CircularProfileAvatar(
                                 null,
-                                child: user.image == null ? Icon(Icons.account_circle_rounded,
-                                    size: 90, color: secondColor): Image.memory(user.image.decode()),
+                                child: user.image == null
+                                    ? Icon(Icons.account_circle_rounded,
+                                        size: 90, color: secondColor)
+                                    : Image.memory(user.image.decode()),
                                 radius: 100,
                                 backgroundColor: Colors.transparent,
-                                borderColor: user.image == null ? firstColor : secondColor,
+                                borderColor: user.image == null
+                                    ? firstColor
+                                    : secondColor,
                                 elevation: 5.0,
                                 cacheImage: true,
                                 onTap: () {
@@ -523,64 +532,70 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         navigate(ProfileScreen(user), context, false);
                       },
                     ),
-
                     ListTile(
                       title: getTitle(
                           'My Requests', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.history,
-                          size: 30, color: firstColor),
+                      leading: Icon(Icons.history, size: 30, color: firstColor),
                       onTap: () {
                         Navigator.pop(_drawerKey.currentContext);
                         navigate(NormalPreviousRequests(user), context, false);
                       },
                     ),
                     ListTile(
-                      title: getTitle(
-                          'Emergency Instructions', 18, firstColor, TextAlign.start, true),
+                      title: getTitle('Emergency Instructions', 18, firstColor,
+                          TextAlign.start, true),
                       leading: Icon(Icons.help_center_outlined,
                           size: 30, color: firstColor),
                       onTap: () {
                         Navigator.pop(_drawerKey.currentContext);
-                        navigate(InstructionsScreen(false, user.token), context, false);
+                        navigate(InstructionsScreen(false, user.token), context,
+                            false);
                       },
                     ),
                     ListTile(
                       title: getTitle(
                           'Chatbot', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.history,
+                      leading: Icon(Icons.chat_bubble_outline_rounded,
                           size: 30, color: firstColor),
                       onTap: () {
-
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatbotScreen(user.token))).then((returned){
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatbotScreen(user.token)))
+                            .then((returned) {
                           Navigator.pop(_drawerKey.currentContext);
 
-                          if (returned == null)
-                            return;
+                          if (returned == null) return;
 
                           if (returned[0] == "request") {
+                            String notes;
                             if (returned.length == 2) {
-                              String notes = returned[1];
-                              _aditionalNotes.text = notes;
+                              notes = returned[1];
                             }
                             _makeRequest().then((value) {
-                              if (firstStatusCode == 200) _showMaterialDialog();
+                              if (firstStatusCode == 200)
+                                _showMaterialDialog(notes);
                             });
-
                           } else if (returned[0] == "voice") {
-                            if (returned.length == 2) {
-                              String notes = returned[1];
-                              _additionalInfoController.text = notes;
-                            }
                             _showCallDialog("voice");
-                          } else if (returned[0] == "video") {
                             if (returned.length == 2) {
                               String notes = returned[1];
-                              _additionalInfoController.text = notes;
+                              setState(() {
+                                _additionalInfoController.text = notes;
+                              });
                             }
+                          } else if (returned[0] == "video") {
                             _showCallDialog("video");
-
+                            if (returned.length == 2) {
+                              String notes = returned[1];
+                              setState(() {
+                                _additionalInfoController.text = notes;
+                              });
+                            }
                           } else if (returned[0] == "instructions") {
-                            navigate(InstructionsScreen(false, user.token), context, false);
+                            navigate(InstructionsScreen(false, user.token),
+                                context, false);
                           }
                         });
                       },
@@ -625,11 +640,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   print("HEREEEE");
 
                   _addMarkerLongPressed(latlang);
-                  print (latlang);
-                  print (_marker);
-                  setState(() {
-
-                  });//we will call this function when pressed on the map
+                  print(latlang);
+                  print(_marker);
+                  setState(
+                      () {}); //we will call this function when pressed on the map
                 },
               ),
               /*SizedBox(
@@ -655,7 +669,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     child: RaisedButton(
                       onPressed: () async {
                         // await _makeRequest();
-                        await _test();
+                        await _makeRequest();
                         if (firstStatusCode == 200) _showMaterialDialog();
                         //_showMaterialDialog();
                       },
@@ -726,7 +740,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 channelName: channelID,
                 userType: "normal",
               ),
-            ));
+            )).then((value) => Navigator.pop(context));
       } else {
         Navigator.push(
             context,
@@ -735,27 +749,27 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 channelName: channelID,
                 userType: "normal",
               ),
-            ));
+            )).then((value) => Navigator.pop(context));
       }
     }
   }
-  Future _addMarkerLongPressed(LatLng latlang) async {
-    _marker =
-        Marker(
-          markerId: MarkerId(_newUserPosition.toString()),
-          position: latlang,
-          draggable: true,
-            onDragEnd: ((newPosition) {
-              print(newPosition.latitude);
-              print(newPosition.longitude);
-            }),
 
-    // infoWindow: InfoWindow(
-          //   title: 'This is a Title',
-          //   snippet: 'This is a snippet',
-          // ),
-          icon: BitmapDescriptor.defaultMarker,
-        );
+  Future _addMarkerLongPressed(LatLng latlang) async {
+    _marker = Marker(
+      markerId: MarkerId(_newUserPosition.toString()),
+      position: latlang,
+      draggable: true,
+      onDragEnd: ((newPosition) {
+        print(newPosition.latitude);
+        print(newPosition.longitude);
+      }),
+
+      // infoWindow: InfoWindow(
+      //   title: 'This is a Title',
+      //   snippet: 'This is a snippet',
+      // ),
+      icon: BitmapDescriptor.defaultMarker,
+    );
 
     // setState(() {
     //   final MarkerId markerId = MarkerId("RANDOM_ID");
@@ -769,7 +783,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     //   _marker = marker;
     // });
   }
+
   _showCallDialog(String type) {
+    _additionalInfoController.clear();
     showDialog(
         context: context,
         builder: (context) {
@@ -787,10 +803,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                            "Additional Information",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
-                          )),
+                        "Call Additional Information",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      )),
                       SizedBox(height: 20),
                       TextField(
                         decoration: InputDecoration(
@@ -809,7 +825,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
-                                    if (_additionalInfoController.text.isEmpty) {
+                                    if (_additionalInfoController
+                                        .text.isEmpty) {
                                       _additionalInfoController.text = " ";
                                     }
                                     onJoin(type);
