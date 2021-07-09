@@ -43,6 +43,8 @@ class BodyMap extends StatefulWidget {
 
   BodyMap.init(int bodyValue, double size) {
     setSelected(bodyValue);
+    if (bodyValue == 16)
+      print("Khaled"+ _selected);
     _size = size;
   }
 
@@ -54,7 +56,10 @@ class BodyMap extends StatefulWidget {
 
   void setSelected(int selected) {
     _selected = selected.toRadixString(2);
-    //_bodyMapState.setSelected(_selected);
+    int diff = injury.length-_selected.length ;
+    for (int i=0 ; i<(diff) ; i++) {
+      _selected = "0" + _selected;
+    }
   }
 
   int getSelected() {

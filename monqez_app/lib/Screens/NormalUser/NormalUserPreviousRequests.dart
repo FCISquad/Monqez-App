@@ -399,6 +399,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     );
     if (response.statusCode == 200) {
       makeToast("Submitted");
+      Navigator.pop(context);
     } else {
       makeToast('Failed to submit rating.');
     }
@@ -430,7 +431,9 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
 
   void _iterateJson(String jsonStr) {
     Map<String, dynamic> requestsJson = json.decode(jsonStr);
+    print(requestsJson);
     requestsJson.forEach((key, value) {
+
       if (value["accepted"]["Counter"] != 0) {
         _Request request = _Request(key);
         value.forEach((requestKey, requestValue) {
