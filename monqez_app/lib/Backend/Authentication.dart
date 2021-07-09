@@ -5,7 +5,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //String url = "https://monqez.herokuapp.com";
-String url = "https://monqez.loca.lt";
+// String url = "https://monqez.loca.lt";
+String url = "https://monqez1.loca.lt";
+// String url = "https://khaled.loca.lt";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -108,6 +110,7 @@ Future<bool> signInWithGoogle() async {
   }
   return false;
 }
+
 /*
 Future<bool> signInWithFacebook() async {
   try {

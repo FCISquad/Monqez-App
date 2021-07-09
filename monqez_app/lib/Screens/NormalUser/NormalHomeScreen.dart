@@ -39,6 +39,7 @@ class Item {
 
 class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
+  bool firstTimeLocation = true ;
   static User user;
   List<Icon> icons;
   bool _isLoading = true;
@@ -59,7 +60,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   AnimationController controller;
 
   Completer<GoogleMapController> _controller = Completer();
-  final Set<Marker> _markers = {};
+  Marker _marker;
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   bool _radioValue;
@@ -79,17 +80,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
 
   showPinsOnMap(){
-    _markers.add(
-      Marker(
-        markerId: MarkerId(_newUserPosition.toString()),
-        position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-        // infoWindow: InfoWindow(
-        //   title: 'This is a Title',
-        //   snippet: 'This is a snippet',
-        // ),
-        icon: BitmapDescriptor.defaultMarker,
-      ),
-    );
+    _marker =
+        Marker(
+          markerId: MarkerId(_newUserPosition.toString()),
+          position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+          draggable: true,
+          onDragEnd: ((newPosition) {
+            print(newPosition.latitude);
+            print(newPosition.longitude);
+          }),
+          // infoWindow: InfoWindow(
+          //   title: 'This is a Title',
+          //   snippet: 'This is a snippet',
+          // ),
+          icon: BitmapDescriptor.defaultMarker,
+        );
   }
   _onMapCreated(GoogleMapController controller) async {
     await _getCurrentUserLocation() ;
@@ -98,11 +103,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
-          bearing: 192.833,
+        // bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          tilt: 59.440,
-          zoom: 11.0);
+          // tilt: 59.440,
+          zoom: 17.0);
     });
+
   }
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
@@ -142,9 +148,29 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'Authorization': 'Bearer $tempToken',
       },
       body: jsonEncode(<String, double>{
-        'latitude': _newUserPosition.latitude,
-        'longitude': _newUserPosition.longitude
+        'latitude': _marker.position.latitude,
+        'longitude': _marker.position.longitude
       }),
+    );
+    firstStatusCode = response.statusCode;
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+
+  Future<void> _test() async {
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/notify_me/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
     );
     firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
@@ -174,10 +200,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Injuries",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      )),
+                            "Injuries",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          )),
                       SizedBox(height: 20),
                       SizedBox(height: 400, child: avatar),
                       SizedBox(
@@ -220,10 +246,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Additional details",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      )),
+                            "Additional details",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          )),
                       SizedBox(height: 20),
                       Container(
                         child: Row(
@@ -316,7 +342,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-   _onMapTypeButtonPressed() {
+  _onMapTypeButtonPressed() {
     setState(() {
       _currentMapType = _currentMapType == MapType.normal
           ? MapType.satellite
@@ -324,19 +350,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     });
   }
   _getCurrentUserLocation() async {
-    Position _newPosition;
-    _newPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-      _newUserPosition = _newPosition;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      _newUserPosition = position;
       _position1 = CameraPosition(
-          bearing: 192.833,
+        // bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          tilt: 59.440,
-          zoom: 11.0);
+          // tilt: 59.440,
+          zoom: 17.0);
       _isLoading = false;
-      setState(() {
-
+      setState(() { // to check if that step is valid or not
       });
+
+    }).catchError((e) {
+      navigate(LoginScreen(), context, true);
+    });
   }
 
   Widget button(Function function, IconData icon, String hero) {
@@ -375,7 +403,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         .then((RemoteMessage message) {
       if (message != null) {
         FirebaseCloudMessaging.route =
-            new NormalUserNotification(message, true);
+        new NormalUserNotification(message, true);
         navigate(NotificationRoute.selectNavigate, context, false);
       }
     });
@@ -388,7 +416,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       isLoaded = true;
     }
     if (_isLoading) {
-      _getCurrentUserLocation() ;
+      if (firstTimeLocation){
+        firstTimeLocation =false ;
+        Future.delayed(Duration.zero, ()async{
+          await _getCurrentUserLocation() ;
+          showPinsOnMap();
+        });
+      }
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -401,9 +435,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       backgroundColor: secondColor,
                       strokeWidth: 5,
                       valueColor:
-                          new AlwaysStoppedAnimation<Color>(firstColor)))));
+                      new AlwaysStoppedAnimation<Color>(firstColor)))));
     } else{
-      showPinsOnMap();
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -540,7 +573,19 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: _position1,
                 mapType: _currentMapType,
-                markers: _markers,
+                markers: {_marker},
+                compassEnabled: true,
+                tiltGesturesEnabled: false,
+                onLongPress: (latlang) {
+                  print("HEREEEE");
+
+                  _addMarkerLongPressed(latlang);
+                  print (latlang);
+                  print (_marker);
+                  setState(() {
+
+                  });//we will call this function when pressed on the map
+                },
               ),
               /*SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -564,7 +609,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     // ignore: deprecated_member_use
                     child: RaisedButton(
                       onPressed: () async {
-                        await _makeRequest();
+                        // await _makeRequest();
+                        await _test();
                         if (firstStatusCode == 200) _showMaterialDialog();
                         //_showMaterialDialog();
                       },
@@ -580,10 +626,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   alignment: Alignment.topRight,
                   child: Column(
                     children: <Widget>[
-                      button(_onMapTypeButtonPressed, Icons.map, 'map'),
-                      SizedBox(
-                        height: 16.0,
-                      ),
+                      // button(_onMapTypeButtonPressed, Icons.map, 'map'),
+                      // SizedBox(
+                      //   height: 16.0,
+                      // ),
                       button(
                           _goToPosition1, Icons.location_searching, 'position'),
                     ],
@@ -648,6 +694,36 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       }
     }
   }
+  Future _addMarkerLongPressed(LatLng latlang) async {
+    _marker =
+        Marker(
+          markerId: MarkerId(_newUserPosition.toString()),
+          position: latlang,
+          draggable: true,
+            onDragEnd: ((newPosition) {
+              print(newPosition.latitude);
+              print(newPosition.longitude);
+            }),
+
+    // infoWindow: InfoWindow(
+          //   title: 'This is a Title',
+          //   snippet: 'This is a snippet',
+          // ),
+          icon: BitmapDescriptor.defaultMarker,
+        );
+
+    // setState(() {
+    //   final MarkerId markerId = MarkerId("RANDOM_ID");
+    //   Marker marker = Marker(
+    //     markerId: markerId,
+    //     draggable: true,
+    //     position: latlang, //With this parameter you automatically obtain latitude and longitude
+    //     icon: BitmapDescriptor.defaultMarker,
+    //   );
+    //
+    //   _marker = marker;
+    // });
+  }
   _showCallDialog(String type) {
     showDialog(
         context: context,
@@ -666,10 +742,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Additional Information",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      )),
+                            "Additional Information",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20),
+                          )),
                       SizedBox(height: 20),
                       TextField(
                         decoration: InputDecoration(

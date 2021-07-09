@@ -382,7 +382,10 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, dynamic>{
-        'rate': rateResponse.rating,
+        'ratingInfo': {
+          'rate': rateResponse.rating,
+          'comment': _commentController.text ,
+        },
         'time' :req.dateId,
         'uid' : req.helperUid
       }),
