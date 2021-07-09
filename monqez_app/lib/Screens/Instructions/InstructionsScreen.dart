@@ -46,7 +46,9 @@ class InstructionsScreen extends StatelessWidget {
       return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-            leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
+            leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+              Navigator.pop(context);
+            }),
             title: getTitle(
                 "Instructions", 22.0, secondColor, TextAlign.start, true),
             actions: [

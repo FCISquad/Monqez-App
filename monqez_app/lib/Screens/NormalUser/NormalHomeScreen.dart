@@ -49,6 +49,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   BodyMap avatar;
   bool isLoaded = false;
   int firstStatusCode;
+  final _drawerKey = GlobalKey<ScaffoldState>();
+
   _NormalHomeScreenState(String token) {
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
@@ -440,6 +442,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             ],
           ),
           drawer: Drawer(
+            key: _drawerKey,
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
@@ -483,7 +486,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       leading: Icon(Icons.account_circle_rounded,
                           size: 30, color: firstColor),
                       onTap: () {
-                        //Navigator.pop(context);
+                        Navigator.pop(_drawerKey.currentContext);
                         navigate(ProfileScreen(user), context, false);
                       },
                     ),
@@ -494,7 +497,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       leading: Icon(Icons.history,
                           size: 30, color: firstColor),
                       onTap: () {
-                        //Navigator.pop(context);
+                        Navigator.pop(_drawerKey.currentContext);
                         navigate(NormalPreviousRequests(user), context, false);
                       },
                     ),
@@ -504,7 +507,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       leading: Icon(Icons.help_center_outlined,
                           size: 30, color: firstColor),
                       onTap: () {
-                        //Navigator.pop(context);
+                        Navigator.pop(_drawerKey.currentContext);
                         navigate(InstructionsScreen(false, user.token), context, false);
                       },
                     ),
@@ -514,8 +517,39 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       leading: Icon(Icons.history,
                           size: 30, color: firstColor),
                       onTap: () {
-                        //Navigator.pop(context);
-                        navigate(ChatbotScreen(), context, false);
+
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatbotScreen(user.token))).then((returned){
+                          Navigator.pop(_drawerKey.currentContext);
+
+                          if (returned == null)
+                            return;
+
+                          if (returned[0] == "request") {
+                            if (returned.length == 2) {
+                              String notes = returned[1];
+                              _aditionalNotes.text = notes;
+                            }
+                            _makeRequest().then((value) {
+                              if (firstStatusCode == 200) _showMaterialDialog();
+                            });
+
+                          } else if (returned[0] == "voice") {
+                            if (returned.length == 2) {
+                              String notes = returned[1];
+                              _additionalInfoController.text = notes;
+                            }
+                            _showCallDialog("voice");
+                          } else if (returned[0] == "video") {
+                            if (returned.length == 2) {
+                              String notes = returned[1];
+                              _additionalInfoController.text = notes;
+                            }
+                            _showCallDialog("video");
+
+                          } else if (returned[0] == "instructions") {
+                            navigate(InstructionsScreen(false, user.token), context, false);
+                          }
+                        });
                       },
                     ),
                     Expanded(
@@ -699,12 +733,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
-                                    if (_additionalInfoController
-                                        .text.isEmpty) {
-                                      makeToast(
-                                          "Please enter additional information");
-                                    } else
-                                      onJoin(type);
+                                    if (_additionalInfoController.text.isEmpty) {
+                                      _additionalInfoController.text = " ";
+                                    }
+                                    onJoin(type);
                                   },
                                   child: Text(
                                     "Submit",

@@ -20,16 +20,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/Chatbot.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Backend/Authentication.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Backend/Authentication.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperHomeScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperUserPreviousRequests.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperUserPreviousRequests.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/RatingsScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/RatingsScreen.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../monqez_app/images/service.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Instructions/InstructionsScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Instructions/InstructionsScreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/Chatbot.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/Chatbot.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalHomeScreen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,6 +135,7 @@
       <workItem from="1622405950277" duration="4278000" />
       <workItem from="1622422884722" duration="1666000" />
       <workItem from="1625666448698" duration="3120000" />
+      <workItem from="1625772247380" duration="1847000" />
     </task>
     <servers />
   </component>
