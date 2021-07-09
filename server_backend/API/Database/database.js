@@ -587,22 +587,26 @@ class Database {
                 .then(function(snapshot) {
                     snapshot.forEach(function(childSnapshot) {
                         // console.log('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted");
-                        admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key + '/' + "accepted")
+                        admin.database().ref('requests/' + userJson["uid"] + '/' + childSnapshot.key)
                             .transaction(function(current_value){
                                 if ( current_value !== null ){
+
+
+                                    console.log("*INFO", current_value);
+                                    console.log("*INFO", "----------------------------------------------------- khaled");
 
                                     if ( current_value["status"] === 'closed' || current_value["status"] === 'cancelled' ){
                                         reject('closed');
                                     }
                                     else{
-                                        if ( current_value["counter"] === 1 ){
+                                        if ( current_value["accepted"]["counter"] === 1 ){
                                             reject();
                                         }
                                         else{
-                                            current_value["counter"]++;
-                                            current_value['uid_' + current_value["counter"]] = monqezId;
+                                            current_value["accepted"]["counter"]++;
+                                            current_value["accepted"]['uid_' + current_value["counter"]] = monqezId;
                                             current_value["status"] = "Accepted";
-                                            current_value["name"] = monqezName;
+                                            current_value["accepted"]["name"] = monqezName;
 
                                             admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
                                                 .set(childSnapshot.key)
@@ -745,8 +749,11 @@ class Database {
         return new Promise( (resolve, _) => {
             admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
-                    snapshot.val()[childSnapshot.key]["status"] = "cancelled";
-                    resolve();
+
+                    admin.database().ref('requests/' + userId + '/' + childSnapshot.key)
+                        .update({"status": "cancelled"}).then(function (){
+                            resolve()
+                    })
                 });
             });
         } );
