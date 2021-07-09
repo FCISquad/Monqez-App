@@ -81,7 +81,7 @@ class NormalUser extends User {
                     this.notify_monqez(min_three);
                 }
                 else{
-                    reject('No avilabel helpers');
+                    reject('No available helpers');
                 }
                 resolve(min_three);
             });
@@ -207,12 +207,28 @@ class NormalUser extends User {
         } );
     }
 
+    cancel_request(userId){
+        return new Promise( (resolve, _) => {
+            User._database.cancel_request(userId).then(function (){
+                resolve();
+            })
+        } );
+    }
+
     addComplaint(userId, json){
         return new Promise( (resolve, reject) => {
             User._database.addComplaint(userId, json).then(() => {resolve();})
                 .catch( function (error){
                     reject(error);
                 } )
+        } );
+    }
+
+    isCancelled(userId){
+        return new Promise( (resolve, _) => {
+            User._database.isCancelled(userId).then(function (result){
+                resolve(result);
+            })
         } );
     }
 }

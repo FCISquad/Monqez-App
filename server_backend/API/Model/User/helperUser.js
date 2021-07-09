@@ -73,7 +73,7 @@ class HelperUser extends User{
             User._database.getProfile(monqezId)
                 .then( function (snapShot){
                     User._database.requestAccept(monqezId, snapShot["name"], userJson)
-                        .then( (phoneNumber) => { resolve(phoneNumber) } )
+                        .then( () => {resolve();})
                         .catch( () => { reject() } );
                 } )
                 .catch( function (error){
@@ -169,6 +169,15 @@ class HelperUser extends User{
         return await User._database.getuser(userId);
     }
 
+    cancel_request(userId){
+        return new Promise( (resolve, reject) => {
+            User._database.cancel_request_helper(userId).then(function (){
+                resolve();
+            }).catch(function (error){
+                reject(error);
+            })
+        } );
+    }
 
     insertDummy(monqezId, userJson){
         return new Promise( (resolve, reject) => {

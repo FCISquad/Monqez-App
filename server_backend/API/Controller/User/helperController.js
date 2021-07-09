@@ -117,9 +117,13 @@ app.post( '/accept_request' , (request, response) => {
             tracker.track("good Auth - start process");
 
             new HelperUser().requestAccept(monqezId, request.body)
-                .then( (phoneNumber) => {
+                .then( async () => {
                     tracker.track("request finished without errors");
-                    response.status(200).send({"phone": phoneNumber});
+
+                    let monqezObject = await new HelperUser().getUser(monqezId);
+                    let normalObject = await new HelperUser().getUser(request.body["uid"]);
+
+                    response.status(200).send({"phone": normalObject["phone"]});
 
                     let normalUserId = request.body["uid"];
                     const payload = {
@@ -129,7 +133,8 @@ app.post( '/accept_request' , (request, response) => {
                         },
                         data:{
                             type: 'normal',
-                            description: 'message'
+                            description: 'message',
+                            phone: monqezObject["phone"]
                         }
                     };
 
@@ -140,7 +145,7 @@ app.post( '/accept_request' , (request, response) => {
 
                     helper.send_notifications(normalUserId, payload, options);
                 })
-                .catch( () => {
+                .catch( (error) => {
                     tracker.error(error);
                     response.sendStatus(201);
                 });
@@ -279,6 +284,45 @@ app.get('/get_requests', function (request, response){
                     tracker.error(error);
                     response.status(503).send(error);
                 } )
+        }
+    })
+});
+
+app.post('/cancel_request', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            new HelperUser().cancel_request(request.body["uid"]).then(function (){
+                tracker.track("request finished without errors");
+                response.sendStatus(200);
+
+                const payload = {
+                    notification: {
+                        title: 'Request is cancelled',
+                        body: 'Request is cancelled'
+                    },
+                    data:{
+                        type: 'normal',
+                        description: 'message'
+                    }
+                };
+                const options = {
+                    priority: 'high',
+                    timeToLive: 60 * 60
+                };
+
+                helper.send_notifications(request.body["uid"], payload, options);
+            }).catch(function (error){
+                tracker.error(error);
+                response.status(503).send(error);
+            })
         }
     })
 });

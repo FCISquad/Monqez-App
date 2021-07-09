@@ -591,7 +591,7 @@ class Database {
                             .transaction(function(current_value){
                                 if ( current_value !== null ){
 
-                                    if ( current_value["status"] === 'closed' ){
+                                    if ( current_value["status"] === 'closed' || current_value["status"] === 'cancelled' ){
                                         reject('closed');
                                     }
                                     else{
@@ -604,18 +604,35 @@ class Database {
                                             current_value["status"] = "Accepted";
                                             current_value["name"] = monqezName;
 
-                                            admin.database().ref('user/' + monqezId).once("value")
-                                                .then(function (snapshot){
-                                                    admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
-                                                        .set(childSnapshot.key)
-                                                        .then(() => {resolve(snapshot["phone"]);})
-                                                        .catch( function (error){
-                                                            reject(error);
-                                                        } );
+                                            admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
+                                                .set(childSnapshot.key)
+                                                .then(() => {
+                                                    resolve();
                                                 })
-                                                .catch(function (error){
+                                                .catch( function (error){
                                                     reject(error);
-                                                })
+                                                } );
+
+                                            // admin.database().ref('user/' + userJson["uid"]).once("value")
+                                            //     .then(function (snapshot){
+                                            //
+                                            //         admin.database().ref('user/' + monqezId).once("value")
+                                            //             .then(function (snapshotMonqez){
+                                            //
+                                            //                 admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
+                                            //                     .set(childSnapshot.key)
+                                            //                     .then(() => {
+                                            //                         resolve({"normal" : snapshot.val()["phone"], "monqez" : snapshotMonqez.val()["phone"]});
+                                            //                     })
+                                            //                     .catch( function (error){
+                                            //                         reject(error);
+                                            //                     } );
+                                            //
+                                            //             })
+                                            //     })
+                                            //     .catch(function (error){
+                                            //         reject(error);
+                                            //     })
                                         }
                                     }
                                 }
@@ -719,6 +736,17 @@ class Database {
             admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
                 snapshot.forEach(function(childSnapshot) {
                     resolve(snapshot.val()[childSnapshot.key]["additionalInfo"]);
+                });
+            });
+        } );
+    }
+
+    cancel_request(userId){
+        return new Promise( (resolve, _) => {
+            admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    snapshot.val()[childSnapshot.key]["status"] = "cancelled";
+                    resolve();
                 });
             });
         } );
@@ -930,6 +958,36 @@ class Database {
                 .catch( function (error){
                     reject(error);
                 } );
+        } );
+    }
+
+
+    isCancelled(userId){
+        return new Promise( (resolve, _) => {
+            admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+                    resolve(snapshot.val()[childSnapshot.key]["status"]);
+                });
+            });
+        });
+    }
+
+    cancel_request_helper(userId){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+
+                    admin.database().ref('requests/' + userId + '/' + childSnapshot.key).update({"status" : "cancelled"})
+                        .then(function (){
+                            resolve();
+                        })
+                        .catch(function (error){
+                            reject(error);
+                        });
+                });
+            }).catch(function (error){
+                reject(error);
+            });
         } );
     }
 

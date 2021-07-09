@@ -241,24 +241,49 @@ app.post('/update_registration_token', (request, response)=>{
 
 function requestTimeOut(userId, monqezIDs){
     tracker.track("Time is finished - check the request state");
-    new NormalUser().isTimeOut(userId).then( (acceptCount) => {
-        if (acceptCount === 0){
-            tracker.track("No helper accept the request");
-            for (let i = 3; i < monqezIDs.length; ++i){
-                let user = new NormalUser({});
-                user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
-                    if (allDecline === true){
-                        tracker.track("all decline - call re request function");
-                        re_request({"uid" : userId});
+
+    new NormalUser().isCancelled(userId).then(function (result){
+        if (result !== "cancelled"){
+            new NormalUser().isTimeOut(userId).then( (acceptCount) => {
+                if (acceptCount === 0){
+                    tracker.track("No helper accept the request");
+                    for (let i = 3; i < monqezIDs.length; ++i){
+                        let user = new NormalUser({});
+                        user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
+                            if (allDecline === true){
+                                tracker.track("all decline - call re request function");
+                                re_request({"uid" : userId});
+                            }
+                        } )
                     }
-                } )
-            }
+                }
+                else{
+                    tracker.track("request is accepted by some helper");
+                }
+            } );
+        }
+    });
+}
+
+app.post('/cancel_request', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
         }
         else{
-            tracker.track("request is accepted by some helper");
+            tracker.track("good Auth - start process");
+            new NormalUser().cancel_request(userId).then(function (){
+                tracker.track("request finished without errors");
+                response.sendStatus(200);
+            })
         }
-    } );
-}
+    })
+});
+
 
 app.post('/check_national_ID', (request, response) => {
     tracker.start(request.originalUrl);
