@@ -10,36 +10,40 @@ import 'package:geolocator/geolocator.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // ignore: must_be_immutable
 class HelperRequestScreen extends StatefulWidget {
+  String requestID ;
   double reqLong;
   double reqLat;
   double helperLong;
   double helperLat;
 
-  HelperRequestScreen(
-      double latitude, double longitude, double helperLat, double helperLong) {
+  HelperRequestScreen(String requestID,double latitude, double longitude, double helperLat, double helperLong) {
     this.reqLong = longitude;
     this.reqLat = latitude;
     this.helperLong = helperLong;
     this.helperLat = helperLat;
+    this.requestID =requestID ;
   }
 
   @override
   _HelperRequestScreenState createState() =>
-      _HelperRequestScreenState(reqLong, reqLat, helperLong, helperLat);
+      _HelperRequestScreenState(requestID,reqLong, reqLat, helperLong, helperLat);
 }
 
 class _HelperRequestScreenState extends State<HelperRequestScreen>
     with SingleTickerProviderStateMixin {
   double reqLong, reqLat, helperLong, helperLat;
+  String requestID ;
   LatLng initialLatLng;
   LatLng destinationLatLng;
   TextEditingController _detailedAddress;
@@ -53,12 +57,12 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   bool forMe;
   Widget avatar;
 
-  _HelperRequestScreenState(
-      double reqLong, double reqLat, double helperLong, double helperLat) {
+  _HelperRequestScreenState(String requestID , double reqLong, double reqLat, double helperLong, double helperLat) {
     this.reqLat = reqLat;
     this.reqLong = reqLong;
     this.helperLat = helperLat;
     this.helperLong = helperLong;
+    this.requestID = requestID ;
     // calcualteDistance() ;
   }
   // LatLng initialLatLng = LatLng(30.029585, 31.022356);
@@ -98,6 +102,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     injuryTypeController = TextEditingController(text: 'Internal or External');
     genderController = TextEditingController(text: 'Gender');
     polylinePoints = PolylinePoints();
+
     initializeSourceAndDestination();
     super.initState();
   }
@@ -120,10 +125,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         markerId: MarkerId(destinationLatLng.toString()),
         position:
             LatLng(destinationLatLng.latitude, destinationLatLng.longitude),
-        infoWindow: InfoWindow(
-          title: 'This is a Title',
-          snippet: 'This is a snippet',
-        ),
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
@@ -148,8 +149,12 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode(
-            <String, String>{'uid': "trdLyxPx9XPhRANKVzfmjK5Vkuy2"}));
+            <String, String>{'uid': requestID}));
     if (response.statusCode == 200) {
+      if (response.body.length==0){
+        return false ;
+      }
+      print ("-------------"+response.body) ;
       Map mp = jsonDecode(response.body);
       _additionalNotes.text = mp["Additional Notes"];
       _detailedAddress.text = mp["Address"];
@@ -238,7 +243,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SizedBox(height: 250, child: BodyMap()),
+                      // SizedBox(height: 250, child: BodyMap()),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -419,8 +424,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     );
     if (response.statusCode == 200) {
       makeToast("Submitted");
-    } else if (response.statusCode == 503) {
-      makeToast("No Available Monqez");
+      Provider.of<Helper>(context, listen: false).changeStatus("Available");
+
     } else {
       makeToast('Failed to submit user.');
     }
@@ -438,11 +443,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-    );
+        body: jsonEncode(
+            <String, String>{'uid': requestID}));
     if (response.statusCode == 200) {
       makeToast("Submitted");
-    } else if (response.statusCode == 503) {
-      makeToast("No Available Monqez");
+      Provider.of<Helper>(context, listen: false).changeStatus("Available");
     } else {
       makeToast('Failed to submit user.');
     }
@@ -467,7 +472,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
               // Map View
               GoogleMap(
                 markers: _markers,
-                initialCameraPosition: _position1,
+                initialCameraPosition: initialCameraPosition,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 mapType: MapType.normal,
@@ -516,6 +521,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           splashColor: Colors.black26,
                           onPressed: () async {
                             _completeRequest();
+                            navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
+
                           },
                           child: _getText(
                               'Complete', 14, FontWeight.w700, Colors.white, 1),
@@ -532,6 +539,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           splashColor: Colors.black26,
                           onPressed: () {
                             _cancelRequest();
+                            navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
                           },
                           child: _getText(
                               'Cancel', 14, FontWeight.w700, Colors.white, 1),

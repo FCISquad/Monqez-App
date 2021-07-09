@@ -46,7 +46,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
   bool firstTimeLocation = true;
   static User user;
-  List<bool> visible = [false,false,true];
+  List<bool> visible = [true,false,false];
   List<Icon> icons;
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
@@ -164,6 +164,26 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'latitude': _marker.position.latitude,
         'longitude': _marker.position.longitude
       }),
+    );
+    firstStatusCode = response.statusCode;
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+  Future<void> _cancelRequest() async {
+    await _getCurrentUserLocation();
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/cancel_request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
     );
     firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
@@ -721,6 +741,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
+                          await _cancelRequest() ;
                           visible[0] = !visible[0] ;
                           visible[1] = !visible[1] ;
                           setState(() {

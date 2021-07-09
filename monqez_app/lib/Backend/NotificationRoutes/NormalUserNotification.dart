@@ -11,7 +11,7 @@ class NormalUserNotification extends NotificationRoute {
     var data = message.data;
     if (data["description"] == "message") {
       showNotification();
-      NotificationRoute.selectNavigate = NormalHomeScreen(token);
+      NotificationRoute.selectNavigate = NormalHomeScreen(token,true);
     } else {
 
     }
