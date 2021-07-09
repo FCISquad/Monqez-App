@@ -33,6 +33,8 @@ class _Request {
   String info;
   bool isExpanded = false;
   String dateId ;
+  bool isRated = false;
+  bool isComplained = false;
 
   _Request(String key) {
     this.date = key.split(" ")[0];
@@ -438,6 +440,9 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
               else if (infoKey == "Additional Notes") request.info = infoValue;
             });
           }
+          if (requestKey == "ratingInfo") {
+            request.isRated = true;
+          }
         });
         value["accepted"].forEach((key2, value2) {
           if (key2.toString().startsWith("uid"))
@@ -789,44 +794,50 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                                             children: [
-                                              Container(
-                                                width: 110,
-                                                // ignore: deprecated_member_use
-                                                child: RaisedButton(
-                                                  onPressed: () {
-                                                    _showMaterialDialog(req);
+                                              Visibility(
+                                                visible: !req.isComplained,
+                                                child: Container(
+                                                  width: 110,
+                                                  // ignore: deprecated_member_use
+                                                  child: RaisedButton(
+                                                    onPressed: () {
+                                                      _showMaterialDialog(req);
 
-                                                  },
-                                                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                                                  color: firstColor,
-                                                  child: Text(
-                                                    'Complain',
-                                                    style: TextStyle(
-                                                      color: Colors.black87,
-                                                      letterSpacing: 1,
-                                                      fontSize: 16.0,
-                                                      fontWeight: FontWeight.bold,
+                                                    },
+                                                    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                                                    color: firstColor,
+                                                    child: Text(
+                                                      'Complain',
+                                                      style: TextStyle(
+                                                        color: Colors.black87,
+                                                        letterSpacing: 1,
+                                                        fontSize: 16.0,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                              Container(
-                                                width: 110,
-                                                // ignore: deprecated_member_use
-                                                child: RaisedButton(
-                                                  onPressed: () {
-                                                    buildScreen2(req);
+                                              Visibility(
+                                                visible: !req.isRated,
+                                                child: Container(
+                                                  width: 110,
+                                                  // ignore: deprecated_member_use
+                                                  child: RaisedButton(
+                                                    onPressed: () {
+                                                      buildScreen2(req);
 
-                                                  },
-                                                  color: firstColor,
-                                                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                                                  child: Text(
-                                                    'Rate',
-                                                    style: TextStyle(
-                                                      color: Colors.black87,
-                                                      letterSpacing: 1,
-                                                      fontSize: 16.0,
-                                                      fontWeight: FontWeight.bold,
+                                                    },
+                                                    color: firstColor,
+                                                    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                                                    child: Text(
+                                                      'Rate',
+                                                      style: TextStyle(
+                                                        color: Colors.black87,
+                                                        letterSpacing: 1,
+                                                        fontSize: 16.0,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),

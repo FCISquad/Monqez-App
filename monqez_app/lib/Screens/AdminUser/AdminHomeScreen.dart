@@ -7,6 +7,7 @@ import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
+import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -192,6 +193,15 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                         onTap: () {
                           // Navigator.pop(context);
                           navigate(AddNewAdminScreen(), context, false);
+                        }),
+                    ListTile(
+                        title: getTitle(
+                            'Modify Instructions', 18, firstColor, TextAlign.start, true),
+                        leading: Icon(Icons.add,
+                            size: 30, color: firstColor),
+                        onTap: () {
+                          // Navigator.pop(context);
+                          navigate(InstructionsScreen(true, user.token), context, false);
                         }),
                     Expanded(
                       child: Align(

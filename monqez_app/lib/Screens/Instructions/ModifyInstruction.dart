@@ -78,6 +78,8 @@ class ModifyInstructionState extends State<ModifyInstruction> {
                   child: getText('Replace', 22, true, Colors.green),
                   onPressed: () {
                     print("Replaced");
+                    print(instructions.length);
+                    print("Khaled:" + instructions.length.toString() + " " + images.length.toString() + " " + stepsControllers.length.toString());
                     Navigator.of(context).pop();
                     _buildImagePicker(context, i);
                   },
@@ -199,6 +201,9 @@ class ModifyInstructionState extends State<ModifyInstruction> {
               return;
             }
             injury = new Injury(images[0], stepsControllers[0].text );
+            for (int i=0 ; i<instructions.length ; i++) {
+              instructions[i] = new Pair(images[i+1], stepsControllers[i+1].text);
+            }
             injury.setInstructions(instructions);
 
              Provider.of<InstructionsList>(context, listen: false).addInjury(injury);

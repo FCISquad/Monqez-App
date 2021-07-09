@@ -76,7 +76,9 @@ class InstructionsList with ChangeNotifier {
     }
 
     String body = json.encode(injuriesJson);
-
+    print("here");
+    print(body);
+    print(body.length);
     final http.Response response = await http.post(
       Uri.parse('$url/admin/save_instructions/'),
       headers: <String, String>{

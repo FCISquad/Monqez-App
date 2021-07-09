@@ -20,13 +20,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../monqez_app/images/service.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Instructions/InstructionsScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Instructions/InstructionsScreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/AdminUser/AdminHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/AdminUser/AdminHomeScreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Instructions/ModifyInstruction.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Instructions/ModifyInstruction.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/LoginScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/LoginScreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/Instructions/InstructionsList.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/Instructions/InstructionsList.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/Chatbot.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/Chatbot.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalHomeScreen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalUserPreviousRequests.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/NormalUser/NormalUserPreviousRequests.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../monqez_app/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/pubspec.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/adminController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/adminController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/monqez.js" beforeDir="false" afterPath="$PROJECT_DIR$/monqez.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,6 +142,7 @@
       <workItem from="1622422884722" duration="1666000" />
       <workItem from="1625666448698" duration="3120000" />
       <workItem from="1625772247380" duration="1847000" />
+      <workItem from="1625839138003" duration="7525000" />
     </task>
     <servers />
   </component>
@@ -155,32 +162,32 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1877" height="370" key="GridCell.Tab.0.bottom" timestamp="1625698087029">
+    <state width="1877" height="612" key="GridCell.Tab.0.bottom" timestamp="1625846847671">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
-    <state width="1877" height="370" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1625698087029" />
+    <state width="1877" height="612" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1625846847671" />
     <state width="725" height="627" key="GridCell.Tab.0.bottom/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
-    <state width="1877" height="370" key="GridCell.Tab.0.center" timestamp="1625698087028">
+    <state width="1877" height="612" key="GridCell.Tab.0.center" timestamp="1625846847671">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
-    <state width="1877" height="370" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1625698087028" />
+    <state width="1877" height="612" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1625846847671" />
     <state width="725" height="627" key="GridCell.Tab.0.center/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
-    <state width="1877" height="370" key="GridCell.Tab.0.left" timestamp="1625698087028">
+    <state width="1877" height="612" key="GridCell.Tab.0.left" timestamp="1625846847671">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
-    <state width="1877" height="370" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1625698087028" />
+    <state width="1877" height="612" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1625846847671" />
     <state width="725" height="627" key="GridCell.Tab.0.left/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
-    <state width="1877" height="370" key="GridCell.Tab.0.right" timestamp="1625698087029">
+    <state width="1877" height="612" key="GridCell.Tab.0.right" timestamp="1625846847671">
       <screen x="0" y="0" width="1920" height="1050" />
     </state>
     <state width="1323" height="122" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1619186916458" />
-    <state width="1877" height="370" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1625698087029" />
+    <state width="1877" height="612" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1625846847671" />
     <state width="725" height="627" key="GridCell.Tab.0.right/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
     <state width="1877" height="511" key="GridCell.Tab.1.bottom" timestamp="1621628847456">

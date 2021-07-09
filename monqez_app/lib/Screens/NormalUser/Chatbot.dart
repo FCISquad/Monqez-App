@@ -175,13 +175,15 @@ class _ChatbotScreenState extends State<ChatbotScreen> with SingleTickerProvider
         onPreviewDataFetched: _handlePreviewDataFetched,
         onSendPressed: _handleSendPressed,
         user: _user,
-        theme: DarkChatTheme(
+        theme: DefaultChatTheme(
+          dateDividerTextStyle: TextStyle(color: firstColor, fontWeight: FontWeight.bold),
+          backgroundColor: secondColor,
           primaryColor: firstColor,
-          secondaryColor: secondColor,
-          receivedMessageBodyTextStyle: TextStyle(color: firstColor, fontWeight: FontWeight.bold),
-          sentMessageBodyTextStyle: TextStyle(color: secondColor, fontWeight: FontWeight.bold),
-          inputBackgroundColor: secondColor,
-          inputTextColor: firstColor,
+          secondaryColor: Color(0xFFDBF5F0),
+          receivedMessageBodyTextStyle: TextStyle(color: Color(0xFF0C6170), fontSize: 16),
+          sentMessageBodyTextStyle: TextStyle(color: secondColor,  fontSize: 16, fontWeight: FontWeight.bold),
+          inputBackgroundColor: Colors.black12,
+          inputTextColor: Colors.black,
         )
       ),
     );

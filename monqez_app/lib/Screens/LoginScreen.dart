@@ -12,6 +12,7 @@ import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:progress_indicator_button/progress_button.dart';
 import '../Backend/Authentication.dart';
 import 'UI.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -275,17 +276,20 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () async {
+      child: ProgressButton(
+        onPressed: (AnimationController controller) async {
+          controller.forward();
           if (!correctPassword && !correctEmail) {
             makeToast("Please enter all fields correctly");
+            controller.reset();
             return;
           } else if (!correctPassword) {
             makeToast("Please enter your password correctly");
+            controller.reset();
             return;
           } else if (!correctEmail) {
             makeToast("Please enter your email correctly");
+            controller.reset();
             return;
           }
           //bool result = await normalSignIn(_emailController, _passwordController);
@@ -344,11 +348,10 @@ class _LoginScreenState extends State<LoginScreen> {
               }
             }
           }
+          controller.reset();
         },
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
+        borderRadius: BorderRadius.circular(30.0),
+
         color: firstColor,
         child: Text(
           'LOGIN',
