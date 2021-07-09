@@ -131,6 +131,8 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     double height =
         (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
             100;
+    _subjectController.clear();
+    _messageController.clear();
     showDialog(
         context: context,
         builder: (context) {
@@ -245,6 +247,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                                             splashColor: Colors.black26,
                                             onPressed: () {
                                               _complainRequest(_messageController.text,_subjectController.text,req) ;
+                                              Navigator.pop(context);
                                             },
                                             child: _getText('Submit', 16,
                                                 Colors.white, FontWeight.w600),
@@ -265,6 +268,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     double height =
         (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
             100;
+    _commentController.clear();
     showDialog(
         context: context,
         builder: (context) {
@@ -276,7 +280,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
               child:SingleChildScrollView(
                   scrollDirection: Axis.vertical ,
                   child :Container(
-                    height: height*40,
+                    height: height*32,
                     width: width*80,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -285,7 +289,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                         Container(
                           height: 5*height,
                           width: 50*width,
-                          child:Center(child: _getText("Rate your Monqez", 20, Colors.black, FontWeight.w700)),
+                          child:Center(child: _getText("Rate your Monqez", 24, Colors.black, FontWeight.w700)),
                         ),
                         SizedBox(height: 2*height,),
                         Center(
@@ -325,14 +329,15 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
                             child: Text(
                               "Submit",
                               style: TextStyle(
-                                color: Colors.blue,
+                                color: firstColor,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 17,
+                                fontSize: 22,
                               ),
                             ),
                             onPressed: () {
                               rateResponse.rating = rate.toInt() ;
                               _rateRequest(rateResponse,req) ;
+                              Navigator.pop(context);
 
                             },
                           ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
@@ -25,12 +26,15 @@ import 'NormalUserPreviousRequests.dart';
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
   String token;
-  NormalHomeScreen(String token) {
+  bool status ;
+  NormalHomeScreen(String token,[bool status]) {
+
+    this.status =status ;
     this.token = token;
   }
 
   @override
-  _NormalHomeScreenState createState() => _NormalHomeScreenState(token);
+  _NormalHomeScreenState createState() => _NormalHomeScreenState(token,status);
 }
 
 class Item {
@@ -42,6 +46,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
   bool firstTimeLocation = true;
   static User user;
+  List<bool> visible = [false,false,true];
   List<Icon> icons;
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
@@ -52,7 +57,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   int firstStatusCode;
   final _drawerKey = GlobalKey<ScaffoldState>();
 
-  _NormalHomeScreenState(String token) {
+  _NormalHomeScreenState(String token,[bool status]) {
+    if (status == true){
+      visible[2] = true ;
+      visible[0] = false ;
+      visible[1] =false ;
+    }
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
       user.setToken(token);
@@ -232,6 +242,18 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
+  Widget _getText(String text, double fontSize, FontWeight fontWeight,
+      Color color, int lines) {
+    return AutoSizeText(text,
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontFamily: 'Cairo',
+            fontWeight: fontWeight),
+        maxLines: lines);
+  }
   _showMaterialDialog([String notes = ""]) {
     _aditionalNotes.clear();
     _detailedAddress.clear();
@@ -658,27 +680,186 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   },
                 ),
               ),*/
-              Padding(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    width: 200,
-                    height: 50,
-                    // ignore: deprecated_member_use
-                    child: RaisedButton(
-                      onPressed: () async {
-                        // await _makeRequest();
-                        await _makeRequest();
-                        if (firstStatusCode == 200) _showMaterialDialog();
-                        //_showMaterialDialog();
-                      },
-                      child: Text('Get Help!'),
-                      color: Colors.deepOrange,
+
+              Visibility(
+                  visible: visible[0] ,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        width: 200,
+                        height: 50,
+                        // ignore: deprecated_member_use
+                        child: RaisedButton(
+                          onPressed: () async {
+                            // await _makeRequest();
+                            await _makeRequest();
+                            if (firstStatusCode == 200){ _showMaterialDialog();
+                            visible[0] = !visible[0] ;
+                            visible[1] = !visible[1] ;
+                            setState(() {
+
+                            });}
+                          },
+                          child: Text('Get Help!'),
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                    ),
+                  ),
+              ),
+              Visibility(
+                visible: visible[1] ,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      width: 200,
+                      height: 50,
+                      // ignore: deprecated_member_use
+                      child: RaisedButton(
+                        onPressed: () async {
+                          visible[0] = !visible[0] ;
+                          visible[1] = !visible[1] ;
+                          setState(() {
+
+                          });
+                        },
+                        child: Text('Cancel', style: TextStyle(color: Colors.black)),
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                 ),
               ),
+              Visibility(
+                visible: visible[2] ,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 4,
+                            offset: Offset(4, 8), // Shadow position
+                          ),
+                        ],
+                         borderRadius: BorderRadius.circular(15.0),
+                      ),
+
+                      width: 220,
+                      height: 100,
+                      // ignore: deprecated_member_use
+                      child:  Column(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 15,),
+                        Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment
+                              .spaceEvenly,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(width: 8,),
+                            Container(
+                              height: 30,
+                              width: 110,
+                              decoration: BoxDecoration(
+                                color: Colors.deepOrange,
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child: Center(
+                                child: _getText('Monqez Name', 14,
+                                    FontWeight.bold, Colors.black, 1),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            _getText('Hatem', 14,
+                                FontWeight.bold, Colors.black, 1),
+                          ],
+                        ),
+                      ),
+                          SizedBox(height: 6,),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 8,),
+                                Container(
+                                  height: 30,
+                                  width: 110,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius: BorderRadius.circular(15.0),
+
+                                    // borderRadius:
+                                    // // BorderRadius.circular(
+                                    // //     20.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText('Phone Number', 14,
+                                        FontWeight.bold, Colors.black, 1),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                _getText('01016192209', 14,
+                                    FontWeight.bold, Colors.black, 1),
+                              ],
+                            ),
+                          ),
+                      // child: Container(
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.white,
+                      //       borderRadius: BorderRadius.circular(20.0),
+
+                          ]),
+                        // child: Column(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   crossAxisAlignment: CrossAxisAlignment.center,
+                        //   children: [
+                        //     Row(
+                        //       children: [
+                        //         SizedBox(width: 5,),
+                        //         Text('Monqez name:'),
+                        //         Text("Hatem") ,
+                        //       ],
+                        //     ),
+                        //     Row(
+                        //       children: [
+                        //         SizedBox(width: 5,),
+                        //         Text('Phone number:'),
+                        //         Text('01016192209') ,
+                        //       ],
+                        //     ),
+                        //
+                        //   ],
+                        // ),
+
+                      ),
+                    ),
+                  ),
+                ),
               Padding(
                 padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
                 child: Align(
