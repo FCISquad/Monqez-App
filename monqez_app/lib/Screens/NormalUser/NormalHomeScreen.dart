@@ -25,6 +25,7 @@ import 'NormalUserPreviousRequests.dart';
 
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
+  static List<bool> visible = [true,false,false];
   String token;
   bool status ;
   NormalHomeScreen(String token,[bool status]) {
@@ -33,6 +34,9 @@ class NormalHomeScreen extends StatefulWidget {
     this.token = token;
   }
 
+  static setAccepted() {
+    visible = [false,false,true];
+  }
   @override
   _NormalHomeScreenState createState() => _NormalHomeScreenState(token,status);
 }
@@ -46,7 +50,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
   bool firstTimeLocation = true;
   static User user;
-  List<bool> visible = [false,false,true];
   List<Icon> icons;
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
@@ -57,11 +60,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   int firstStatusCode;
   final _drawerKey = GlobalKey<ScaffoldState>();
 
+
   _NormalHomeScreenState(String token,[bool status]) {
     if (status == true){
-      visible[2] = true ;
-      visible[0] = false ;
-      visible[1] =false ;
+      NormalHomeScreen.visible[2] = true ;
+      NormalHomeScreen.visible[0] = false ;
+      NormalHomeScreen.visible[1] =false ;
     }
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
@@ -682,7 +686,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
               ),*/
 
               Visibility(
-                  visible: visible[0] ,
+                  visible: NormalHomeScreen.visible[0] ,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                     child: Align(
@@ -696,8 +700,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             // await _makeRequest();
                             await _makeRequest();
                             if (firstStatusCode == 200){ _showMaterialDialog();
-                            visible[0] = !visible[0] ;
-                            visible[1] = !visible[1] ;
+                            NormalHomeScreen.visible[0] = !NormalHomeScreen.visible[0] ;
+                            NormalHomeScreen.visible[1] = !NormalHomeScreen.visible[1] ;
                             setState(() {
 
                             });}
@@ -710,7 +714,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   ),
               ),
               Visibility(
-                visible: visible[1] ,
+                visible: NormalHomeScreen.visible[1] ,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
@@ -721,8 +725,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
-                          visible[0] = !visible[0] ;
-                          visible[1] = !visible[1] ;
+                          NormalHomeScreen.visible[0] = !NormalHomeScreen.visible[0] ;
+                          NormalHomeScreen.visible[1] = !NormalHomeScreen.visible[1] ;
                           setState(() {
 
                           });
@@ -735,7 +739,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 ),
               ),
               Visibility(
-                visible: visible[2] ,
+                visible: NormalHomeScreen.visible[2] ,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(

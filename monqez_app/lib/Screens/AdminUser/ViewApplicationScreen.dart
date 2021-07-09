@@ -105,7 +105,11 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       makeToast("Successful");
       Navigator.pop(context);
       //navigate(ApplicationsScreen(), context, true);
+    } else if (response.statusCode == 503) {
+      makeToast("Another admin has handled this application");
+      Navigator.pop(context);
     } else {
+      makeToast("Error!");
       print(response.statusCode);
     }
     setState(() {});
