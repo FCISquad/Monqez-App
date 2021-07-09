@@ -73,7 +73,7 @@ class HelperUser extends User{
             User._database.getProfile(monqezId)
                 .then( function (snapShot){
                     User._database.requestAccept(monqezId, snapShot["name"], userJson)
-                        .then( () => { resolve() } )
+                        .then( (phoneNumber) => { resolve(phoneNumber) } )
                         .catch( () => { reject() } );
                 } )
                 .catch( function (error){

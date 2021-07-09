@@ -11,6 +11,30 @@ const tracker = require('../../Tools/debugger');
 const controllerType = "normal";
 const freeForAll = "all";
 
+app.post('/notify_me', function(request, response){
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        const payload = {
+            notification: {
+                title: 'Hello world',
+                body: 'Test notifications'
+            },
+            data:{
+                type: 'normal',
+                description: 'message'
+            }
+        };
+
+        const options = {
+            priority: 'high',
+            timeToLive: 60 * 60
+        };
+
+        helper.send_notifications(userId, payload, options);
+    });
+
+})
+
 app.post('/khaled', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");

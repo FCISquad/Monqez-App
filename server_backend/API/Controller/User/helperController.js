@@ -117,9 +117,28 @@ app.post( '/accept_request' , (request, response) => {
             tracker.track("good Auth - start process");
 
             new HelperUser().requestAccept(monqezId, request.body)
-                .then( () => {
+                .then( (phoneNumber) => {
                     tracker.track("request finished without errors");
-                    response.sendStatus(200);
+                    response.status(200).send({"phone": phoneNumber});
+
+                    let normalUserId = request.body["uid"];
+                    const payload = {
+                        notification: {
+                            title: 'Request is accepted',
+                            body: 'Helper is on the way to you'
+                        },
+                        data:{
+                            type: 'normal',
+                            description: 'message'
+                        }
+                    };
+
+                    const options = {
+                        priority: 'high',
+                        timeToLive: 60 * 60
+                    };
+
+                    helper.send_notifications(normalUserId, payload, options);
                 })
                 .catch( () => {
                     tracker.error(error);

@@ -4,6 +4,7 @@ const app = express();
 const helper = require('../../Tools/RequestFunctions');
 const adminModel = require('../../Model/User/adminUser');
 const tracker = require('../../Tools/debugger');
+const mailer = require('../../Tools/nodeMailer');
 const controllerType = "admin";
 
 app.post('/add' , (request , response) => {
@@ -132,9 +133,15 @@ app.post( '/set_approval' , (request , response) => {
         }
         else{
             tracker.track("good Auth - start process");
-            new adminModel().setApproval(userID , request.body);
-            response.sendStatus(200);
-            tracker.track("request finished without errors");
+            new adminModel().setApproval(userID , request.body)
+                .then(function (){
+                    response.sendStatus(200);
+                    tracker.track("request finished without errors");
+                })
+                .catch(function (error){
+                    tracker.error(error);
+                    response.send(error);
+                })
         }
     });
 } );
@@ -191,6 +198,7 @@ app.post('/getComplaint', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
+    tracker.track(request.body);
     helper.verifyToken(request, controllerType, (userId) => {
         if (userId === null){
             tracker.error("Auth error, null userId");
@@ -210,6 +218,81 @@ app.post('/getComplaint', function (request, response){
         }
     })
 });
+
+app.post('/mail_complaint_warnings', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    new adminModel().sendWarningToUser(request.body);
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new adminModel().sendWarningToUser(request.body)
+                .then(function (){
+                    tracker.track("request finished without errors");
+                    response.sendStatus(200);
+                })
+                .catch(function (error){
+                    tracker.error(error);
+                    response.status(503).send(error);
+                })
+        }
+    })
+});
+
+app.post('/archive_complaint', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new adminModel().archiveComplaint(request.body)
+                .then(function (){
+                    tracker.track("request finished without errors");
+                    response.sendStatus(200);
+                })
+                .catch(function(error){
+                    tracker.error(error);
+                    response.sendStatus(503);
+                })
+        }
+    })
+});
+
+app.post( '/save_instructions' , (request , response) => {
+    // console.log("Here");
+    // let admin = new adminModel(request.body);
+    // admin.saveInstructions("Khaled" , request.body);
+    // response.sendStatus(200);
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+    helper.verifyToken(request, controllerType, (userID) => {
+        if ( userID === null ){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            let admin = new adminModel(request.body);
+            admin.saveInstructions(userID , request.body);
+            tracker.track("request finished without errors");
+            response.sendStatus(200);
+        }
+    });
+} );
+
 
 
 module.exports = app;

@@ -83,29 +83,37 @@ class Database {
             });
     }
 
-    getState() { //to be continued
-        async function getComplaintsSize() {
-            return await admin.database().ref('complaints/').once("value")
-                .then( function (snapShot){
-                    return Object.keys(snapShot.val()).length;
-                } )
-                .catch( function (){
-                    return 0;
-                } );
-        }
+    saveInstructions(adminID, instructionJson) {
+        return new Promise((resolve, reject) => {
+            admin.database().ref('injuries').update({
+                injuries: instructionJson,
+                edited_by: adminID
+            }).then(() => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
+        });
+    }
 
+
+    getState() { //to be continued
         return new Promise(((resolve, reject) => {
-            admin.database().ref('applicationQueue/')
-                .once("value")
-                .then( async (snapshot) => {
-                    resolve({
-                        "snapshot": snapshot.numChildren(),
-                        "complaints": await getComplaintsSize()
-                    });
-                })
-                .catch((error) => {
-                    reject(error);
-                })
+
+            this.getAllComplaints().then( function (complaints){
+                admin.database().ref('applicationQueue/')
+                    .once("value")
+                    .then( async (snapshot) => {
+                        resolve({
+                            "snapshot": snapshot.numChildren(),
+                            "complaints": complaints.length
+                        });
+                    })
+                    .catch((error) => {
+                        reject(error);
+                    })
+            } );
+
         }));
     }
 
@@ -261,6 +269,57 @@ class Database {
         } );
     }
 
+    sendWarining(complaintObject){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('complaints/' + complaintObject["complaintID"] + '/' + complaintObject["complainedUID"])
+                .limitToLast(1).once('value')
+                .then(function(snapshot) {
+                    snapshot.forEach(function(childSnapshot) {
+                        // console.log("*INFO", childSnapshot.val()["complaint"]);
+                        // console.log("*INFO", childSnapshot.val()["subject"]);
+
+                        admin.auth().getUser(complaintObject["complainedUID"])
+                            .then((userData) => {
+                                let mailSubject = childSnapshot.val()["subject"];
+                                let mailBody = childSnapshot.val()["subject"];
+
+                                mailer.sendMail(userData.email, mailSubject, mailBody)
+                                    .then(() => {
+                                    }).catch(() => {
+                                });
+                            });
+                    });
+                    resolve();
+                })
+                .catch(function (error){
+                    reject(error);
+                })
+        } );
+    }
+
+    archiveComplaint(complaintObject){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('complaints/' + complaintObject["complaintID"] + '/' + complaintObject["complainedUID"] + '/' + complaintObject["date"])
+                .transaction(function(snapshot){
+                    if (snapshot !== null){
+                        admin.database().ref('complaintsArchive/').update(snapshot)
+                            .then(function(){})
+                            .catch(function(error){
+                                reject(error);
+                            })
+                    }
+                    return snapshot;
+                })
+                .then( function(){
+                    admin.database().ref('complaints/' + complaintObject["complaintID"] + '/' + complaintObject["complainedUID"] + '/' + complaintObject["date"]).remove();
+                    resolve();
+                } )
+                .catch( function(error){
+                    reject(error);
+                } )
+        } );
+    }
+
     addAdmin(userID, databaseJson) {
         return new Promise((resolve, reject) => {
             admin.database().ref('user/' + userID).set(databaseJson)
@@ -307,7 +366,7 @@ class Database {
             admin.database().ref('user/' + userID).update({
                 "name": userObject["name"],
                 "national_id": userObject["national_id"],
-                "phone": userObject["phone_number"],
+                "phone": userObject["phone"],
                 "gender": userObject["gender"],
                 "birthdate": userObject["dob"],
                 "country": userObject["country"],
@@ -337,36 +396,53 @@ class Database {
     }
 
     setApproval(adminID, applicationJSON) {
-        admin.database().ref('applicationApproval/' + applicationJSON.userID)
-            .set({
-                "adminUID": adminID,
-                "date": applicationJSON.date,
-                "result": applicationJSON.result
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('applicationQueue/' + applicationJSON.userID).transaction(function (snapshot){
+                if (snapshot !== null){
+                    admin.database().ref('applicationApproval/' + applicationJSON.userID)
+                        .set({
+                            "adminUID": adminID,
+                            "date": applicationJSON.date,
+                            "result": applicationJSON.result
+                        })
+                        .then(() => {});
+
+                    if (applicationJSON.result === 'true') {
+                        admin.database().ref('user/' + applicationJSON.userID).update({
+                            "disable": "false"
+                        }).then(() => {});
+                    }
+
+                    admin.database().ref('monqez/' + applicationJSON.userID).update({
+                        "status": "Busy"
+                    }).then(() => {});
+
+                    admin.auth().getUser(applicationJSON.userID)
+                        .then((userData) => {
+                            let mailSubject = 'Monqez Team - Application Approval';
+                            let mailBody = applicationJSON.result;
+                            mailer.sendMail(userData.email, mailSubject, mailBody)
+                                .then(() => {
+                                }).catch(() => {
+                            });
+                        });
+                }
+                return snapshot;
+
             })
-            .then(() => {
-            });
-        admin.database().ref('applicationQueue/' + applicationJSON.userID).remove().then(() => {
-        });
-        if (applicationJSON.result === 'true') {
-            admin.database().ref('user/' + applicationJSON.userID).update({
-                "disable": "false"
-            })
-                .then(() => {
-                });
-        }
-        admin.database().ref('monqez/' + applicationJSON.userID).update({
-            "status": "Busy"
-        }).then(() => {
-        });
-        admin.auth().getUser(applicationJSON.userID)
-            .then((userData) => {
-                let mailSubject = 'Monqez Team - Application Approval';
-                let mailBody = applicationJSON.result;
-                mailer.sendMail(userData.email, mailSubject, mailBody)
-                    .then(() => {
-                    }).catch(() => {
-                });
-            });
+                .then(function (){
+                    resolve();
+                })
+                .catch(function (error){
+                    reject("Application not founded");
+                })
+        } );
+    }
+
+    deleteApplication(applicationJSON){
+        admin.database().ref('applicationQueue/' + applicationJSON.userID).remove()
+            .then(() => {})
+            .catch(() => {});
     }
 
     updateLocation(userID, userJson) {
@@ -528,12 +604,18 @@ class Database {
                                             current_value["status"] = "Accepted";
                                             current_value["name"] = monqezName;
 
-                                            admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
-                                                .set(childSnapshot.key)
-                                                .then(() => {resolve();})
-                                                .catch( function (error){
+                                            admin.database().ref('user/' + monqezId).once("value")
+                                                .then(function (snapshot){
+                                                    admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
+                                                        .set(childSnapshot.key)
+                                                        .then(() => {resolve(snapshot["phone"]);})
+                                                        .catch( function (error){
+                                                            reject(error);
+                                                        } );
+                                                })
+                                                .catch(function (error){
                                                     reject(error);
-                                                } );
+                                                })
                                         }
                                     }
                                 }
@@ -697,8 +779,8 @@ class Database {
             console.log("*INFO", json["time"]);
             console.log("*INFO", json);
 
-            admin.database().ref('requests/' + uid + '/' + json["time"])
-                .update({"rate" : json["rate"]})
+            admin.database().ref('requests/' + uid + '/' + json["time"] + '/' + 'ratingInfo/')
+                .update({"rate" : json["rate"], "comment" : json["comment"]})
                 .then( function () {
                     resolve();
                 } )
