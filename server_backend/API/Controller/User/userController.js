@@ -453,7 +453,7 @@ app.post('/rate', function (request, response){
             new NormalUser().rate(userId, request.body)
                 .then( () => {
                     tracker.track("request finished without errors");
-                    response.send(200);
+                    response.sendStatus(200);
                 } )
                 .catch( function ( error) {
                     tracker.error(error);

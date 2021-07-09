@@ -368,7 +368,7 @@ class Database {
                 "national_id": userObject["national_id"],
                 "phone": userObject["phone"],
                 "gender": userObject["gender"],
-                "birthdate": userObject["dob"],
+                "birthdate": userObject["birthdate"],
                 "country": userObject["country"],
                 "city": userObject["city"],
                 "street": userObject["street"],
@@ -780,7 +780,7 @@ class Database {
             console.log("*INFO", json);
 
             admin.database().ref('requests/' + uid + '/' + json["time"] + '/' + 'ratingInfo/')
-                .update({"rate" : json["rate"], "comment" : json["comment"]})
+                .update({"rate" : json["ratingInfo"]["rate"], "comment" : json["ratingInfo"]["comment"]})
                 .then( function () {
                     resolve();
                 } )
@@ -810,7 +810,8 @@ class Database {
         return new Promise( (resolve, reject) => {
             admin.database().ref('monqez/' + json["uid"]).transaction(function(current_value){
                 if (current_value !== null) {
-                    current_value["sum"] = current_value["sum"] + json["rate"];
+                    console.log("*INFO", json);
+                    current_value["sum"] = current_value["sum"] + json["ratingInfo"]["rate"];
                     current_value["total"] = current_value["total"] + 1;
                 }
                 return current_value;

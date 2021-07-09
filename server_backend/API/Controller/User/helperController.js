@@ -208,6 +208,7 @@ app.post('/get_additional_information', (request, response) => {
             tracker.track("good Auth - start process");
             new HelperUser().get_additional_information(request.body["uid"]).then( (additionalInfo) => {
                 tracker.track("request finished without errors");
+                console.log("*INFO", additionalInfo);
                 response.status(200).send(additionalInfo);
             } );
         }

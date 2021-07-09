@@ -203,7 +203,7 @@ class NormalUser extends User {
                 .then( () => {resolve();} )
                 .catch( function (error){
                     reject(error);
-                } )
+                } );
         } );
     }
 
