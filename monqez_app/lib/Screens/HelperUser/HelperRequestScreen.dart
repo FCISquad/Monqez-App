@@ -85,9 +85,9 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
   Completer<GoogleMapController> _controller = Completer();
   static CameraPosition _position1 = CameraPosition(
-    bearing: 192.833,
+    // bearing: 192.833,
     target: LatLng(30.029585, 31.022356),
-    tilt: 59.440,
+    // tilt: 59.440,
     zoom: 12.0,
   );
 

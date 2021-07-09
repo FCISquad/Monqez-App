@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //String url = "https://monqez.herokuapp.com";
 String url = "https://khaled.loca.lt";
 
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
 var _prefs = SharedPreferences.getInstance();
@@ -108,6 +109,7 @@ Future<bool> signInWithGoogle() async {
   }
   return false;
 }
+
 /*
 Future<bool> signInWithFacebook() async {
   try {

@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
             return;
           }
           //bool result = await normalSignIn(_emailController, _passwordController);
-          bool result;
+          bool result ;
           var token;
           UserCredential userCredential;
           try {
@@ -304,12 +304,15 @@ class _LoginScreenState extends State<LoginScreen> {
             if (e.code == 'user-not-found') {
               makeToast('Email not found!');
               result = false;
+              print ("1") ;
             } else if (e.code == 'wrong-password') {
               makeToast('Wrong password!');
               result = false;
+              print ("2") ;
             } else {
               makeToast(e.code);
               result = false;
+              print ("3") ;
             }
           }
 
@@ -328,6 +331,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 navigateReplacement(SecondSignupScreen());
               }
             } else {
+              print ("here") ;
+              print (type) ;
               saveUserToken(token, userCredential.user.uid);
               makeToast("Logged in Successfully");
               if (type == 0) {
@@ -403,6 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
             saveUserToken(token, authResult.user.uid);
             navigateReplacement(SecondSignupScreen());
           } else {
+            print ("heere") ;
             saveUserToken(token, authResult.user.uid);
             makeToast("Logged in Successfully");
             if (type == 0) {
