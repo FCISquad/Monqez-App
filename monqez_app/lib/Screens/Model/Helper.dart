@@ -16,6 +16,7 @@ class Helper extends User with ChangeNotifier  {
   double latitude;
   int callCount;
   double ratings;
+  int myPoints = 0;
 
   final loc.Location _location = loc.Location();
 
@@ -53,6 +54,7 @@ class Helper extends User with ChangeNotifier  {
       this.status = parsed['status'];
       this.callCount = (parsed['calls'] == 0 || parsed['calls'] == null) ? 0 : parsed['calls'];
       this.ratings = (parsed['sum'] == 0 || parsed['sum'] == null) ? 0 : (parsed['sum'] / parsed['total']);
+      this.myPoints = (parsed['points'] == 0 || parsed['points'] == null) ? 0 : parsed['points'];
     } else {
       print(response2.statusCode);
     }
@@ -101,7 +103,6 @@ class Helper extends User with ChangeNotifier  {
       },
       body: jsonEncode(<String, String>{'status': newValue}),
     );
-
     if (response.statusCode == 200) {
       makeToast("Submitted");
     } else {
