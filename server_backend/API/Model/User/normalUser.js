@@ -3,7 +3,7 @@ const sphericalGeometry = require('spherical-geometry-js');
 const admin = require('firebase-admin');
 
 const max_distance = 3000; // 3 Km = 3000 Meter
-const helper = require('../../Tools/RequestFunctions');
+const helper = require('../../Tools/requestFunctions');
 
 class NormalUser extends User {
     constructor(userJson) {

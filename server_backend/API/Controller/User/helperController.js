@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-const helper = require("../../Tools/RequestFunctions");
+const helper = require("../../Tools/requestFunctions");
 const HelperUser = require("../../Model/User/helperUser");
 const tracker = require('../../Tools/debugger');
 const controllerType = "helper";
