@@ -8,7 +8,7 @@ app.get('/', (req,res) => {
 
 //const monqez = require('./monqez');
 // const localtunnel = require("localtunnel");
-app.use('/' , monqez);
+// app.use('/' , monqez);
 
 const port = process.env.PORT || '5000';
 app.listen(port, () => console.log(`Server started on Port ${port}`));
