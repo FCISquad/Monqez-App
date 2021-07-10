@@ -56,6 +56,7 @@ abstract class NotificationRoute{
               channel.id,
               channel.name,
               channel.description,
+              timeoutAfter: 1000,
               importance: Importance.max,
               priority: Priority.high,
               enableVibration: true,

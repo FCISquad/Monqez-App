@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'Screens/ComplaintDialog.dart';
 import 'Screens/HelperUser/HelperRequestScreen.dart';
 import 'Screens/Model/Helper.dart';
+import 'Screens/Model/Normal.dart';
 import 'Screens/SplashScreen.dart';
 import 'Screens/rateDialog.dart';
 
@@ -18,6 +19,7 @@ main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<Helper>(create: (context) => Helper.empty()),
+        ChangeNotifierProvider<Normal>(create: (context) => Normal.empty()),
         ChangeNotifierProvider<InstructionsList>(
             create: (context) => InstructionsList()),
       ],

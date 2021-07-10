@@ -15,7 +15,7 @@ app.listen(port, () => console.log(`Server started on Port ${port}`));
 
 
 (async () => {
-    const tunnel = await localtunnel({ port: 5000, subdomain: "khaled" });
+    const tunnel = await localtunnel({ port: 5000, subdomain: "monqez2" });
 
     // the assigned public url for your tunnel
     // i.e. https://abcdefgjhij.localtunnel.me

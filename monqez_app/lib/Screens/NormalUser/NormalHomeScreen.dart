@@ -22,23 +22,15 @@ import '../LoginScreen.dart';
 import '../VoicePage.dart';
 import 'Chatbot.dart';
 import 'NormalUserPreviousRequests.dart';
+import 'package:provider/provider.dart';
+import 'package:monqez_app/Screens/Model/Normal.dart';
 
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
-  static List<bool> visible = [true,false,false];
   String token;
-  bool status ;
-  NormalHomeScreen(String token,[bool status]) {
-
-    this.status =status ;
-    this.token = token;
-  }
-
-  static setAccepted() {
-    visible = [false,false,true];
-  }
+  NormalHomeScreen(this.token);
   @override
-  _NormalHomeScreenState createState() => _NormalHomeScreenState(token,status);
+  _NormalHomeScreenState createState() => _NormalHomeScreenState(token);
 }
 
 class Item {
@@ -48,6 +40,7 @@ class Item {
 
 class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
+
   bool firstTimeLocation = true;
   static User user;
   List<Icon> icons;
@@ -61,12 +54,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   final _drawerKey = GlobalKey<ScaffoldState>();
 
 
-  _NormalHomeScreenState(String token,[bool status]) {
-    if (status == true){
-      NormalHomeScreen.visible[2] = true ;
-      NormalHomeScreen.visible[0] = false ;
-      NormalHomeScreen.visible[1] =false ;
-    }
+  _NormalHomeScreenState(String token) {
+
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
       user.setToken(token);
@@ -471,6 +460,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       valueColor:
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
     } else {
+      List<bool> visible = Provider.of<Normal>(context, listen: true).visible;
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -686,7 +676,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
               ),*/
 
               Visibility(
-                  visible: NormalHomeScreen.visible[0] ,
+                  visible: visible[0] ,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                     child: Align(
@@ -700,8 +690,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             // await _makeRequest();
                             await _makeRequest();
                             if (firstStatusCode == 200){ _showMaterialDialog();
-                            NormalHomeScreen.visible[0] = !NormalHomeScreen.visible[0] ;
-                            NormalHomeScreen.visible[1] = !NormalHomeScreen.visible[1] ;
+                            visible[0] = !visible[0] ;
+                            visible[1] = !visible[1] ;
                             setState(() {
 
                             });}
@@ -714,7 +704,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   ),
               ),
               Visibility(
-                visible: NormalHomeScreen.visible[1] ,
+                visible: visible[1] ,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
@@ -725,8 +715,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
-                          NormalHomeScreen.visible[0] = !NormalHomeScreen.visible[0] ;
-                          NormalHomeScreen.visible[1] = !NormalHomeScreen.visible[1] ;
+                          visible[0] = !visible[0] ;
+                          visible[1] = !visible[1] ;
                           setState(() {
 
                           });
@@ -739,7 +729,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 ),
               ),
               Visibility(
-                visible: NormalHomeScreen.visible[2] ,
+                visible: visible[2] ,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
