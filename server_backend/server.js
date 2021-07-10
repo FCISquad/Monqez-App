@@ -6,7 +6,7 @@ app.get('/', (req,res) => {
     res.send('Welcome in Monqez Server');
 });
 
-const monqez = require('./monqez');
+//const monqez = require('./monqez');
 // const localtunnel = require("localtunnel");
 app.use('/' , monqez);
 

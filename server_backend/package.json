@@ -26,6 +26,7 @@
     "node": "14.15.0"
   },
   "devDependencies": {
+    "case-sensitive-paths-webpack-plugin": "^2.4.0",
     "config": "^3.3.6",
     "firebase-service": "^5.0.3",
     "request-promise": "^4.2.6"
