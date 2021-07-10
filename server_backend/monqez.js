@@ -19,12 +19,12 @@ app.use(bodyParser.urlencoded({parameterLimit: 100000,limit: '100mb', extended :
 app.use(bodyParser.json({limit: '100mb'}));
 
 
-const userRoute = require('./API/Controller/User/userController');
-app.use('/user' , userRoute);
+// const userRoute = require('./API/Controller/User/userController');
+// app.use('/user' , userRoute);
 
-// const adminRoute = require('./API/Controller/User/adminController');
-// app.use('/admin' , adminRoute);
-//
+const adminRoute = require('./API/Controller/User/adminController');
+app.use('/admin' , adminRoute);
+
 // const helperRoute = require('./API/Controller/User/helperController');
 // app.use('/helper' , helperRoute);
 //

@@ -54,7 +54,6 @@ app.post('/khaled', function (request, response){
     })
 });
 
-
 app.post('/signup' , (request , response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
@@ -284,7 +283,6 @@ app.post('/cancel_request', function (request, response){
     })
 });
 
-
 app.post('/check_national_ID', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
@@ -309,7 +307,6 @@ app.post('/check_national_ID', function (request, response){
         }
     })
 });
-
 
 // app.post('/check_national_ID', (request, response) => {
 //     tracker.start(request.originalUrl);
