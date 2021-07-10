@@ -27,23 +27,26 @@ class HelperRequestScreen extends StatefulWidget {
   double reqLat;
   double helperLong;
   double helperLat;
+  String phone ;
 
-  HelperRequestScreen(String requestID,double latitude, double longitude, double helperLat, double helperLong) {
+  HelperRequestScreen(String phone ,String requestID,double latitude, double longitude, double helperLat, double helperLong) {
     this.reqLong = longitude;
     this.reqLat = latitude;
     this.helperLong = helperLong;
     this.helperLat = helperLat;
     this.requestID =requestID ;
+    this.phone = phone ;
   }
 
   @override
   _HelperRequestScreenState createState() =>
-      _HelperRequestScreenState(requestID,reqLong, reqLat, helperLong, helperLat);
+      _HelperRequestScreenState(phone,requestID,reqLong, reqLat, helperLong, helperLat);
 }
 
 class _HelperRequestScreenState extends State<HelperRequestScreen>
     with SingleTickerProviderStateMixin {
   double reqLong, reqLat, helperLong, helperLat;
+  String phone ;
   String requestID ;
   LatLng initialLatLng;
   LatLng destinationLatLng;
@@ -59,12 +62,13 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   bool forMe;
   Widget avatar;
 
-  _HelperRequestScreenState(String requestID , double reqLong, double reqLat, double helperLong, double helperLat) {
+  _HelperRequestScreenState(String phone ,String requestID , double reqLong, double reqLat, double helperLong, double helperLat) {
     this.reqLat = reqLat;
     this.reqLong = reqLong;
     this.helperLat = helperLat;
     this.helperLong = helperLong;
     this.requestID = requestID ;
+    this._phoneNumberController.text= phone ;
     // calcualteDistance() ;
   }
   // LatLng initialLatLng = LatLng(30.029585, 31.022356);
@@ -485,21 +489,24 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                 SizedBox(
                                   width: 8,
                                 ),
-                               Container(
-                                   height: 30,
-                                   width: 125,
-                                   decoration: BoxDecoration(
-                                     color: Colors.white24,
-                                     borderRadius:
-                                     BorderRadius.circular(
-                                         5.0),
+                                Container(
+                                     height: 30,
+                                     width: 125,
+                                     decoration: BoxDecoration(
+                                       color: Colors.white24,
+                                       borderRadius:
+                                       BorderRadius.circular(
+                                           5.0),
 
+                                     ),
+                                     child:  Center(
+                                       child: GestureDetector(
+                                         onTap:(){ _launchCaller(phone);},
+                                         child: _getText(phone, 15,
+                                             FontWeight.normal, Colors.black, 1),
+                                       ),
+                                     ),
                                    ),
-                                   child:  Center(
-                                     child: _getText('01016192209', 15,
-                                         FontWeight.normal, Colors.black, 1),
-                                   ),
-                                 ),
                               ],
                             ),
                           ),

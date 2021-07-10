@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // String url = "https://monqez.herokuapp.com";
 // String url = "https://khaled.loca.lt";
-String url = "https://monqez5.loca.lt";
+String url = "https://monqez2.loca.lt";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();

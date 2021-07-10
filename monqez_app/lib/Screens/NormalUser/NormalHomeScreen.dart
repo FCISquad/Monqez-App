@@ -8,6 +8,7 @@ import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -844,8 +845,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText('01016192209', 14,
-                                    FontWeight.bold, Colors.black, 1),
+                                GestureDetector(
+                                    onTap:(){ _launchCaller("01016192209");},
+                                  child: _getText('01016192209', 14,
+                                      FontWeight.bold, Colors.black, 1),
+                                ),
                               ],
                             ),
                           ),
@@ -901,6 +905,15 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           ),
         ),
       );
+    }
+  }
+
+  _launchCaller(String number) async {
+    String url = "tel:$number";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 
