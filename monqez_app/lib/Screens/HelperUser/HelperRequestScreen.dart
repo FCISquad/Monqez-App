@@ -10,42 +10,52 @@ import 'package:geolocator/geolocator.dart';
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Model/Helper.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class HelperRequestScreen extends StatefulWidget {
+  String requestID ;
   double reqLong;
   double reqLat;
   double helperLong;
   double helperLat;
+  String phone ;
 
-  HelperRequestScreen(
-      double latitude, double longitude, double helperLat, double helperLong) {
+  HelperRequestScreen(String phone ,String requestID,double latitude, double longitude, double helperLat, double helperLong) {
     this.reqLong = longitude;
     this.reqLat = latitude;
     this.helperLong = helperLong;
     this.helperLat = helperLat;
+    this.requestID =requestID ;
+    this.phone = phone ;
   }
 
   @override
   _HelperRequestScreenState createState() =>
-      _HelperRequestScreenState(reqLong, reqLat, helperLong, helperLat);
+      _HelperRequestScreenState(phone,requestID,reqLong, reqLat, helperLong, helperLat);
 }
 
 class _HelperRequestScreenState extends State<HelperRequestScreen>
     with SingleTickerProviderStateMixin {
   double reqLong, reqLat, helperLong, helperLat;
+  String phone ;
+  String requestID ;
   LatLng initialLatLng;
   LatLng destinationLatLng;
-  TextEditingController _detailedAddress;
-  TextEditingController _additionalNotes;
-  TextEditingController injuryTypeController;
-  TextEditingController genderController;
+  TextEditingController _detailedAddressController;
+  TextEditingController _additionalNotesController;
+  TextEditingController _forMeController;
+
+  // TextEditingController _injuryTypeController;
+  // TextEditingController _genderController;
   Position helperLocation;
   var _prefs;
 
@@ -53,12 +63,13 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   bool forMe;
   Widget avatar;
 
-  _HelperRequestScreenState(
-      double reqLong, double reqLat, double helperLong, double helperLat) {
+  _HelperRequestScreenState(String phone ,String requestID , double reqLong, double reqLat, double helperLong, double helperLat) {
     this.reqLat = reqLat;
     this.reqLong = reqLong;
     this.helperLat = helperLat;
     this.helperLong = helperLong;
+    this.requestID = requestID ;
+    this.phone = phone;
     // calcualteDistance() ;
   }
   // LatLng initialLatLng = LatLng(30.029585, 31.022356);
@@ -84,20 +95,15 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   final Set<Marker> _markers = {};
 
   Completer<GoogleMapController> _controller = Completer();
-  static CameraPosition _position1 = CameraPosition(
-    // bearing: 192.833,
-    target: LatLng(30.029585, 31.022356),
-    // tilt: 59.440,
-    zoom: 12.0,
-  );
 
   @override
   void initState() {
-    _detailedAddress = TextEditingController(text: "Detailed Address");
-    _additionalNotes = TextEditingController(text: 'Additional Notes');
-    injuryTypeController = TextEditingController(text: 'Internal or External');
-    genderController = TextEditingController(text: 'Gender');
+    _detailedAddressController = TextEditingController(text: "Detailed Address");
+    _additionalNotesController = TextEditingController(text: 'Additional Notes');
+    // _injuryTypeController = TextEditingController(text: 'Internal or External');
+    // _genderController = TextEditingController(text: 'Gender');
     polylinePoints = PolylinePoints();
+
     initializeSourceAndDestination();
     super.initState();
   }
@@ -120,17 +126,10 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         markerId: MarkerId(destinationLatLng.toString()),
         position:
             LatLng(destinationLatLng.latitude, destinationLatLng.longitude),
-        infoWindow: InfoWindow(
-          title: 'This is a Title',
-          snippet: 'This is a snippet',
-        ),
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
   }
-  // void calcualteDistance (){
-  //   _placeDistance = GeolocatorPlatform.instance.distanceBetween(helperLat, helperLong, reqLat, reqLong).toStringAsFixed(2);
-  // }
 
   void setUrl() {
     String url =
@@ -139,27 +138,40 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   Future<bool> getAdditionalInformation() async {
-    String token = Provider.of<Helper>(context, listen: false).token;
-    final http.Response response = await http.post(
-        Uri.parse('$url/helper/get_additional_information/'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(
-            <String, String>{'uid': "trdLyxPx9XPhRANKVzfmjK5Vkuy2"}));
-    if (response.statusCode == 200) {
-      Map mp = jsonDecode(response.body);
-      _additionalNotes.text = mp["Additional Notes"];
-      _detailedAddress.text = mp["Address"];
-      bodyMapValue = int.parse(mp["avatarBody"]);
-      print(bodyMapValue);
-      avatar = BodyMap.init(bodyMapValue, 200);
-      return true;
-    } else {
-      print(response.statusCode);
-      return false;
+    if (_additionalNotesController.text == "Additional Notes" &&
+        destinationAddressController.text == "Detailed Address") {
+      String token = Provider
+          .of<Helper>(context, listen: false)
+          .token;
+      final http.Response response = await http.post(
+          Uri.parse('$url/helper/get_additional_information/'),
+          headers: <String, String>{
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(
+              <String, String>{'uid': requestID}));
+      if (response.statusCode == 200) {
+        if (response.body.length == 0) {
+          return false;
+        }
+        print("-------------" + response.body);
+        Map mp = jsonDecode(response.body);
+
+        _additionalNotesController.text = mp["Additional Notes"];
+        _detailedAddressController.text = mp["Address"];
+        _detailedAddressController.text = (mp["forMe"]).toString();
+        // _genderController.text = mp["Gender"];
+        // _injuryTypeController.text = mp["Injury"];
+        bodyMapValue = int.parse(mp["avatarBody"]);
+        print(bodyMapValue);
+        avatar = BodyMap.init(bodyMapValue, 200);
+        return true;
+      } else {
+        print(response.statusCode);
+        return false;
+      }
     }
   }
 
@@ -177,7 +189,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   void setPolylines() async {
-    print("--------------");
     print(initialLatLng);
     print(destinationLatLng);
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
@@ -233,158 +244,222 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: ListView(shrinkWrap: true, children: [
                   SizedBox(height: 200, child: avatar),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: 250, child: BodyMap()),
+                      // SizedBox(height: 250, child: BodyMap()),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Detailed Address', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Detailed Address ',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText(_detailedAddress.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                Container(
+                                  height: 25,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+
+                                  ),
+                                  child: Center(
+                                    child: _getText(_detailedAddressController.text, 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Additional Notes', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Additional Notes ',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText(_additionalNotes.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                Container(
+                                  height: 30,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText(_additionalNotesController.text, 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 6,),
+                                Container(
+                                  height: 25,
+                                  width: 115,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText(
+                                        'Additional Notes ',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                Container(
+                                  height: 30,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText(_additionalNotesController.text, 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                           //SizedBox(height: 4,),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Injury Type', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Phone Number',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
-                                ),
-                                _getText(injuryTypeController.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4,
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 4,
                                 ),
                                 Container(
-                                  height: 25,
-                                  width: 115,
-                                  decoration: BoxDecoration(
-                                    color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
-                                  ),
-                                  child: Center(
-                                    child: _getText('Gender', 15,
-                                        FontWeight.normal, Colors.white, 1),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                _getText(genderController.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                     height: 30,
+                                     width: 125,
+                                     decoration: BoxDecoration(
+                                       color: Colors.white24,
+                                       borderRadius:
+                                       BorderRadius.circular(
+                                           5.0),
+                                     ),
+                                     child:  Center(
+                                       child: GestureDetector(
+                                         onTap:(){ _launchCaller(phone);},
+                                         child: _getText(phone, 15,
+                                             FontWeight.normal, Colors.black, 1),
+                                       ),
+                                     ),
+                                   ),
                               ],
                             ),
                           ),
-                          SizedBox(
-                            height: 4,
-                          ),
+                          SizedBox(height: 6,)
                         ],
                       )
-                    ],
-                  ),
+
                 ])),
           );
         });
   }
-
   _launch() {
     AndroidIntent intent = new AndroidIntent(
         action: 'action_view',
@@ -419,8 +494,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     );
     if (response.statusCode == 200) {
       makeToast("Submitted");
-    } else if (response.statusCode == 503) {
-      makeToast("No Available Monqez");
+      Provider.of<Helper>(context, listen: false).changeStatus("Available");
+
     } else {
       makeToast('Failed to submit user.');
     }
@@ -438,11 +513,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-    );
+        body: jsonEncode(
+            <String, String>{'uid': requestID}));
     if (response.statusCode == 200) {
       makeToast("Submitted");
-    } else if (response.statusCode == 503) {
-      makeToast("No Available Monqez");
+      Provider.of<Helper>(context, listen: false).changeStatus("Available");
     } else {
       makeToast('Failed to submit user.');
     }
@@ -467,7 +542,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
               // Map View
               GoogleMap(
                 markers: _markers,
-                initialCameraPosition: _position1,
+                initialCameraPosition: initialCameraPosition,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
                 mapType: MapType.normal,
@@ -516,6 +591,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           splashColor: Colors.black26,
                           onPressed: () async {
                             _completeRequest();
+                            navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
+
                           },
                           child: _getText(
                               'Complete', 14, FontWeight.w700, Colors.white, 1),
@@ -532,6 +609,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           splashColor: Colors.black26,
                           onPressed: () {
                             _cancelRequest();
+                            navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
                           },
                           child: _getText(
                               'Cancel', 14, FontWeight.w700, Colors.white, 1),
@@ -546,6 +624,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               color: Colors.transparent,
                               splashColor: Colors.black26,
                               onPressed: () async {
+
                                 await getAdditionalInformation();
                                 _modalBottomSheetMenu();
                               },
@@ -560,5 +639,13 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
             ],
           ),
         ));
+  }
+  _launchCaller(String number) async {
+    String url = "tel:$number";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

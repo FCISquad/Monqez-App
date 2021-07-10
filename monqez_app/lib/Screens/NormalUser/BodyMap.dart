@@ -62,6 +62,7 @@ class BodyMap extends StatefulWidget {
     }
   }
 
+
   int getSelected() {
     List<int> binary = [];
     List<String> selected = [];

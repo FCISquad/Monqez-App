@@ -8,6 +8,7 @@ import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -43,6 +44,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
 
   bool firstTimeLocation = true;
   static User user;
+  
   List<Icon> icons;
   bool _isLoading = true;
   var _detailedAddress = TextEditingController();
@@ -157,6 +159,26 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'latitude': _marker.position.latitude,
         'longitude': _marker.position.longitude
       }),
+    );
+    firstStatusCode = response.statusCode;
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+  Future<void> _cancelRequest() async {
+    await _getCurrentUserLocation();
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/cancel_request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
     );
     firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
@@ -715,6 +737,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
+                          await _cancelRequest() ;
                           visible[0] = !visible[0] ;
                           visible[1] = !visible[1] ;
                           setState(() {
@@ -817,8 +840,11 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText('01016192209', 14,
-                                    FontWeight.bold, Colors.black, 1),
+                                GestureDetector(
+                                    onTap:(){ _launchCaller("01016192209");},
+                                  child: _getText('01016192209', 14,
+                                      FontWeight.bold, Colors.black, 1),
+                                ),
                               ],
                             ),
                           ),
@@ -874,6 +900,15 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           ),
         ),
       );
+    }
+  }
+
+  _launchCaller(String number) async {
+    String url = "tel:$number";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
     }
   }
 

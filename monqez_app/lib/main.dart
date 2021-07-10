@@ -42,8 +42,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       routes: {
-        //'/': (context) => HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
-        '/': (context) => Splash(),
+        '/': (context) => HelperRequestScreen("010", "010", 30.0, 31.0, 30.0, 30.2),
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),
