@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 
 
-const helper = require('../../Tools/RequestFunctions');
+const helper = require('../../Tools/requestFunctions');
 const NormalUser = require("../../Model/User/normalUser");
 const HelperUser = require("../../Model/User/helperUser");
 const User = require("../../Model/User/user");
