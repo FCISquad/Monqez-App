@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ class NormalPreviousRequests extends StatefulWidget {
 
 class _Request {
   String date;
-  String helperUid;
+  String helperName;
   int bodyMap;
   BodyMap avatar;
   String address;
@@ -51,7 +52,7 @@ class _Request {
   }
 
   getName(int size) {
-    return helperUid.substring(0, size);
+    return helperName.substring(0, min(size, helperName.length));
   }
 
   getAddress() {
@@ -67,13 +68,13 @@ class _Request {
   }
 
   isValid() {
-    return (date != null && helperUid != null);
+    return (date != null && helperName != null);
   }
 
   show() {
     print("\n\n\n-------------------------------------------");
     print((date == null) ? "Null" : date.toString());
-    print((helperUid == null) ? "Null" : helperUid);
+    print((helperName == null) ? "Null" : helperName);
     print((bodyMap == null) ? "Null" : bodyMap);
     print((address == null) ? "Null" : address);
     print((forMe == null) ? "Null" : forMe);
@@ -394,7 +395,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
           'comment': _commentController.text ,
         },
         'time' :req.dateId,
-        'uid' : req.helperUid
+        'uid' : req.helperName
       }),
     );
     if (response.statusCode == 200) {
@@ -419,7 +420,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         'subject': subject,
         'complaint': message,
         'time' :req.dateId,
-        'uid' : req.helperUid
+        'uid' : req.helperName
       }),
     );
     if (response.statusCode == 200) {
@@ -453,9 +454,8 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
           }
         });
         value["accepted"].forEach((key2, value2) {
-          if (key2.toString().startsWith("uid"))
-            request.helperUid = value2.toString();
-
+          if (key2 == "name")
+            request.helperName = value2;
         });
 
         //request.show();
