@@ -556,24 +556,30 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   color: secondColor,
                   height: (MediaQuery.of(context).size.height) - 200,
                   child: Column(children: [
-                    ListTile(
-                      title: getTitle(
-                          'My Profile', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.account_circle_rounded,
-                          size: 30, color: firstColor),
-                      onTap: () {
-                        Navigator.pop(_drawerKey.currentContext);
-                        navigate(ProfileScreen(user), context, false);
-                      },
+                    Visibility(
+                      visible: user.name != "One Time Request",
+                      child: ListTile(
+                        title: getTitle(
+                            'My Profile', 18, firstColor, TextAlign.start, true),
+                        leading: Icon(Icons.account_circle_rounded,
+                            size: 30, color: firstColor),
+                        onTap: () {
+                          Navigator.pop(_drawerKey.currentContext);
+                          navigate(ProfileScreen(user), context, false);
+                        },
+                      ),
                     ),
-                    ListTile(
-                      title: getTitle(
-                          'My Requests', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.history, size: 30, color: firstColor),
-                      onTap: () {
-                        Navigator.pop(_drawerKey.currentContext);
-                        navigate(NormalPreviousRequests(user), context, false);
-                      },
+                    Visibility(
+                      visible: user.name != "One Time Request",
+                      child: ListTile(
+                        title: getTitle(
+                            'My Requests', 18, firstColor, TextAlign.start, true),
+                        leading: Icon(Icons.history, size: 30, color: firstColor),
+                        onTap: () {
+                          Navigator.pop(_drawerKey.currentContext);
+                          navigate(NormalPreviousRequests(user), context, false);
+                        },
+                      ),
                     ),
                     ListTile(
                       title: getTitle('Emergency Instructions', 18, firstColor,

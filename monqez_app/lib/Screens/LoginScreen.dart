@@ -552,8 +552,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       print("HEEEEE" + token);
                                       bool valid = await sendID(token);
                                       if (valid) {
+                                        saveUserToken(token, FirebaseAuth.instance.currentUser.uid);
                                         navigateReplacement(
-                                            OneTimeRequestScreen(uid, token));
+                                            NormalHomeScreen(token));
                                       }
                                     }
                                   },
@@ -592,7 +593,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.statusCode == 200) {
       //var parsed = jsonDecode(response.body).cast<String, dynamic>();
       return true;
-    } else if (response.statusCode == 403) {
+    } else if (response.statusCode == 503) {
       makeToast("Error, National ID already exists!");
       return false;
     } else {
