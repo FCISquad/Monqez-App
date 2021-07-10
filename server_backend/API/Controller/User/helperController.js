@@ -117,11 +117,36 @@ app.post( '/accept_request' , (request, response) => {
             tracker.track("good Auth - start process");
 
             new HelperUser().requestAccept(monqezId, request.body)
-                .then( () => {
+                .then( async () => {
                     tracker.track("request finished without errors");
-                    response.sendStatus(200);
+
+                    let monqezObject = await new HelperUser().getUser(monqezId);
+                    let normalObject = await new HelperUser().getUser(request.body["uid"]);
+
+                    response.status(200).send({"phone": normalObject["phone"]});
+
+                    let normalUserId = request.body["uid"];
+                    const payload = {
+                        notification: {
+                            title: 'Request is accepted',
+                            body: 'Helper is on the way to you'
+                        },
+                        data:{
+                            type: 'normal',
+                            description: 'accept',
+                            phone: monqezObject["phone"],
+                            name: monqezObject["name"]
+                        }
+                    };
+
+                    const options = {
+                        priority: 'high',
+                        timeToLive: 60 * 60
+                    };
+
+                    helper.send_notifications(normalUserId, payload, options);
                 })
-                .catch( () => {
+                .catch( (error) => {
                     tracker.error(error);
                     response.sendStatus(201);
                 });
@@ -189,6 +214,7 @@ app.post('/get_additional_information', (request, response) => {
             tracker.track("good Auth - start process");
             new HelperUser().get_additional_information(request.body["uid"]).then( (additionalInfo) => {
                 tracker.track("request finished without errors");
+                console.log("*INFO", additionalInfo);
                 response.status(200).send(additionalInfo);
             } );
         }
@@ -239,19 +265,23 @@ app.get('/get_requests', function (request, response){
 
                     let requestsPool = [];
                     for(let normalUserId in snapShot){
-                        let time = snapShot[normalUserId];
+                        for (let requestTime in snapShot[normalUserId]){
 
-                        let requestJson = await helperUser.getRequestBody(normalUserId, time);
-                        let userJson    = await helperUser.getUser(normalUserId);
+                            let time = snapShot[normalUserId][requestTime];
 
-                        let json = {
-                            "request" : requestJson,
-                            "user": userJson,
-                            "time": time
+                            let requestJson = await helperUser.getRequestBody(normalUserId, time);
+                            let userJson    = await helperUser.getUser(normalUserId);
+
+                            let json = {
+                                "request" : requestJson,
+                                "user": userJson,
+                                "time": time
+                            }
+                            requestsPool.push(json);
                         }
-
-                        requestsPool.push(json);
                     }
+
+                    console.log("*INFO", requestsPool);
 
                     response.status(200).send(requestsPool);
                 } )
@@ -259,6 +289,84 @@ app.get('/get_requests', function (request, response){
                     tracker.error(error);
                     response.status(503).send(error);
                 } )
+        }
+    })
+});
+
+app.post('/cancel_request', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            new HelperUser().cancel_request(request.body["uid"]).then(function (){
+                tracker.track("request finished without errors");
+                response.sendStatus(200);
+
+                const payload = {
+                    notification: {
+                        title: 'Request is cancelled',
+                        body: 'Request is cancelled'
+                    },
+                    data:{
+                        type: 'normal',
+                        description: 'cancel'
+                    }
+                };
+                const options = {
+                    priority: 'high',
+                    timeToLive: 60 * 60
+                };
+
+                helper.send_notifications(request.body["uid"], payload, options);
+            }).catch(function (error){
+                tracker.error(error);
+                response.status(503).send(error);
+            })
+        }
+    })
+});
+
+app.post('/complete_request', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            new HelperUser().complete_request(request.body, userId).then(function(){
+                tracker.track("request finished without errors");
+                response.sendStatus(200);
+
+                const payload = {
+                    notification: {
+                        title: 'Request is Completed',
+                        body: 'You can rate the monqez'
+                    },
+                    data:{
+                        type: 'normal',
+                        description: 'completed'
+                    }
+                };
+                const options = {
+                    priority: 'high',
+                    timeToLive: 60 * 60
+                };
+
+                helper.send_notifications(request.body["uid"], payload, options);
+            }).catch(function (error){
+                tracker.error(error);
+                response.sendStatus(503);
+            })
         }
     })
 });

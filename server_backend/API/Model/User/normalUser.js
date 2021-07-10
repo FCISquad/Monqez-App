@@ -10,9 +10,9 @@ class NormalUser extends User {
         super(userJson);
     }
 
-    checkOneTimeRequest(nationalId){
+    checkOneTimeRequest(userId, nationalId){
         return new Promise( (resolve, reject) => {
-            User._database.checkNationalId(nationalId)
+            User._database.checkNationalId(userId, nationalId)
                 .then( function (){
                     resolve();
                 } )
@@ -81,7 +81,7 @@ class NormalUser extends User {
                     this.notify_monqez(min_three);
                 }
                 else{
-                    reject('No avilabel helpers');
+                    reject('No available helpers');
                 }
                 resolve(min_three);
             });
@@ -203,7 +203,15 @@ class NormalUser extends User {
                 .then( () => {resolve();} )
                 .catch( function (error){
                     reject(error);
-                } )
+                } );
+        } );
+    }
+
+    cancel_request(userId){
+        return new Promise( (resolve, _) => {
+            User._database.cancel_request(userId).then(function (){
+                resolve();
+            })
         } );
     }
 
@@ -213,6 +221,14 @@ class NormalUser extends User {
                 .catch( function (error){
                     reject(error);
                 } )
+        } );
+    }
+
+    isCancelled(userId){
+        return new Promise( (resolve, _) => {
+            User._database.isCancelled(userId).then(function (result){
+                resolve(result);
+            })
         } );
     }
 }

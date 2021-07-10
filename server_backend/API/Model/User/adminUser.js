@@ -20,7 +20,15 @@ class Admin extends User{
     }
 
     setApproval(adminID , applicationJson){
-        User._database.setApproval(adminID , applicationJson);
+        return new Promise( (resolve, reject) => {
+            User._database.setApproval(adminID , applicationJson).then(function (){
+                User._database.deleteApplication(applicationJson);
+                resolve();
+            })
+            .catch(function (error){
+                reject(error);
+            })
+        } );
     }
 
     saveInstructions(adminID, instructionJson) {
@@ -85,6 +93,30 @@ class Admin extends User{
         } );
     }
 
+    sendWarningToUser(complaintObject){
+        return new Promise( (resolve, reject) => {
+            User._database.sendWarining(complaintObject)
+                .then(function(){
+                    resolve();
+                })
+                .catch(function(error){
+                    reject(error);
+                })
+        } );
+    }
+
+    archiveComplaint(complaintObject){
+        return new Promise( (resolve, reject) => {
+            User._database.archiveComplaint(complaintObject)
+                .then(function(){
+                    resolve();
+                })
+                .catch(function(error){
+                    reject(error);
+                })
+        } );
+    }
+
     getAllComplaints(){
         return new Promise( (resolve, reject) => {
             User._database.getAllComplaints()
@@ -113,6 +145,7 @@ class Admin extends User{
                 })
         } );
     }
+
 }
 
 module.exports = Admin;

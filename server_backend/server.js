@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 
-app.use(express.json({limit: '100mb'}));
+app.use(express.json({limit: '50mb'}));
 app.get('/', (req,res) => {
     res.send('Welcome in Monqez Server');
 });
@@ -15,7 +15,7 @@ app.listen(port, () => console.log(`Server started on Port ${port}`));
 
 
 (async () => {
-    const tunnel = await localtunnel({ port: 5000, subdomain: "monqez2" });
+    const tunnel = await localtunnel({ port: 5000, subdomain: "monqez6" });
 
     // the assigned public url for your tunnel
     // i.e. https://abcdefgjhij.localtunnel.me

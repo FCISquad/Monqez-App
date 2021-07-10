@@ -2,6 +2,9 @@ const User = require("./user");
 const normalUser = require('../User/normalUser');
 const helper = require('../../Tools/RequestFunctions');
 
+const sphericalGeometry = require('spherical-geometry-js');
+const max_distance = 1000; // 1 Km = 1000 Meter
+
 class HelperUser extends User{
     constructor(userJson) {
         super(userJson);
@@ -73,7 +76,7 @@ class HelperUser extends User{
             User._database.getProfile(monqezId)
                 .then( function (snapShot){
                     User._database.requestAccept(monqezId, snapShot["name"], userJson)
-                        .then( () => { resolve() } )
+                        .then( () => {resolve();})
                         .catch( () => { reject() } );
                 } )
                 .catch( function (error){
@@ -95,7 +98,7 @@ class HelperUser extends User{
                         },
                         data:{
                             type: 'normal',
-                            description: 'message'
+                            description: 'timeout'
                         }
                     };
 
@@ -169,13 +172,41 @@ class HelperUser extends User{
         return await User._database.getuser(userId);
     }
 
-
-    insertDummy(monqezId, userJson){
+    cancel_request(userId){
         return new Promise( (resolve, reject) => {
-            User._database.insertDummy(monqezId, userJson).then( ()=>{resolve();} )
-                .catch( function (error){
-                    reject(error);
-                } );
+            User._database.cancel_request_helper(userId).then(function (){
+                resolve();
+            }).catch(function (error){
+                reject(error);
+            })
+        } );
+    }
+
+    complete_request(userJson, monqezId){
+        return new Promise( (resolve, reject) => {
+
+            User._database.getLongLat(userJson["uid"]).then(function (snapshot){
+
+                let normalUserLocation = [snapshot["latitude"], snapshot["longitude"]];
+                let monqezUserLocation = [userJson["latitude"], userJson["longitude"]];
+                let distance = sphericalGeometry.computeDistanceBetween(monqezUserLocation, normalUserLocation);
+
+                console.log("*INFO", "***********************************************************************************");
+                console.log("*INFO", distance);
+                console.log("*INFO", "***********************************************************************************");
+
+
+                if (distance <= max_distance){
+                    User._database.complete_request_helper(userJson["uid"], monqezId).then(function (){
+                        resolve();
+                    }).catch(function (error){
+                        reject(error);
+                    });
+                }
+                else{
+                    reject('Complete request in other location');
+                }
+            });
         } );
     }
 }

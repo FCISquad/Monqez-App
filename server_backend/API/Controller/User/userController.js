@@ -11,6 +11,30 @@ const tracker = require('../../Tools/debugger');
 const controllerType = "normal";
 const freeForAll = "all";
 
+app.post('/notify_me', function(request, response){
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        const payload = {
+            notification: {
+                title: 'Hello world',
+                body: 'Test notifications'
+            },
+            data:{
+                type: 'normal',
+                description: 'message'
+            }
+        };
+
+        const options = {
+            priority: 'high',
+            timeToLive: 60 * 60
+        };
+
+        helper.send_notifications(userId, payload, options);
+    });
+
+})
+
 app.post('/khaled', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
@@ -217,40 +241,91 @@ app.post('/update_registration_token', (request, response)=>{
 
 function requestTimeOut(userId, monqezIDs){
     tracker.track("Time is finished - check the request state");
-    new NormalUser().isTimeOut(userId).then( (acceptCount) => {
-        if (acceptCount === 0){
-            tracker.track("No helper accept the request");
-            for (let i = 3; i < monqezIDs.length; ++i){
-                let user = new NormalUser({});
-                user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
-                    if (allDecline === true){
-                        tracker.track("all decline - call re request function");
-                        re_request({"uid" : userId});
+
+    new NormalUser().isCancelled(userId).then(function (result){
+        if (result !== "cancelled"){
+            new NormalUser().isTimeOut(userId).then( (acceptCount) => {
+                if (acceptCount === 0){
+                    tracker.track("No helper accept the request");
+                    for (let i = 3; i < monqezIDs.length; ++i){
+                        let user = new NormalUser({});
+                        user.requestTimeOut(userId, monqezIDs[i]).then( (allDecline) => {
+                            if (allDecline === true){
+                                tracker.track("all decline - call re request function");
+                                re_request({"uid" : userId});
+                            }
+                        } )
                     }
-                } )
-            }
+                }
+                else{
+                    tracker.track("request is accepted by some helper");
+                }
+            } );
         }
-        else{
-            tracker.track("request is accepted by some helper");
-        }
-    } );
+    });
 }
 
-app.post('/check_national_ID', (request, response) => {
+app.post('/cancel_request', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
-    tracker.track(request.body["nationalId"]);
-    new NormalUser().checkOneTimeRequest(request.body["nationalId"])
-        .then( function (){
-            tracker.track("request finished without errors");
-            response.send(200);
-        } )
-        .catch( function (error){
-            tracker.error(error);
-            response.status(403).send(error);
-        } )
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            new NormalUser().cancel_request(userId).then(function (){
+                tracker.track("request finished without errors");
+                response.sendStatus(200);
+            })
+        }
+    })
 });
+
+
+app.post('/check_national_ID', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new NormalUser().checkOneTimeRequest(userId, request.body["nationalId"])
+                .then( function (){
+                    tracker.track("request finished without errors");
+                    response.send(200);
+                } )
+                .catch( function (error){
+                    tracker.error(error);
+                    response.status(503).send(error);
+                } )
+        }
+    })
+});
+
+
+// app.post('/check_national_ID', (request, response) => {
+//     tracker.start(request.originalUrl);
+//     tracker.track("Hello Request");
+//
+//     tracker.track(request.body["nationalId"]);
+//     new NormalUser().checkOneTimeRequest(request.body["nationalId"])
+//         .then( function (){
+//             tracker.track("request finished without errors");
+//             response.send(200);
+//         } )
+//         .catch( function (error){
+//             tracker.error(error);
+//             response.status(403).send(error);
+//         } )
+// });
 
 app.post('/request', (request, response) => {
     tracker.start(request.originalUrl);
@@ -368,25 +443,6 @@ app.post( '/call_out' , (request, response) => {
     tracker.end();
 } );
 
-app.post( '/get_requests' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
-        if ( userId === null ){
-            // Forbidden
-            response.sendStatus(403);
-        }
-        else{
-            User.getRequests(userId)
-                .then( (userJson) => {
-                    response.send(userJson);
-                } )
-                .catch( (error) => {
-                    console.log(error);
-                    response.send(error);
-                } );
-        }
-    });
-} );
-
 module.exports.re_request = re_request;
 
 app.get('/get_requests', function (request, response){
@@ -429,7 +485,7 @@ app.post('/rate', function (request, response){
             new NormalUser().rate(userId, request.body)
                 .then( () => {
                     tracker.track("request finished without errors");
-                    response.send(200);
+                    response.sendStatus(200);
                 } )
                 .catch( function ( error) {
                     tracker.error(error);
