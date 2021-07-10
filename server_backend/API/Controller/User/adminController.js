@@ -4,7 +4,6 @@ const app = express();
 const helper = require('../../Tools/requestFunctions');
 const adminModel = require('../../Model/User/adminUser');
 const tracker = require('../../Tools/debugger');
-const mailer = require('../../Tools/nodeMailer');
 const controllerType = "admin";
 
 app.post('/add' , (request , response) => {
