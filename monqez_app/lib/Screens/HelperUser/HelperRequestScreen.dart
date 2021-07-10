@@ -18,6 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class HelperRequestScreen extends StatefulWidget {
@@ -46,10 +47,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   String requestID ;
   LatLng initialLatLng;
   LatLng destinationLatLng;
-  TextEditingController _detailedAddress;
-  TextEditingController _additionalNotes;
-  TextEditingController injuryTypeController;
-  TextEditingController genderController;
+  TextEditingController _detailedAddressController;
+  TextEditingController _additionalNotesController;
+  TextEditingController _injuryTypeController;
+  TextEditingController _genderController;
+  TextEditingController _phoneNumberController;
   Position helperLocation;
   var _prefs;
 
@@ -97,10 +99,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
   @override
   void initState() {
-    _detailedAddress = TextEditingController(text: "Detailed Address");
-    _additionalNotes = TextEditingController(text: 'Additional Notes');
-    injuryTypeController = TextEditingController(text: 'Internal or External');
-    genderController = TextEditingController(text: 'Gender');
+    _detailedAddressController = TextEditingController(text: "Detailed Address");
+    _additionalNotesController = TextEditingController(text: 'Additional Notes');
+    _injuryTypeController = TextEditingController(text: 'Internal or External');
+    _genderController = TextEditingController(text: 'Gender');
+    _phoneNumberController = TextEditingController(text: '01016192209');
     polylinePoints = PolylinePoints();
 
     initializeSourceAndDestination();
@@ -156,8 +159,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
       }
       print ("-------------"+response.body) ;
       Map mp = jsonDecode(response.body);
-      _additionalNotes.text = mp["Additional Notes"];
-      _detailedAddress.text = mp["Address"];
+      // _additionalNotesController.text = mp["Additional Notes"];
+      // _detailedAddressController.text = mp["Address"];
+      // _genderController.text = mp["Gender"];
+      // _injuryTypeController.text = mp["Injury"];
+      // _phoneNumberController.text = mp["Phone"];
       bodyMapValue = int.parse(mp["avatarBody"]);
       print(bodyMapValue);
       avatar = BodyMap.init(bodyMapValue, 200);
@@ -238,82 +244,114 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: ListView(shrinkWrap: true, children: [
                   SizedBox(height: 200, child: avatar),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
                       // SizedBox(height: 250, child: BodyMap()),
                       Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Detailed Address', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Detailed Address ',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText(_detailedAddress.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                Container(
+                                  height: 25,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+
+                                  ),
+                                  child: Center(
+                                    child: _getText("Detailed Address", 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Additional Notes', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Additional Notes ',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText(_additionalNotes.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                Container(
+                                  height: 30,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText("Additional Notes", 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                           //SizedBox(height: 4,),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
@@ -322,74 +360,157 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Injury Type', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Injury Type ',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText(injuryTypeController.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                Container(
+                                  height: 30,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+
+                                  ),
+                                  child: Center(
+                                    child: _getText("Injury", 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(
-                                  width: 4,
-                                ),
+                                SizedBox(width: 6,),
                                 Container(
                                   height: 25,
                                   width: 115,
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
                                   ),
                                   child: Center(
-                                    child: _getText('Gender', 15,
-                                        FontWeight.normal, Colors.white, 1),
+                                    child: _getText(
+                                        'Gender',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
                                   ),
                                 ),
                                 SizedBox(
                                   width: 8,
                                 ),
-                                _getText(genderController.text, 15,
-                                    FontWeight.normal, Colors.black, 1)
+                                Container(
+                                  height: 30,
+                                  width: 125,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white24,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        5.0),
+
+                                  ),
+                                  child: Center(
+                                    child: _getText("Male", 15,
+                                        FontWeight.normal, Colors.black, 1),
+                                  ),
+                                )
                               ],
                             ),
                           ),
                           SizedBox(
-                            height: 4,
+                            height: 8,
                           ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 6,),
+                                Container(
+                                  height: 25,
+                                  width: 115,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius:
+                                    BorderRadius.circular(
+                                        20.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText(
+                                        'Phone Number',
+                                        13,
+                                        FontWeight.bold,
+                                        Colors.black,1),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                               Container(
+                                   height: 30,
+                                   width: 125,
+                                   decoration: BoxDecoration(
+                                     color: Colors.white24,
+                                     borderRadius:
+                                     BorderRadius.circular(
+                                         5.0),
+
+                                   ),
+                                   child:  Center(
+                                     child: _getText('01016192209', 15,
+                                         FontWeight.normal, Colors.black, 1),
+                                   ),
+                                 ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 6,)
                         ],
                       )
-                    ],
-                  ),
+
                 ])),
           );
         });
   }
-
   _launch() {
     AndroidIntent intent = new AndroidIntent(
         action: 'action_view',
@@ -568,5 +689,13 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
             ],
           ),
         ));
+  }
+  _launchCaller(String number) async {
+    String url = "tel:$number";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }
