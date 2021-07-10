@@ -18,8 +18,9 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     print("HelperRequest");
   }
   static String requestID;
-  static double longitude;
-  static double latitude;
+  static double reqLongitude;
+  static double reqLatitude;
+  String phone ;
   var _prefs;
   String token;
   Position helperLocation ;
@@ -65,6 +66,9 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     if (response.statusCode == 200) {
       makeToast("Successful");
       Provider.of<Helper>(context, listen: false).changeStatus("Busy");
+      var parsed = jsonDecode(response.body).cast<String, dynamic>();
+      phone = parsed["phone"] ;
+
     } else if (response.statusCode == 201){
       makeToast("Someone already accepted the request!");
       returned = 201;
@@ -138,7 +142,7 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                         int result = await accept(context);
                         if (result == 0){
                           await _getCurrentUserLocation();
-                        navigate(HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
+                        navigate(HelperRequestScreen(phone,requestID,reqLatitude,reqLongitude,helperLocation.latitude,helperLocation.longitude),
                             context, true);}
                         else{
                           navigate(HelperHomeScreen(token), context, true); ///nfs error l t7t?

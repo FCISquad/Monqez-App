@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 class InstructionsScreen extends StatelessWidget {
   final bool _isAdmin;
   final String _token;
-  InstructionsScreen([this._isAdmin = true, this._token]);
+  InstructionsScreen([this._isAdmin = false, this._token]);
 
 
   @override
@@ -26,8 +26,8 @@ class InstructionsScreen extends StatelessWidget {
     }
     var provider = Provider.of<InstructionsList>(context, listen: true);
     List<Injury> instructions = provider.getInjuries();
-    print(instructions.toString());
-    if (instructions == null) {
+    if (instructions == null || instructions.length == 0) {
+      provider.loadInjuries(_token);
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -46,7 +46,9 @@ class InstructionsScreen extends StatelessWidget {
       return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-            leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
+            leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+              Navigator.pop(context);
+            }),
             title: getTitle(
                 "Instructions", 22.0, secondColor, TextAlign.start, true),
             actions: [
@@ -80,21 +82,23 @@ class InstructionsScreen extends StatelessWidget {
                   itemCount: instructions.length + 1,
                   itemBuilder: (BuildContext context, int index) {
                     if (index == instructions.length) {
-                      return Align(
-                        alignment: Alignment.center,
-                        child: SizedBox(
-                          width: 200,
-                          // ignore: deprecated_member_use
-                          child: RaisedButton(
-                            onPressed: () {
-                              provider.saveInjuries(_token);
-                              //Navigator.of(context).pop();
-                            },
-                            child: Text(
-                              "Save Changes",
-                              style: TextStyle(color: Colors.white),
+                      return Visibility(
+                        visible: _isAdmin,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: SizedBox(
+                            width: 200,
+                            // ignore: deprecated_member_use
+                            child: RaisedButton(
+                              onPressed: () {
+                                provider.saveInjuries(_token);
+                              },
+                              child: Text(
+                                "Save Changes",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              color: Colors.deepOrange,
                             ),
-                            color: Colors.deepOrange,
                           ),
                         ),
                       );

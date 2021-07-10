@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -13,20 +16,20 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Screens/Utils/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import '../Instructions/InstructionsScreen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../CallPage.dart';
 import '../LoginScreen.dart';
 import '../VoicePage.dart';
+import 'Chatbot.dart';
+import 'NormalUserPreviousRequests.dart';
+import 'package:provider/provider.dart';
+import 'package:monqez_app/Screens/Model/Normal.dart';
 
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {
   String token;
-  NormalHomeScreen(String token) {
-    this.token = token;
-  }
-
+  NormalHomeScreen(this.token);
   @override
   _NormalHomeScreenState createState() => _NormalHomeScreenState(token);
 }
@@ -38,77 +41,77 @@ class Item {
 
 class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
+
+  bool firstTimeLocation = true;
   static User user;
+  
   List<Icon> icons;
-  bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   var _additionalInfoController = TextEditingController();
-  int bodyMap;
+  BodyMap avatar;
   bool isLoaded = false;
+  bool _locationLoaded = false;
+  bool _dataLoaded = false;
+
   int firstStatusCode;
+  final _drawerKey = GlobalKey<ScaffoldState>();
+
+
   _NormalHomeScreenState(String token) {
+
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
       user.setToken(token);
       await user.getUser();
-      _isLoading = false;
+      setState(() {
+        _dataLoaded = true;
+      });
     });
   }
   Animation<double> animation;
   AnimationController controller;
-  /*
-  void logout () async {
-    _prefs = await SharedPreferences.getInstance();
-    _prefs.remove('email');
-    _prefs.remove('userID');
-    _prefs.remove('userToken');
-    makeToast('Logged out!');
-  }
-   */
+
   Completer<GoogleMapController> _controller = Completer();
-  static const LatLng _center = const LatLng(45.521563, -122.677433);
-  final Set<Marker> _markers = {};
-  LatLng _lastMapPosition = _center;
+  Marker _marker;
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
-  Item _selectedSeviirty;
   bool _radioValue;
-  var _nameController = TextEditingController();
 
-  List<Item> users = <Item>[
-    const Item('Very dangerous'),
-    const Item('Dangerous'),
-    const Item('Normal'),
-  ];
 
-  static CameraPosition _position1 = CameraPosition(
-    bearing: 192.833,
-    target: LatLng(45.531563, -122.677433),
-    tilt: 59.440,
-    zoom: 11.0,
-  );
+  static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
+    _getCurrentUserLocation();
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
   }
 
+  showPinsOnMap() {
+    _marker = Marker(
+      markerId: MarkerId(_newUserPosition.toString()),
+      position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+      draggable: true,
+      onDragEnd: ((newPosition) {
+        print(newPosition.latitude);
+        print(newPosition.longitude);
+      }),
+      icon: BitmapDescriptor.defaultMarker,
+    );
+  }
+
   _onMapCreated(GoogleMapController controller) async {
+    await _getCurrentUserLocation();
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
     _controller.complete(controller);
     setState(() {
       _position1 = CameraPosition(
-          bearing: 192.833,
-          target: LatLng(37.0503, -95.7111),
-          tilt: 59.440,
-          zoom: 11.0);
+          // bearing: 192.833,
+          target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+          // tilt: 59.440,
+          zoom: 17.0);
     });
-    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
-    print(_position1.target);
-  }
-
-  _onCameraMove(CameraPosition position) {
-    _lastMapPosition = _position1.target;
   }
 
   void _sendAdditionalInformation() async {
@@ -117,7 +120,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       'additionalInfo': {
         'Address': _detailedAddress.text,
         'Additional Notes': _aditionalNotes.text,
-        'avatarBody': bodyMap.toString(),
+        'avatarBody': avatar.getSelected().toString(),
         'forMe': _radioValue.toString()
       },
     };
@@ -149,9 +152,49 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         'Authorization': 'Bearer $tempToken',
       },
       body: jsonEncode(<String, double>{
-        'latitude': _newUserPosition.latitude,
-        'longitude': _newUserPosition.longitude
+        'latitude': _marker.position.latitude,
+        'longitude': _marker.position.longitude
       }),
+    );
+    firstStatusCode = response.statusCode;
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+  Future<void> _cancelRequest() async {
+    await _getCurrentUserLocation();
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/cancel_request/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
+    );
+    firstStatusCode = response.statusCode;
+    if (response.statusCode == 200) {
+      makeToast("Submitted");
+    } else if (response.statusCode == 503) {
+      makeToast("No Available Monqez");
+    } else {
+      makeToast('Failed to submit user.');
+    }
+  }
+
+  Future<void> _test() async {
+    String tempToken = user.token;
+    final http.Response response = await http.post(
+      Uri.parse('$url/user/notify_me/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $tempToken',
+      },
     );
     firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
@@ -186,12 +229,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      SizedBox(height: 400, child: BodyMap()),
+                      SizedBox(height: 400, child: avatar),
                       SizedBox(
                         width: 200,
+                        // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () {
-                            bodyMap = BodyMap.getSelected();
                             Navigator.of(context).pop();
                           },
                           child: Text(
@@ -210,7 +253,22 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-  _showMaterialDialog() {
+  Widget _getText(String text, double fontSize, FontWeight fontWeight,
+      Color color, int lines) {
+    return AutoSizeText(text,
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontFamily: 'Cairo',
+            fontWeight: fontWeight),
+        maxLines: lines);
+  }
+  _showMaterialDialog([String notes = ""]) {
+    _aditionalNotes.clear();
+    _detailedAddress.clear();
+    _aditionalNotes.text = notes;
     showDialog(
         context: context,
         builder: (context) {
@@ -233,38 +291,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      // Container(
-                      //   child :Row(
-                      //     children: [
-                      //       Text("Severity  ") ,
-                      //       DropdownButton<Item>(
-                      //         hint: Text("Select item"),
-                      //         value: _selectedSeviirty,
-                      //         onChanged: (Item value) {
-                      //           setState(() {
-                      //             _selectedSeviirty = value;
-                      //             print(_selectedSeviirty.name) ;
-                      //           });
-                      //         },
-                      //         items: users.map((Item user) {
-                      //           return  DropdownMenuItem<Item>(
-                      //             value: user,
-                      //             child: Row(
-                      //               children: <Widget>[
-                      //                 SizedBox(width: 10,),
-                      //                 Text(
-                      //                   user.name,
-                      //                   style:  TextStyle(color: Colors.black),
-                      //                 ),
-                      //               ],
-                      //             ),
-                      //           );
-                      //         }).toList(),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
-
                       Container(
                         child: Row(
                           children: [
@@ -313,6 +339,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _showAvatar();
@@ -327,12 +354,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               ),
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
                                     _sendAdditionalInformation();
                                     Navigator.of(context).pop();
-                                    navigate(InstructionsScreen(),
-                                        context, false);
+                                    navigate(
+                                        InstructionsScreen(), context, false);
                                   },
                                   child: Text(
                                     "Submit",
@@ -354,45 +382,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-  PolylinePoints polylinePoints;
-
-  List<LatLng> polylineCoordinates = [];
-
-  Map<PolylineId, Polyline> polylines = {};
-  _createPolylines(Position start, Position destination) async {
-    polylinePoints = PolylinePoints();
-
-    // Generating the list of coordinates to be used for
-    // drawing the polylines
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo', // Google Maps API Key
-      PointLatLng(start.latitude, start.longitude),
-      PointLatLng(destination.latitude, destination.longitude),
-      travelMode: TravelMode.transit,
-    );
-
-    // Adding the coordinates to the list
-    if (result.points.isNotEmpty) {
-      result.points.forEach((PointLatLng point) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      });
-    }
-
-    // Defining an ID
-    PolylineId id = PolylineId('poly');
-
-    // Initializing Polyline
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 3,
-    );
-
-    // Adding the polyline to the map
-    polylines[id] = polyline;
-  }
-
   _onMapTypeButtonPressed() {
     setState(() {
       _currentMapType = _currentMapType == MapType.normal
@@ -402,34 +391,20 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
 
   _getCurrentUserLocation() async {
-    Position _newPosition;
-    _newPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      _newUserPosition = _newPosition;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      _newUserPosition = position;
       _position1 = CameraPosition(
-          bearing: 192.833,
+          // bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          tilt: 59.440,
-          zoom: 11.0);
-    });
-  }
-
-  _onAddMarkerButtonPressed() async {
-    await _getCurrentUserLocation();
-    setState(() {
-      _markers.add(
-        Marker(
-          markerId: MarkerId(_newUserPosition.toString()),
-          position:
-              LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          infoWindow: InfoWindow(
-            title: 'This is a Title',
-            snippet: 'This is a snippet',
-          ),
-          icon: BitmapDescriptor.defaultMarker,
-        ),
-      );
+          // tilt: 59.440,
+          zoom: 17.0);
+      setState(() {
+        // to check if that step is valid or not
+        _locationLoaded = true;
+      });
+    }).catchError((e) {
+      navigate(LoginScreen(), context, true);
     });
   }
 
@@ -446,51 +421,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     );
   }
 
-  Widget _buildBtn(String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 25.0),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5.0,
-        onPressed: () {
-          logout();
-          Navigator.pushReplacement(
-              context,
-              PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 500),
-                  transitionsBuilder:
-                      (context, animation, animationTime, child) {
-                    return SlideTransition(
-                      position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
-                          .animate(CurvedAnimation(
-                        parent: animation,
-                        curve: Curves.ease,
-                      )),
-                      child: child,
-                    );
-                  },
-                  pageBuilder: (context, animation, animationTime) {
-                    return LoginScreen();
-                  }));
-        },
-        padding: EdgeInsets.all(15.0),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Text(text,
-            style: TextStyle(
-                color: Colors.deepOrange,
-                fontSize: 16,
-                fontWeight: FontWeight.bold)),
-      ),
-    );
-  }
-
   @override
   void initState() {
     super.initState();
-    bodyMap = 0;
+    avatar = BodyMap();
     _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
@@ -522,7 +456,14 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       checkNotification(context);
       isLoaded = true;
     }
-    if (_isLoading) {
+    if (!_locationLoaded || !_dataLoaded ) {
+      if (firstTimeLocation) {
+        firstTimeLocation = false;
+        Future.delayed(Duration.zero, () async {
+          await _getCurrentUserLocation();
+          showPinsOnMap();
+        });
+      }
       return Scaffold(
           backgroundColor: secondColor,
           body: Container(
@@ -536,8 +477,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       strokeWidth: 5,
                       valueColor:
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
-    } else
+    } else {
+      var provider = Provider.of<Normal>(context, listen: true);
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
             title: getTitle("Monqez", 22.0, secondColor, TextAlign.start, true),
@@ -571,6 +514,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             ],
           ),
           drawer: Drawer(
+            key: _drawerKey,
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
@@ -582,8 +526,27 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           children: [
                             getTitle(user.name, 26, secondColor,
                                 TextAlign.start, true),
-                            Icon(Icons.account_circle_rounded,
-                                size: 90, color: secondColor),
+                            Container(
+                              width: 90,
+                              height: 90,
+                              child: CircularProfileAvatar(
+                                null,
+                                child: user.image == null
+                                    ? Icon(Icons.account_circle_rounded,
+                                        size: 90, color: secondColor)
+                                    : Image.memory(user.image.decode()),
+                                radius: 100,
+                                backgroundColor: Colors.transparent,
+                                borderColor: user.image == null
+                                    ? firstColor
+                                    : secondColor,
+                                elevation: 5.0,
+                                cacheImage: true,
+                                onTap: () {
+                                  print('Tabbed');
+                                }, // sets on tap
+                              ),
+                            ),
                           ])),
                   decoration: BoxDecoration(
                     color: firstColor,
@@ -593,14 +556,88 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   color: secondColor,
                   height: (MediaQuery.of(context).size.height) - 200,
                   child: Column(children: [
+                    Visibility(
+                      visible: user.name != "One Time Request",
+                      child: ListTile(
+                        title: getTitle(
+                            'My Profile', 18, firstColor, TextAlign.start, true),
+                        leading: Icon(Icons.account_circle_rounded,
+                            size: 30, color: firstColor),
+                        onTap: () {
+                          Navigator.pop(_drawerKey.currentContext);
+                          navigate(ProfileScreen(user), context, false);
+                        },
+                      ),
+                    ),
+                    Visibility(
+                      visible: user.name != "One Time Request",
+                      child: ListTile(
+                        title: getTitle(
+                            'My Requests', 18, firstColor, TextAlign.start, true),
+                        leading: Icon(Icons.history, size: 30, color: firstColor),
+                        onTap: () {
+                          Navigator.pop(_drawerKey.currentContext);
+                          navigate(NormalPreviousRequests(user), context, false);
+                        },
+                      ),
+                    ),
                     ListTile(
-                      title: getTitle(
-                          'My Profile', 18, firstColor, TextAlign.start, true),
-                      leading: Icon(Icons.account_circle_rounded,
+                      title: getTitle('Emergency Instructions', 18, firstColor,
+                          TextAlign.start, true),
+                      leading: Icon(Icons.help_center_outlined,
                           size: 30, color: firstColor),
                       onTap: () {
-                        //Navigator.pop(context);
-                        navigate(ProfileScreen(user), context, false);
+                        Navigator.pop(_drawerKey.currentContext);
+                        navigate(InstructionsScreen(false, user.token), context,
+                            false);
+                      },
+                    ),
+                    ListTile(
+                      title: getTitle(
+                          'Chatbot', 18, firstColor, TextAlign.start, true),
+                      leading: Icon(Icons.chat_bubble_outline_rounded,
+                          size: 30, color: firstColor),
+                      onTap: () {
+                        Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ChatbotScreen(user.token)))
+                            .then((returned) {
+                          Navigator.pop(_drawerKey.currentContext);
+
+                          if (returned == null) return;
+
+                          if (returned[0] == "request") {
+                            String notes;
+                            if (returned.length == 2) {
+                              notes = returned[1];
+                            }
+                            _makeRequest().then((value) {
+                              if (firstStatusCode == 200)
+                                _showMaterialDialog(notes);
+                            });
+                          } else if (returned[0] == "voice") {
+                            _showCallDialog("voice");
+                            if (returned.length == 2) {
+                              String notes = returned[1];
+                              setState(() {
+                                _additionalInfoController.text = notes;
+                              });
+                            }
+                          } else if (returned[0] == "video") {
+                            _showCallDialog("video");
+                            if (returned.length == 2) {
+                              String notes = returned[1];
+                              setState(() {
+                                _additionalInfoController.text = notes;
+                              });
+                            }
+                          } else if (returned[0] == "instructions") {
+                            navigate(InstructionsScreen(false, user.token),
+                                context, false);
+                          }
+                        });
                       },
                     ),
                     Expanded(
@@ -609,6 +646,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         child: Container(
                           height: 40,
                           width: 120,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
@@ -635,9 +673,18 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: _position1,
                 mapType: _currentMapType,
-                markers: _markers,
-                onCameraMove: _onCameraMove,
-                polylines: Set<Polyline>.of(polylines.values),
+                markers: {_marker},
+                compassEnabled: true,
+                tiltGesturesEnabled: false,
+                onLongPress: (latlang) {
+                  print("HEREEEE");
+
+                  _addMarkerLongPressed(latlang);
+                  print(latlang);
+                  print(_marker);
+                  setState(
+                      () {}); //we will call this function when pressed on the map
+                },
               ),
               /*SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -651,40 +698,200 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   },
                 ),
               ),*/
-              Padding(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    width: 200,
-                    height: 50,
-                    child: RaisedButton(
-                      onPressed: () async {
-                        //_createPolylines();
-                        await _makeRequest();
-                        if (firstStatusCode == 200) _showMaterialDialog();
-                      },
-                      child: Text('Get Help!'),
-                      color: Colors.deepOrange,
+
+              Visibility(
+                  visible: provider.visible[0] ,
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SizedBox(
+                        width: 200,
+                        height: 50,
+                        // ignore: deprecated_member_use
+                        child: RaisedButton(
+                          onPressed: () async {
+                            // await _makeRequest();
+                            await _makeRequest();
+                            if (firstStatusCode == 200){ _showMaterialDialog();
+                            provider.visible[0] = !provider.visible[0] ;
+                            provider.visible[1] = !provider.visible[1] ;
+                            setState(() {
+
+                            });}
+                          },
+                          child: Text('Get Help!'),
+                          color: Colors.deepOrange,
+                        ),
+                      ),
+                    ),
+                  ),
+              ),
+              Visibility(
+                visible: provider.visible[1] ,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      width: 200,
+                      height: 50,
+                      // ignore: deprecated_member_use
+                      child: RaisedButton(
+                        onPressed: () async {
+                          await _cancelRequest() ;
+                          provider.visible[0] = !provider.visible[0] ;
+                          provider.visible[1] = !provider.visible[1] ;
+                          setState(() {
+
+                          });
+                        },
+                        child: Text('Cancel', style: TextStyle(color: Colors.black)),
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                 ),
               ),
+              Visibility(
+                visible: provider.visible[2] ,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey,
+                            blurRadius: 4,
+                            offset: Offset(4, 8), // Shadow position
+                          ),
+                        ],
+                         borderRadius: BorderRadius.circular(15.0),
+                      ),
+
+                      width: 220,
+                      height: 100,
+                      // ignore: deprecated_member_use
+                      child:  Column(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(height: 15,),
+                        Align(
+                        alignment: Alignment.centerLeft,
+                        child: Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment
+                              .spaceEvenly,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(width: 8,),
+                            Container(
+                              height: 30,
+                              width: 110,
+                              decoration: BoxDecoration(
+                                color: Colors.deepOrange,
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child: Center(
+                                child: _getText('Monqez Name', 14,
+                                    FontWeight.bold, Colors.black, 1),
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            _getText(provider.helperName, 14,
+                                FontWeight.bold, Colors.black, 1),
+                          ],
+                        ),
+                      ),
+                          SizedBox(height: 6,),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment
+                                  .spaceEvenly,
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(width: 8,),
+                                Container(
+                                  height: 30,
+                                  width: 110,
+                                  decoration: BoxDecoration(
+                                    color: Colors.deepOrange,
+                                    borderRadius: BorderRadius.circular(15.0),
+
+                                    // borderRadius:
+                                    // // BorderRadius.circular(
+                                    // //     20.0),
+                                  ),
+                                  child: Center(
+                                    child: _getText('Phone Number', 14,
+                                        FontWeight.bold, Colors.black, 1),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                GestureDetector(
+                                    onTap:(){ _launchCaller(provider.helperPhone);},
+                                  child: _getText(provider.helperPhone, 14,
+                                      FontWeight.bold, Colors.black, 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                      // child: Container(
+                      //     decoration: BoxDecoration(
+                      //       color: Colors.white,
+                      //       borderRadius: BorderRadius.circular(20.0),
+
+                          ]),
+                        // child: Column(
+                        //   mainAxisAlignment: MainAxisAlignment.center,
+                        //   crossAxisAlignment: CrossAxisAlignment.center,
+                        //   children: [
+                        //     Row(
+                        //       children: [
+                        //         SizedBox(width: 5,),
+                        //         Text('Monqez name:'),
+                        //         Text("Hatem") ,
+                        //       ],
+                        //     ),
+                        //     Row(
+                        //       children: [
+                        //         SizedBox(width: 5,),
+                        //         Text('Phone number:'),
+                        //         Text('01016192209') ,
+                        //       ],
+                        //     ),
+                        //
+                        //   ],
+                        // ),
+
+                      ),
+                    ),
+                  ),
+                ),
               Padding(
                 padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
                 child: Align(
                   alignment: Alignment.topRight,
                   child: Column(
                     children: <Widget>[
-                      button(_onMapTypeButtonPressed, Icons.map, 'map'),
-                      SizedBox(
-                        height: 16.0,
-                      ),
-                      button(_onAddMarkerButtonPressed, Icons.add_location,
-                          'marker'),
-                      SizedBox(
-                        height: 16.0,
-                      ),
+                      // button(_onMapTypeButtonPressed, Icons.map, 'map'),
+                      // SizedBox(
+                      //   height: 16.0,
+                      // ),
                       button(
                           _goToPosition1, Icons.location_searching, 'position'),
                     ],
@@ -695,6 +902,16 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           ),
         ),
       );
+    }
+  }
+
+  _launchCaller(String number) async {
+    String url = "tel:$number";
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   Future<void> _handleCameraAndMic(Permission permission) async {
@@ -735,7 +952,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 channelName: channelID,
                 userType: "normal",
               ),
-            ));
+            )).then((value) => Navigator.pop(context));
       } else {
         Navigator.push(
             context,
@@ -744,19 +961,43 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 channelName: channelID,
                 userType: "normal",
               ),
-            ));
+            )).then((value) => Navigator.pop(context));
       }
     }
-    /*
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VoicePage(channelName: "channelID"),
-        ));
-        */
+  }
+
+  Future _addMarkerLongPressed(LatLng latlang) async {
+    _marker = Marker(
+      markerId: MarkerId(_newUserPosition.toString()),
+      position: latlang,
+      draggable: true,
+      onDragEnd: ((newPosition) {
+        print(newPosition.latitude);
+        print(newPosition.longitude);
+      }),
+
+      // infoWindow: InfoWindow(
+      //   title: 'This is a Title',
+      //   snippet: 'This is a snippet',
+      // ),
+      icon: BitmapDescriptor.defaultMarker,
+    );
+
+    // setState(() {
+    //   final MarkerId markerId = MarkerId("RANDOM_ID");
+    //   Marker marker = Marker(
+    //     markerId: markerId,
+    //     draggable: true,
+    //     position: latlang, //With this parameter you automatically obtain latitude and longitude
+    //     icon: BitmapDescriptor.defaultMarker,
+    //   );
+    //
+    //   _marker = marker;
+    // });
   }
 
   _showCallDialog(String type) {
+    _additionalInfoController.clear();
     showDialog(
         context: context,
         builder: (context) {
@@ -774,7 +1015,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     children: [
                       Center(
                           child: Text(
-                        "Additional Information",
+                        "Call Additional Information",
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
@@ -793,8 +1034,13 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () {
+                                    if (_additionalInfoController
+                                        .text.isEmpty) {
+                                      _additionalInfoController.text = " ";
+                                    }
                                     onJoin(type);
                                   },
                                   child: Text(

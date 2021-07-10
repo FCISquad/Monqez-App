@@ -9,7 +9,7 @@ abstract class NotificationRoute{
   static Widget selectNavigate;
   RemoteNotification notification ;
   AndroidNotification android ;
-  bool isBackground = true;
+  bool isBackground = false; // it was true, why ?
   final AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -30,6 +30,7 @@ abstract class NotificationRoute{
     print("Notification Route");
     this.message = message;
     notification = message.notification;
+    print (notification);
     android = message.notification?.android;
     initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
     initializationSettings = InitializationSettings(
@@ -55,6 +56,7 @@ abstract class NotificationRoute{
               channel.id,
               channel.name,
               channel.description,
+              timeoutAfter: 1000,
               importance: Importance.max,
               priority: Priority.high,
               enableVibration: true,

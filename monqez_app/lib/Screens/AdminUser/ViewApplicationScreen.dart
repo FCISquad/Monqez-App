@@ -105,7 +105,11 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       makeToast("Successful");
       Navigator.pop(context);
       //navigate(ApplicationsScreen(), context, true);
+    } else if (response.statusCode == 503) {
+      makeToast("Another admin has handled this application");
+      Navigator.pop(context);
     } else {
+      makeToast("Error!");
       print(response.statusCode);
     }
     setState(() {});
@@ -180,24 +184,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
                                         ),
                                         TextSpan(
                                           text: " $nationalID\n",
-                                          style: TextStyle(
-                                              color: color,
-                                              fontSize: 14,
-                                              letterSpacing: 1.5,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        WidgetSpan(
-                                          child: Icon(
-                                            Icons.email,
-                                            size: 14,
-                                            color: color,
-                                          ),
-                                        ),
-                                        TextSpan(
-                                          recognizer: new TapGestureRecognizer()
-                                            ..onTap = () => _launchMail(
-                                                "hussienashraf99@gmail.com"),
-                                          text: " hussienashraf99@gmail.com\n",
                                           style: TextStyle(
                                               color: color,
                                               fontSize: 14,
@@ -359,19 +345,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       await launch(url);
     } else {
       throw 'Could not launch $url';
-    }
-  }
-
-  _launchMail(String mail) async {
-    final Uri params = Uri(
-      scheme: 'mailto',
-      path: mail,
-    );
-    String url = params.toString();
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      print('Could not launch $url');
     }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,8 @@ import 'package:provider/provider.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 
+import 'HelperUserPreviousRequests.dart';
+
 // ignore: must_be_immutable
 class HelperHomeScreen extends StatelessWidget {
   String token;
@@ -25,7 +28,6 @@ class HelperHomeScreen extends StatelessWidget {
 
   List<String> _statusDropDown = <String>[
     "Available",
-    "Contacting only",
     "Busy"
   ];
 
@@ -150,8 +152,23 @@ class HelperHomeScreen extends StatelessWidget {
                               secondColor,
                               TextAlign.start,
                               true),
-                          Icon(Icons.account_circle_rounded,
-                              size: 90, color: secondColor),
+                          Container(
+                            width: 90,
+                            height: 90,
+                            child: CircularProfileAvatar(
+                              null,
+                              child: Provider.of<Helper>(context, listen: true).image == null ? Icon(Icons.account_circle_rounded,
+                                  size: 90, color: secondColor): Image.memory(Provider.of<Helper>(context, listen: true).image.decode()),
+                              radius: 100,
+                              backgroundColor: Colors.transparent,
+                              borderColor: Provider.of<Helper>(context, listen: true).image == null ? firstColor : secondColor,
+                              elevation: 5.0,
+                              cacheImage: true,
+                              onTap: () {
+                                print('Tabbed');
+                              }, // sets on tap
+                            ),
+                          ),
                         ])),
                 decoration: BoxDecoration(
                   color: firstColor,
@@ -195,12 +212,34 @@ class HelperHomeScreen extends StatelessWidget {
                   ),
                   ListTile(
                     title: getTitle(
+                        'My Requests', 18, firstColor, TextAlign.start, true),
+                    leading: Icon(Icons.history,
+                        size: 30, color: firstColor),
+                    onTap: () {
+                      //Navigator.pop(context);
+                      navigate(HelperPreviousRequests(Provider.of<Helper>(context, listen: false)), context, false);
+                    },
+                  ),
+                  ListTile(
+                    title: getTitle(
                         'My Ratings', 18, firstColor, TextAlign.start, true),
                     leading: Icon(Icons.star_rate, size: 30, color: firstColor),
                     onTap: () {
                       Navigator.pop(context);
-                      navigate(HelperRatingsScreen(), context, false);
+                      navigate(HelperRatingsScreen(Provider.of<Helper>(context, listen: false).ratings), context, false);
                     },
+                  ),
+                  ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        getTitle(
+                            'My Points', 18, firstColor, TextAlign.start, true),
+                        getTitle(
+                            (Provider.of<Helper>(context, listen: false)
+                                .myPoints).toString(), 18, firstColor, TextAlign.start, true),                      ],
+                    ),
+                    leading: Icon(Icons.money, size: 30, color: firstColor),
                   ),
                   Expanded(
                     child: Align(
@@ -208,6 +247,7 @@ class HelperHomeScreen extends StatelessWidget {
                       child: Container(
                         height: 40,
                         width: 120,
+                        // ignore: deprecated_member_use
                         child: RaisedButton(
                             elevation: 5.0,
                             onPressed: () {
@@ -216,6 +256,8 @@ class HelperHomeScreen extends StatelessWidget {
                                   "Available") {
                                 Provider.of<Helper>(context, listen: false)
                                     .stopBackgroundProcess();
+                                Provider.of<Helper>(context, listen: false)
+                                    .changeStatus("Busy");
                               }
                               print("Logging out");
                               logout();
@@ -244,38 +286,31 @@ class HelperHomeScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(
                   horizontal: 10.0,
-                  vertical: 40.0,
+                  vertical: 10.0,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        getCard(
-                            "Call Queue",
-                            "4",
-                            CallingQueueScreen(),
-                            Icons.call,
-                            (MediaQuery.of(context).size.width - 40) / 2,
-                            context),
-                        getCard(
-                            "Chat Queue",
-                            "3",
-                            ChatQueueScreen(),
-                            Icons.chat,
-                            (MediaQuery.of(context).size.width - 40) / 2,
-                            context),
-                      ],
-                    ),
-                    getCard("Request Queue", "6", null, Icons.local_hospital,
-                        MediaQuery.of(context).size.width, context),
+                    getCard(
+                        "Call Queue",
+                        Provider.of<Helper>(context, listen: true).callCount.toString(),
+                        CallingQueueScreen(),
+                        Icons.call,
+                        MediaQuery.of(context).size.width,
+                        context),
+                    getCard(
+                        "Chat Queue",
+                        "3",
+                        ChatQueueScreen(),
+                        Icons.chat,
+                        MediaQuery.of(context).size.width,
+                        context),
                     getCard(
                         "My Ratings",
-                        "4.4",
-                        HelperRatingsScreen(),
+                        Provider.of<Helper>(context, listen: true).ratings.toStringAsFixed(2),
+                        HelperRatingsScreen(Provider.of<Helper>(context, listen: false)
+                            .ratings),
                         Icons.star_rate,
                         MediaQuery.of(context).size.width,
                         context),
@@ -283,7 +318,7 @@ class HelperHomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          )
         ),
       );
   }

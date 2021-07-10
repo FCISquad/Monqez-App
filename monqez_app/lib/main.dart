@@ -5,9 +5,12 @@ import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
 import 'package:monqez_app/Screens/Instructions/InjuryScreen.dart';
 import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
 import 'package:provider/provider.dart';
+import 'Screens/ComplaintDialog.dart';
 import 'Screens/HelperUser/HelperRequestScreen.dart';
 import 'Screens/Model/Helper.dart';
+import 'Screens/Model/Normal.dart';
 import 'Screens/SplashScreen.dart';
+import 'Screens/rateDialog.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
@@ -16,6 +19,7 @@ main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider<Helper>(create: (context) => Helper.empty()),
+        ChangeNotifierProvider<Normal>(create: (context) => Normal.empty()),
         ChangeNotifierProvider<InstructionsList>(
             create: (context) => InstructionsList()),
       ],
@@ -38,7 +42,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       routes: {
-        //'/': (context) => HelperRequestScreen(30.060567, 30.962413, 30.029585, 31.022356),
         '/': (context) => Splash(),
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),

@@ -27,8 +27,8 @@ class HelperUserNotification extends NotificationRoute {
     if (data != null){
       requestID = data['userId'];
       HelperRequestNotificationScreen.requestID = requestID;
-      HelperRequestNotificationScreen.longitude = double.parse(data['longitude']) ;
-      HelperRequestNotificationScreen.latitude = double.parse(data['latitude']);
+      HelperRequestNotificationScreen.reqLongitude = double.parse(data['longitude']) ;
+      HelperRequestNotificationScreen.reqLatitude = double.parse(data['latitude']);
     }
     showNotification();
     navigatorKey.currentState.pushNamed('notification');

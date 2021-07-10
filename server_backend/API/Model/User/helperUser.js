@@ -2,37 +2,27 @@ const User = require("./user");
 const normalUser = require('../User/normalUser');
 const helper = require('../../Tools/RequestFunctions');
 
+const sphericalGeometry = require('spherical-geometry-js');
+const max_distance = 1000; // 1 Km = 1000 Meter
+
 class HelperUser extends User{
     constructor(userJson) {
         super(userJson);
-        this.rates = [];
-        this.longitude = userJson.longitude;
-        this.latitude  = userJson.latitude;
-
-        this.certificate = userJson.certificate;
-        this.certificateName = userJson.certificateName
-    }
-    setIsApproval(isApproval){
-        this.isApproval = isApproval;
-    }
-    setIsBanend(isBanned){
-        this.isBanned = isBanned;
-    }
-    setLongitude(longitude){
-        this.longitude = longitude;
-    }
-    setLongitude(latitude){
-        this.latitude = latitude;
     }
 
-    submitApplication(subDate){
-        User._database.createUser(this)
-            .then( () => {
-                User._database.changeToMonqez(this , subDate);
-            } )
-            .catch((error) => {
+    submitApplication(userId, userObject){
+        return new Promise( (resolve, reject) => {
+            User._database.createUser(userId, userObject)
+                .then( () => {
+                    User._database.changeToMonqez(userId, userObject)
+                        .then(()=>{resolve();})
+                        .catch( (error) => {reject(error);} )
+                } )
+                .catch((error) => {
+                    reject(error);
+                })
+        } );
 
-            })
     }
     setStatus(userID , status){
         return new Promise( (resolve, reject) => {
@@ -68,8 +58,8 @@ class HelperUser extends User{
         } );
     }
 
-    updateLocation(userID){
-        User._database.updateLocation(userID, this.longitude, this.latitude);
+    updateLocation(userID, userJson){
+        User._database.updateLocation(userID, userJson);
     }
 
     requestDecline(monqezId, userJson){
@@ -83,9 +73,15 @@ class HelperUser extends User{
     }
     requestAccept(monqezId, userJson){
         return new Promise( ((resolve, reject) => {
-            User._database.requestAccept(monqezId, userJson)
-                .then( () => { resolve() } )
-                .catch( () => { reject() } );
+            User._database.getProfile(monqezId)
+                .then( function (snapShot){
+                    User._database.requestAccept(monqezId, snapShot["name"], userJson)
+                        .then( () => {resolve();})
+                        .catch( () => { reject() } );
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
         }) );
     }
     rerequest(userJson){
@@ -102,7 +98,7 @@ class HelperUser extends User{
                         },
                         data:{
                             type: 'normal',
-                            description: 'message'
+                            description: 'timeout'
                         }
                     };
 
@@ -153,6 +149,64 @@ class HelperUser extends User{
     logCallRequest(userJson){
         return new Promise( (resolve, _) => {
             User._database.archiveCallRequest(userJson).then(()=>{ resolve() });
+        } );
+    }
+
+    getRequests(monqezId){
+        return new Promise( (resolve, reject) => {
+            User._database.getRequestsHelper(monqezId)
+                .then( function (snapShot){
+                    resolve(snapShot);
+                } )
+                .catch( function (error){
+                    reject(error);
+                } )
+        } );
+    }
+
+
+    async getRequestBody(userId, time){
+        return await User._database.getRequestBody(userId, time);
+    }
+    async getUser(userId){
+        return await User._database.getuser(userId);
+    }
+
+    cancel_request(userId){
+        return new Promise( (resolve, reject) => {
+            User._database.cancel_request_helper(userId).then(function (){
+                resolve();
+            }).catch(function (error){
+                reject(error);
+            })
+        } );
+    }
+
+    complete_request(userJson, monqezId){
+        return new Promise( (resolve, reject) => {
+
+            User._database.getLongLat(userJson["uid"]).then(function (snapshot){
+
+                let normalUserLocation = [snapshot["latitude"], snapshot["longitude"]];
+                let monqezUserLocation = [userJson["latitude"], userJson["longitude"]];
+                let distance = sphericalGeometry.computeDistanceBetween(monqezUserLocation, normalUserLocation);
+
+                console.log("*INFO", "***********************************************************************************");
+                console.log("*INFO", distance);
+                console.log("*INFO", "***********************************************************************************");
+
+
+                if (distance <= max_distance){
+                    User._database.complete_request_helper(userJson["uid"], monqezId).then(function (){
+                        resolve();
+                    }).catch(function (error){
+                        reject(error);
+                    });
+                }
+                else{
+                    reject('Complete request in other location');
+                }
+            });
         } );
     }
 }

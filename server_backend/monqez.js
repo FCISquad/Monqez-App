@@ -15,8 +15,9 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
-app.use(bodyParser.urlencoded({parameterLimit: 100000,limit: '50mb', extended : true}));
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.urlencoded({parameterLimit: 100000,limit: '100mb', extended : true}));
+app.use(bodyParser.json({limit: '100mb'}));
+
 
 const userRoute = require('./API/Controller/User/userController');
 app.use('/user' , userRoute);
@@ -26,5 +27,13 @@ app.use('/admin' , adminRoute);
 
 const helperRoute = require('./API/Controller/User/helperController');
 app.use('/helper' , helperRoute);
+
+const helper = require('./API/Tools/RequestFunctions');
+app.get('/getToken' , (request, response) => {
+    console.log("*INFO", request.body["uid"]);
+    helper.getToken(request.body["uid"]).then( (token) => {
+        response.status(200).send(token);
+    })
+});
 
 module.exports = app;

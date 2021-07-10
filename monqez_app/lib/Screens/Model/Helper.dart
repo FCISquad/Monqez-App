@@ -14,10 +14,20 @@ class Helper extends User with ChangeNotifier  {
   final _samplingPeriod = 5;
   double longitude;
   double latitude;
+  int callCount;
+  double ratings;
+  int myPoints = 0;
+
   final loc.Location _location = loc.Location();
 
   Helper.empty ():super.empty();
 
+  @override
+  Future<bool> saveUser() async {
+    bool ret = await super.saveUser();
+    notifyListeners();
+    return ret;
+  }
 
   Future<void> setToken(String token) async {
     super.setToken(token);
@@ -39,12 +49,15 @@ class Helper extends User with ChangeNotifier  {
     );
 
     if (response2.statusCode == 200) {
+      print(response2.body);
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.status = parsed['status'];
+      this.callCount = (parsed['calls'] == 0 || parsed['calls'] == null) ? 0 : parsed['calls'];
+      this.ratings = (parsed['sum'] == 0 || parsed['sum'] == null) ? 0 : (parsed['sum'] / parsed['total']);
+      this.myPoints = (parsed['points'] == 0 || parsed['points'] == null) ? 0 : parsed['points'];
     } else {
       print(response2.statusCode);
     }
-    print("Helper: " + name + ", " + status);
     notifyListeners();
   }
 
@@ -90,7 +103,6 @@ class Helper extends User with ChangeNotifier  {
       },
       body: jsonEncode(<String, String>{'status': newValue}),
     );
-
     if (response.statusCode == 200) {
       makeToast("Submitted");
     } else {

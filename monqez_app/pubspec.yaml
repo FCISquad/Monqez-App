@@ -28,8 +28,7 @@ dependencies:
   background_location: ^0.4.3
   circular_profile_avatar: ^1.0.8
   fluttertoast: ^7.1.1
-  flutter_rating_bar: ^3.2.0+1
-  http: ^0.13.1
+  http: ^0.13.3
   shared_preferences: ^2.0.5
   firebase_core: ^1.0.3
   firebase_auth: ^1.1.0
@@ -47,12 +46,18 @@ dependencies:
   provider: ^5.0.0
   mime: ^1.0.0
   flutter_absolute_path: ^1.0.6
-  agora_rtc_engine: ^3.3.3
+  agora_rtc_engine: ^4.0.0-rc.1
   permission_handler:
   google_maps_flutter: ^2.0.3
   geodesy: ^0.3.2
   android_intent: ^2.0.0
   auto_size_text: ^2.1.0
+  rating_dialog: ^2.0.0
+  flutter_rating_bar: ^4.0.0
+  flutter_chat_ui: ^1.1.5
+  dialog_flowtter: ^0.3.1
+  progress_indicator_button: ^0.0.3
+
 
 
   flutter:
@@ -103,6 +108,8 @@ flutter:
     - images/BodyMap/stomach.png
     - images/ToBeRemoved/burn.png
     - images/ToBeRemoved/leg.png
+    - images/users.png
+    - images/service.json
 
   #   - images/a_dot_ham.jpeg
 

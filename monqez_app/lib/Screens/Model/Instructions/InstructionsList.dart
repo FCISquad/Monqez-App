@@ -12,12 +12,10 @@ class InstructionsList with ChangeNotifier {
   List<Injury> _injuries = [];
   int selected;
   bool edit = false;
-  String token;
 
   InstructionsList() {
     _injuries = [];
     selected = -1;
-    loadInjuries();
   }
 
   addInjury(Injury injury) {
@@ -30,11 +28,6 @@ class InstructionsList with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<ImageController> getImage(String path) async {
-    ImageController imageController = ImageController.fromAssets(path);
-    await imageController.loadBytesFromAssets();
-    return imageController;
-  }
 
   void _iterateJson(String jsonStr) {
     Map<String, dynamic> applications = json.decode(jsonStr);
@@ -47,7 +40,7 @@ class InstructionsList with ChangeNotifier {
       _injuries.add(i);
     });
   }
-  loadInjuries() {
+  loadInjuries(token) {
     // will be http request
     Future.delayed(Duration.zero, () async {
       http.Response response = await http.get(
@@ -83,7 +76,9 @@ class InstructionsList with ChangeNotifier {
     }
 
     String body = json.encode(injuriesJson);
-
+    print("here");
+    print(body);
+    print(body.length);
     final http.Response response = await http.post(
       Uri.parse('$url/admin/save_instructions/'),
       headers: <String, String>{

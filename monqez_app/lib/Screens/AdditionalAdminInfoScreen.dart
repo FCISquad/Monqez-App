@@ -7,13 +7,15 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
+import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'UI.dart';
 import '../Backend/Authentication.dart';
 
 class AdditionalAdminInfoScreen extends StatefulWidget {
   @override
-  _AdditionalAdminInfoScreenState createState() => _AdditionalAdminInfoScreenState();
+  _AdditionalAdminInfoScreenState createState() =>
+      _AdditionalAdminInfoScreenState();
 }
 
 class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
@@ -25,6 +27,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   var _cityController = TextEditingController();
   var _streetController = TextEditingController();
   var _buildNumberController = TextEditingController();
+  var _diseaseController = TextEditingController();
   var token;
   var uid;
   String _fullNameError = '';
@@ -47,12 +50,15 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       gravity: ToastGravity.BOTTOM,
     );
   }
-  bool _validateAllFields(){
-    if(_correctFullName && _correctPhoneNumber && _correctNationalId && _correctAddress){
-      return true ;
-    }
-    else{
-      return false ;
+
+  bool _validateAllFields() {
+    if (_correctFullName &&
+        _correctPhoneNumber &&
+        _correctNationalId &&
+        _correctAddress) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -88,35 +94,72 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   void _validateNationalId(String text) {
     setState(() {
       if (text.isEmpty) {
-        _nationalIdError =
-            "National ID number is required";
+        _nationalIdError = "National ID number is required";
         _correctNationalId = false;
-      }
-      else if (text.length != 14 ){
-        _nationalIdError =
-        "National ID number is incorrect";
+      } else if (text.length != 14) {
+        _nationalIdError = "National ID number is incorrect";
         _correctNationalId = false;
-      }
-      else {
+      } else {
         _nationalIdError = "";
         _correctNationalId = true;
       }
     });
     return;
   }
+
+  Widget _buildDiseaseTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        getTitle("Diseases"),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            controller: _diseaseController,
+            style: TextStyle(
+              color: firstColor,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.accessibility_outlined,
+                color: firstColor,
+              ),
+              hintText: 'Enter any diseases',
+              hintStyle: TextStyle(
+                color: firstColor,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 5.0),
+      ],
+    );
+  }
+
   Widget getTitle(String text) {
-    return  Text(
+    return Text(
       text,
       style: TextStyle(
-        color: Colors.white,
+        color: firstColor,
         fontSize: 16.0,
         fontWeight: FontWeight.bold,
       ),
     );
   }
+
   void _validateAddress(String text) {
     setState(() {
-      if (_cityController.text.isEmpty || _streetController.text.isEmpty || _buildNumberController.text.isEmpty || _countryController.text.isEmpty) {
+      if (_cityController.text.isEmpty ||
+          _streetController.text.isEmpty ||
+          _buildNumberController.text.isEmpty ||
+          _countryController.text.isEmpty) {
         _addressError = "Please enter your address correctly";
         _correctAddress = false;
       } else {
@@ -126,7 +169,6 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
     });
     return;
   }
-
 
   void navigateReplacement(Widget map) {
     Navigator.pushReplacement(
@@ -157,7 +199,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   }
 
   void _click() {
-    if (_validateAllFields()){
+    if (_validateAllFields()) {
       _adminData();
     } else {
       makeToast("Data is incomplete");
@@ -165,17 +207,19 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   }
 
   Future<void> _adminData() async {
+    String chronic = " ";
+    if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
 
     final http.Response response = await http.post(
-        Uri.parse('$url/admin/addAdditionalInformation/'),
-        headers: <String, String> {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+      Uri.parse('$url/admin/addAdditionalInformation/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: jsonEncode(<String, String>{
         'token': token,
         'uid': uid,
@@ -188,14 +232,14 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         'city': _cityController.text,
         'street': _streetController.text,
         'buildNumber': _buildNumberController.text,
+        'chronicDiseases': chronic
       }),
     );
-    if (response.statusCode == 200){
+    if (response.statusCode == 200) {
       makeToast("Information Added Successfully!");
       navigateReplacement(AdminHomeScreen());
       return true;
-    }
-    else {
+    } else {
       print(response.statusCode);
       throw Exception('Failed to create user.');
     }
@@ -216,7 +260,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
             controller: _nameController,
             onChanged: _validateFullName,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -224,11 +268,11 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.account_circle_sharp,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               hintText: 'Enter your Name',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -237,9 +281,9 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         Visibility(
           child: Text(
             _fullNameError,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: firstColor, fontWeight: FontWeight.bold),
           ),
-          visible:  _fullNameError.isNotEmpty,
+          visible: _fullNameError.isNotEmpty,
         ),
       ],
     );
@@ -260,7 +304,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
             controller: _phoneController,
             onChanged: _validatePhoneNumber,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             decoration: InputDecoration(
@@ -268,11 +312,11 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
               contentPadding: EdgeInsets.only(top: 14.0),
               prefixIcon: Icon(
                 Icons.phone,
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
               hintText: 'Enter your Phone Number',
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -281,7 +325,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         Visibility(
           child: Text(
             _phoneNumberError,
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(color: firstColor, fontWeight: FontWeight.bold),
           ),
           visible: _phoneNumberError.isNotEmpty,
         ),
@@ -304,7 +348,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
               onChanged: _validateNationalId,
               keyboardType: TextInputType.number,
               style: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
                 fontFamily: 'OpenSans',
               ),
               decoration: InputDecoration(
@@ -312,11 +356,11 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                 contentPadding: EdgeInsets.only(top: 14.0),
                 prefixIcon: Icon(
                   Icons.assignment_ind_outlined,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
                 hintText: 'Enter your ID Number',
                 hintStyle: TextStyle(
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
             ),
@@ -325,7 +369,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
             child: Text(
               _nationalIdError,
               style: TextStyle(
-                color: Colors.white,
+                color: firstColor,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -359,7 +403,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
           child: TextFormField(
             readOnly: true,
             style: TextStyle(
-              color: Colors.deepOrange,
+              color: firstColor,
               fontFamily: 'OpenSans',
             ),
             onTap: _selectDate,
@@ -370,12 +414,12 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                 onTap: _selectDate,
                 child: Icon(
                   Icons.date_range,
-                  color: Colors.deepOrange,
+                  color: firstColor,
                 ),
               ),
               hintText: "${selectedDate.toLocal()}".split(' ')[0],
               hintStyle: TextStyle(
-                color: Colors.deepOrange,
+                color: firstColor,
               ),
             ),
           ),
@@ -403,7 +447,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                     controller: _countryController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -411,7 +455,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "Country",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   )),
@@ -423,7 +467,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                     controller: _cityController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -431,7 +475,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "City",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   ))
@@ -452,7 +496,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                     controller: _streetController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -460,11 +504,10 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "Street",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   )),
-
               Container(
                   width: MediaQuery.of(context).size.width / 2.55,
                   alignment: Alignment.centerRight,
@@ -473,7 +516,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                     controller: _buildNumberController,
                     onChanged: _validateAddress,
                     style: TextStyle(
-                      color: Colors.deepOrange,
+                      color: firstColor,
                       fontFamily: 'OpenSans',
                     ),
                     decoration: InputDecoration(
@@ -481,7 +524,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                       contentPadding: EdgeInsets.only(left: 14.0),
                       hintText: "Build Number",
                       hintStyle: TextStyle(
-                        color: Colors.deepOrange,
+                        color: firstColor,
                       ),
                     ),
                   )),
@@ -490,13 +533,11 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         ),
         SizedBox(height: 10.0),
         Visibility(
-          child: Text(
-          _addressError,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          )
-          ),
+          child: Text(_addressError,
+              style: TextStyle(
+                color: firstColor,
+                fontWeight: FontWeight.bold,
+              )),
           visible: !_addressError.isEmpty,
         )
       ],
@@ -514,11 +555,11 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: Colors.white,
+        color: firstColor,
         child: Text(
           'Submit',
           style: TextStyle(
-            color: Colors.deepOrange,
+            color: secondColor,
             letterSpacing: 1,
             fontSize: 20.0,
             fontWeight: FontWeight.bold,
@@ -533,7 +574,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Radio(
-          activeColor: Colors.white,
+          activeColor: firstColor,
           focusColor: Colors.blue,
           value: title,
           groupValue: gender,
@@ -546,7 +587,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
         Text(
           title,
           style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              color: firstColor, fontWeight: FontWeight.bold, fontSize: 16),
         ),
       ],
     );
@@ -555,7 +596,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrangeAccent,
+      backgroundColor: secondColor,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -565,7 +606,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
             child: SingleChildScrollView(
               physics: AlwaysScrollableScrollPhysics(),
               padding: EdgeInsets.symmetric(
-                horizontal: MediaQuery.of(context).size.width*0.1,
+                horizontal: MediaQuery.of(context).size.width * 0.1,
                 vertical: 60.0,
               ),
               child: Column(
@@ -574,7 +615,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                   Text(
                     'Add Additional Admin Information',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: firstColor,
                       fontSize: 23.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -590,20 +631,18 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                   ),
                   _buildDatePicker(context),
                   SizedBox(height: 10.0),
+                  _buildDiseaseTF(),
+                  SizedBox(height: 10.0),
                   _buildAddress(),
                   SizedBox(height: 20.0),
-                  
                   SizedBox(
-                    width: double.infinity,
-                    height: 20,
-                    child: getTitle("Gender")
-                  ),
-                  Row(
-                    children: <Widget>[
-                      addRadioButton(1, "Male"),
-                      addRadioButton(2, "Female"),
-                    ]
-                  ),
+                      width: double.infinity,
+                      height: 20,
+                      child: getTitle("Gender")),
+                  Row(children: <Widget>[
+                    addRadioButton(1, "Male"),
+                    addRadioButton(2, "Female"),
+                  ]),
                   SizedBox(height: 10.0),
                   _buildSubmitBtn()
                 ],
