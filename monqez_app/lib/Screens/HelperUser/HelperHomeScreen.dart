@@ -229,6 +229,18 @@ class HelperHomeScreen extends StatelessWidget {
                       navigate(HelperRatingsScreen(Provider.of<Helper>(context, listen: false).ratings), context, false);
                     },
                   ),
+                  ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        getTitle(
+                            'My Points', 18, firstColor, TextAlign.start, true),
+                        getTitle(
+                            (Provider.of<Helper>(context, listen: false)
+                                .myPoints).toString(), 18, firstColor, TextAlign.start, true),                      ],
+                    ),
+                    leading: Icon(Icons.money, size: 30, color: firstColor),
+                  ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.bottomCenter,

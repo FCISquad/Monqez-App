@@ -493,11 +493,18 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         'uid': requestID
       }),
     );
+    print ("-------------") ;
+    print (response.statusCode) ;
     if (response.statusCode == 200) {
       makeToast("Submitted");
       Provider.of<Helper>(context, listen: false).changeStatus("Available");
+      navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
 
-    } else {
+
+    }else if (response.statusCode == 503){
+      makeToast("You are not near the location!") ;
+    }
+    else {
       makeToast('Failed to submit user.');
     }
   }
@@ -519,6 +526,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     if (response.statusCode == 200) {
       makeToast("Submitted");
       Provider.of<Helper>(context, listen: false).changeStatus("Available");
+      navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
+
     } else {
       makeToast('Failed to submit user.');
     }
@@ -592,7 +601,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           splashColor: Colors.black26,
                           onPressed: () async {
                             _completeRequest();
-                            navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
 
                           },
                           child: _getText(
@@ -610,7 +618,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           splashColor: Colors.black26,
                           onPressed: () {
                             _cancelRequest();
-                            navigate(HelperHomeScreen(Provider.of<Helper>(context, listen: false).token), context, true) ;
                           },
                           child: _getText(
                               'Cancel', 14, FontWeight.w700, Colors.white, 1),
