@@ -6,14 +6,13 @@ app.get('/', (req,res) => {
     res.send('Welcome in Monqez Server');
 });
 
-//const monqez = require('./monqez');
-// const localtunnel = require("localtunnel");
-// app.use('/' , monqez);
+const monqez = require('./monqez');
+app.use('/' , monqez);
 
 const port = process.env.PORT || '5000';
 app.listen(port, () => console.log(`Server started on Port ${port}`));
 
-
+// const localtunnel = require("localtunnel");
 // (async () => {
 //     const tunnel = await localtunnel({ port: 5000, subdomain: "monqez6" });
 //
