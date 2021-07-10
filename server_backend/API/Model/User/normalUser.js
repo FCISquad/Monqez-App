@@ -10,9 +10,9 @@ class NormalUser extends User {
         super(userJson);
     }
 
-    checkOneTimeRequest(nationalId){
+    checkOneTimeRequest(userId, nationalId){
         return new Promise( (resolve, reject) => {
-            User._database.checkNationalId(nationalId)
+            User._database.checkNationalId(userId, nationalId)
                 .then( function (){
                     resolve();
                 } )

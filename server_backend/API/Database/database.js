@@ -2,12 +2,29 @@ const admin = require('firebase-admin');
 const mailer = require('../Tools/nodeMailer');
 
 class Database {
-    checkNationalId(nationalId){
+    checkNationalId(userId, nationalId){
         return new Promise( (resolve, reject) => {
             admin.database().ref('oneTimeRequest/' + nationalId).once("value")
                 .then( function (snapshot){
                     if (snapshot.val() === null){
                         admin.database().ref('oneTimeRequest/' + nationalId).set("").then(()=>{});
+
+                        admin.database().ref('user/' + userId).update({
+                            "name": "One Time Request",
+                            "national_id": nationalId,
+                            "phone": "011111",
+                            "gender": "male",
+                            "birthdate": "1111-11-11 00:00:00.0",
+                            "country": " ",
+                            "city": " ",
+                            "street": " ",
+                            "buildNumber": " ",
+                            "chronicDiseases": " ",
+                            "type": "0"
+                        })
+                            .then(()=>{resolve();})
+                            .catch((error)=>{reject(error);});
+
                         resolve();
                     }
                     else{
@@ -46,7 +63,8 @@ class Database {
                 certificate: userObject["certificate"],
                 certificateName: userObject["certificateName"],
                 sum: 0,
-                total: 0
+                total: 0,
+                points: 0
             }).catch((error) => {reject(error);});
 
             admin.database().ref('user/' + userId).update({
@@ -96,7 +114,6 @@ class Database {
         });
     }
 
-
     getState() { //to be continued
         return new Promise(((resolve, reject) => {
 
@@ -138,6 +155,7 @@ class Database {
                         "status": userInfo.val()["status"],
                         "sum": userInfo.val()["sum"],
                         "total": userInfo.val()["total"],
+                        "points": userInfo.val()["points"],
                         "calls": callNumber
                     })
                 })
@@ -608,35 +626,16 @@ class Database {
                                             current_value["status"] = "Accepted";
                                             current_value["accepted"]["name"] = monqezName;
 
+
+
                                             admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
-                                                .set(childSnapshot.key)
+                                                .push(childSnapshot.key)
                                                 .then(() => {
                                                     resolve();
                                                 })
                                                 .catch( function (error){
                                                     reject(error);
                                                 } );
-
-                                            // admin.database().ref('user/' + userJson["uid"]).once("value")
-                                            //     .then(function (snapshot){
-                                            //
-                                            //         admin.database().ref('user/' + monqezId).once("value")
-                                            //             .then(function (snapshotMonqez){
-                                            //
-                                            //                 admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
-                                            //                     .set(childSnapshot.key)
-                                            //                     .then(() => {
-                                            //                         resolve({"normal" : snapshot.val()["phone"], "monqez" : snapshotMonqez.val()["phone"]});
-                                            //                     })
-                                            //                     .catch( function (error){
-                                            //                         reject(error);
-                                            //                     } );
-                                            //
-                                            //             })
-                                            //     })
-                                            //     .catch(function (error){
-                                            //         reject(error);
-                                            //     })
                                         }
                                     }
                                 }
@@ -954,21 +953,6 @@ class Database {
         }));
     }
 
-
-    insertDummy(monqezId, userJson){
-        return new Promise( (resolve, reject) => {
-            console.log("*INFO", userJson["time"]);
-
-            admin.database().ref('monqezRequests/' + monqezId + '/' + userJson["uid"])
-                .set(userJson["time"])
-                .then(() => {resolve()})
-                .catch( function (error){
-                    reject(error);
-                } );
-        } );
-    }
-
-
     isCancelled(userId){
         return new Promise( (resolve, _) => {
             admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
@@ -997,6 +981,33 @@ class Database {
             });
         } );
     }
+
+    complete_request_helper(userId, monqezId){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+
+                    admin.database().ref('monqez/' + monqezId).once("value").then(function (snapshot){
+                        admin.database().ref('monqez/' + monqezId).update({"points" : snapshot.val()["points"] + 100})
+                            .then(function (){});
+                    }).catch(function(error){
+                        reject(error);
+                    })
+
+                    admin.database().ref('requests/' + userId + '/' + childSnapshot.key).update({"status" : "completed"})
+                        .then(function (){
+                            resolve();
+                        })
+                        .catch(function (error){
+                            reject(error);
+                        });
+                });
+            }).catch(function (error){
+                reject(error);
+            });
+        } );
+    }
+
 
 }
 

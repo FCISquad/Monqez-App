@@ -285,21 +285,47 @@ app.post('/cancel_request', function (request, response){
 });
 
 
-app.post('/check_national_ID', (request, response) => {
+app.post('/check_national_ID', function (request, response){
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
-    tracker.track(request.body["nationalId"]);
-    new NormalUser().checkOneTimeRequest(request.body["nationalId"])
-        .then( function (){
-            tracker.track("request finished without errors");
-            response.send(200);
-        } )
-        .catch( function (error){
-            tracker.error(error);
-            response.status(403).send(error);
-        } )
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+
+            new NormalUser().checkOneTimeRequest(userId, request.body["nationalId"])
+                .then( function (){
+                    tracker.track("request finished without errors");
+                    response.send(200);
+                } )
+                .catch( function (error){
+                    tracker.error(error);
+                    response.status(503).send(error);
+                } )
+        }
+    })
 });
+
+
+// app.post('/check_national_ID', (request, response) => {
+//     tracker.start(request.originalUrl);
+//     tracker.track("Hello Request");
+//
+//     tracker.track(request.body["nationalId"]);
+//     new NormalUser().checkOneTimeRequest(request.body["nationalId"])
+//         .then( function (){
+//             tracker.track("request finished without errors");
+//             response.send(200);
+//         } )
+//         .catch( function (error){
+//             tracker.error(error);
+//             response.status(403).send(error);
+//         } )
+// });
 
 app.post('/request', (request, response) => {
     tracker.start(request.originalUrl);
@@ -415,25 +441,6 @@ app.post( '/call_out' , (request, response) => {
         }
     });
     tracker.end();
-} );
-
-app.post( '/get_requests' , (request , response) => {
-    helper.verifyToken(request , (userId) => {
-        if ( userId === null ){
-            // Forbidden
-            response.sendStatus(403);
-        }
-        else{
-            User.getRequests(userId)
-                .then( (userJson) => {
-                    response.send(userJson);
-                } )
-                .catch( (error) => {
-                    console.log(error);
-                    response.send(error);
-                } );
-        }
-    });
 } );
 
 module.exports.re_request = re_request;

@@ -38,18 +38,13 @@ module.exports = {
     verifyToken(requestJson, controllerType , callback){
         let bearerHeader = requestJson.headers['authorization'];
 
-        // console.log("*INFO", "1");
         if (bearerHeader) {
             const bearer = bearerHeader.split(' ');
             const bearerToken = bearer[1];
 
-            // console.log("*INFO", "2");
-
             admin.auth().verifyIdToken(bearerToken).then((decodedToken) => {
 
-                // console.log("*INFO", "3");
-
-                if (controllerType === "all" || requestJson.body["oneTimeRequest"] === "true"){
+                if (controllerType === "all" || ("onetimerequest" in requestJson.headers)){
                     callback(decodedToken.uid);
                 }
                 else{

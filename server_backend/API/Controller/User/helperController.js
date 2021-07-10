@@ -133,8 +133,9 @@ app.post( '/accept_request' , (request, response) => {
                         },
                         data:{
                             type: 'normal',
-                            description: 'message',
-                            phone: monqezObject["phone"]
+                            description: 'accept',
+                            phone: monqezObject["phone"],
+                            name: monqezObject["name"]
                         }
                     };
 
@@ -264,19 +265,23 @@ app.get('/get_requests', function (request, response){
 
                     let requestsPool = [];
                     for(let normalUserId in snapShot){
-                        let time = snapShot[normalUserId];
+                        for (let requestTime in snapShot[normalUserId]){
 
-                        let requestJson = await helperUser.getRequestBody(normalUserId, time);
-                        let userJson    = await helperUser.getUser(normalUserId);
+                            let time = snapShot[normalUserId][requestTime];
 
-                        let json = {
-                            "request" : requestJson,
-                            "user": userJson,
-                            "time": time
+                            let requestJson = await helperUser.getRequestBody(normalUserId, time);
+                            let userJson    = await helperUser.getUser(normalUserId);
+
+                            let json = {
+                                "request" : requestJson,
+                                "user": userJson,
+                                "time": time
+                            }
+                            requestsPool.push(json);
                         }
-
-                        requestsPool.push(json);
                     }
+
+                    console.log("*INFO", requestsPool);
 
                     response.status(200).send(requestsPool);
                 } )
@@ -310,7 +315,7 @@ app.post('/cancel_request', function (request, response){
                     },
                     data:{
                         type: 'normal',
-                        description: 'message'
+                        description: 'cancel'
                     }
                 };
                 const options = {
@@ -322,6 +327,45 @@ app.post('/cancel_request', function (request, response){
             }).catch(function (error){
                 tracker.error(error);
                 response.status(503).send(error);
+            })
+        }
+    })
+});
+
+app.post('/complete_request', function (request, response){
+    tracker.start(request.originalUrl);
+    tracker.track("Hello Request");
+
+    helper.verifyToken(request, controllerType, (userId) => {
+        if (userId === null){
+            tracker.error("Auth error, null userId");
+            response.sendStatus(403);
+        }
+        else{
+            tracker.track("good Auth - start process");
+            new HelperUser().complete_request(request.body, userId).then(function(){
+                tracker.track("request finished without errors");
+                response.sendStatus(200);
+
+                const payload = {
+                    notification: {
+                        title: 'Request is Completed',
+                        body: 'You can rate the monqez'
+                    },
+                    data:{
+                        type: 'normal',
+                        description: 'completed'
+                    }
+                };
+                const options = {
+                    priority: 'high',
+                    timeToLive: 60 * 60
+                };
+
+                helper.send_notifications(request.body["uid"], payload, options);
+            }).catch(function (error){
+                tracker.error(error);
+                response.sendStatus(503);
             })
         }
     })
