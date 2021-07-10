@@ -100,6 +100,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   void initState() {
     _detailedAddressController = TextEditingController(text: "Detailed Address");
     _additionalNotesController = TextEditingController(text: 'Additional Notes');
+    _forMeController = TextEditingController(text: ' ');
     // _injuryTypeController = TextEditingController(text: 'Internal or External');
     // _genderController = TextEditingController(text: 'Gender');
     polylinePoints = PolylinePoints();
@@ -139,7 +140,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
   Future<bool> getAdditionalInformation() async {
     if (_additionalNotesController.text == "Additional Notes" &&
-        destinationAddressController.text == "Detailed Address") {
+        _detailedAddressController.text == "Detailed Address" && _forMeController.text== ' ') {
       String token = Provider
           .of<Helper>(context, listen: false)
           .token;
@@ -161,9 +162,11 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
         _additionalNotesController.text = mp["Additional Notes"];
         _detailedAddressController.text = mp["Address"];
-        _detailedAddressController.text = (mp["forMe"]).toString();
-        // _genderController.text = mp["Gender"];
-        // _injuryTypeController.text = mp["Injury"];
+        if(mp["forMe"] == true)
+          _forMeController.text = "Yes";
+        else
+          _forMeController.text = "No";
+
         bodyMapValue = int.parse(mp["avatarBody"]);
         print(bodyMapValue);
         avatar = BodyMap.init(bodyMapValue, 200);
@@ -176,16 +179,31 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   Widget _getText(String text, double fontSize, FontWeight fontWeight,
-      Color color, int lines) {
+      Color color, int lines,bool launch) {
+    if (launch){
     return AutoSizeText(text,
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.center,
         style: TextStyle(
+          decoration: TextDecoration.underline,
             color: color,
             fontSize: fontSize,
             fontFamily: 'Cairo',
             fontWeight: fontWeight),
         maxLines: lines);
+    }
+    else{
+      return AutoSizeText(text,
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: color,
+              fontSize: fontSize,
+              fontFamily: 'Cairo',
+              fontWeight: fontWeight),
+          maxLines: lines);
+
+    }
   }
 
   void setPolylines() async {
@@ -274,7 +292,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                         'Detailed Address ',
                                         13,
                                         FontWeight.bold,
-                                        Colors.black,1),
+                                        Colors.black,1,false),
                                   ),
                                 ),
                                 SizedBox(
@@ -292,7 +310,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                   ),
                                   child: Center(
                                     child: _getText(_detailedAddressController.text, 15,
-                                        FontWeight.normal, Colors.black, 1),
+                                        FontWeight.normal, Colors.black, 1,false),
                                   ),
                                 )
                               ],
@@ -323,10 +341,10 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                   ),
                                   child: Center(
                                     child: _getText(
-                                        'Additional Notes ',
+                                       'Additional Notes' ,
                                         13,
                                         FontWeight.bold,
-                                        Colors.black,1),
+                                        Colors.black,1,false),
                                   ),
                                 ),
                                 SizedBox(
@@ -343,11 +361,14 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                   ),
                                   child: Center(
                                     child: _getText(_additionalNotesController.text, 15,
-                                        FontWeight.normal, Colors.black, 1),
+                                        FontWeight.normal, Colors.black, 1,false),
                                   ),
                                 )
                               ],
                             ),
+                          ),
+                          SizedBox(
+                            height: 8,
                           ),
                           Align(
                             alignment: Alignment.centerLeft,
@@ -371,10 +392,10 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                   ),
                                   child: Center(
                                     child: _getText(
-                                        'Additional Notes ',
+                                        'For Me ',
                                         13,
                                         FontWeight.bold,
-                                        Colors.black,1),
+                                        Colors.black,1,false),
                                   ),
                                 ),
                                 SizedBox(
@@ -390,8 +411,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                         5.0),
                                   ),
                                   child: Center(
-                                    child: _getText(_additionalNotesController.text, 15,
-                                        FontWeight.normal, Colors.black, 1),
+                                    child: _getText(_forMeController.text, 15,
+                                        FontWeight.normal, Colors.black, 1,false),
                                   ),
                                 )
                               ],
@@ -426,7 +447,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                         'Phone Number',
                                         13,
                                         FontWeight.bold,
-                                        Colors.black,1),
+                                        Colors.black,1,false),
                                   ),
                                 ),
                                 SizedBox(
@@ -445,7 +466,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                                        child: GestureDetector(
                                          onTap:(){ _launchCaller(phone);},
                                          child: _getText(phone, 15,
-                                             FontWeight.normal, Colors.black, 1),
+                                             FontWeight.normal, Colors.blue, 1,true),
                                        ),
                                      ),
                                    ),
@@ -587,7 +608,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                             _launch();
                           },
                           child: _getText(
-                              'Navigate', 14, FontWeight.w700, Colors.white, 1),
+                              'Navigate', 14, FontWeight.w700, Colors.white, 1,false),
                         ),
                       ),
                       Container(
@@ -604,7 +625,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
                           },
                           child: _getText(
-                              'Complete', 14, FontWeight.w700, Colors.white, 1),
+                              'Complete', 14, FontWeight.w700, Colors.white, 1,false),
                         ),
                       ),
                       Container(
@@ -620,7 +641,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                             _cancelRequest();
                           },
                           child: _getText(
-                              'Cancel', 14, FontWeight.w700, Colors.white, 1),
+                              'Cancel', 14, FontWeight.w700, Colors.white, 1,false),
                         ),
                       ),
                       Padding(
