@@ -46,12 +46,14 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   static User user;
   
   List<Icon> icons;
-  bool _isLoading = true;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
   var _additionalInfoController = TextEditingController();
   BodyMap avatar;
   bool isLoaded = false;
+  bool _locationLoaded = false;
+  bool _dataLoaded = false;
+
   int firstStatusCode;
   final _drawerKey = GlobalKey<ScaffoldState>();
 
@@ -62,6 +64,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       user = new User.empty();
       user.setToken(token);
       await user.getUser();
+      setState(() {
+        _dataLoaded = true;
+      });
     });
   }
   Animation<double> animation;
@@ -73,11 +78,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   Position _newUserPosition;
   bool _radioValue;
 
-  List<Item> users = <Item>[
-    const Item('Very dangerous'),
-    const Item('Dangerous'),
-    const Item('Normal'),
-  ];
 
   static CameraPosition _position1;
 
@@ -96,10 +96,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         print(newPosition.latitude);
         print(newPosition.longitude);
       }),
-      // infoWindow: InfoWindow(
-      //   title: 'This is a Title',
-      //   snippet: 'This is a snippet',
-      // ),
       icon: BitmapDescriptor.defaultMarker,
     );
   }
@@ -403,9 +399,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
           // tilt: 59.440,
           zoom: 17.0);
-      _isLoading = false;
       setState(() {
         // to check if that step is valid or not
+        _locationLoaded = true;
       });
     }).catchError((e) {
       navigate(LoginScreen(), context, true);
@@ -460,7 +456,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       checkNotification(context);
       isLoaded = true;
     }
-    if (_isLoading) {
+    if (!_locationLoaded || !_dataLoaded ) {
       if (firstTimeLocation) {
         firstTimeLocation = false;
         Future.delayed(Duration.zero, () async {
@@ -482,7 +478,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       valueColor:
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
     } else {
-      List<bool> visible = Provider.of<Normal>(context, listen: true).visible;
+      var provider = Provider.of<Normal>(context, listen: true);
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -698,7 +694,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
               ),*/
 
               Visibility(
-                  visible: visible[0] ,
+                  visible: provider.visible[0] ,
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                     child: Align(
@@ -712,8 +708,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             // await _makeRequest();
                             await _makeRequest();
                             if (firstStatusCode == 200){ _showMaterialDialog();
-                            visible[0] = !visible[0] ;
-                            visible[1] = !visible[1] ;
+                            provider.visible[0] = !provider.visible[0] ;
+                            provider.visible[1] = !provider.visible[1] ;
                             setState(() {
 
                             });}
@@ -726,7 +722,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                   ),
               ),
               Visibility(
-                visible: visible[1] ,
+                visible: provider.visible[1] ,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
@@ -738,8 +734,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       child: RaisedButton(
                         onPressed: () async {
                           await _cancelRequest() ;
-                          visible[0] = !visible[0] ;
-                          visible[1] = !visible[1] ;
+                          provider.visible[0] = !provider.visible[0] ;
+                          provider.visible[1] = !provider.visible[1] ;
                           setState(() {
 
                           });
@@ -752,7 +748,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 ),
               ),
               Visibility(
-                visible: visible[2] ,
+                visible: provider.visible[2] ,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
@@ -804,7 +800,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                             SizedBox(
                               width: 8,
                             ),
-                            _getText('Hatem', 14,
+                            _getText(provider.helperName, 14,
                                 FontWeight.bold, Colors.black, 1),
                           ],
                         ),
@@ -841,8 +837,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   width: 8,
                                 ),
                                 GestureDetector(
-                                    onTap:(){ _launchCaller("01016192209");},
-                                  child: _getText('01016192209', 14,
+                                    onTap:(){ _launchCaller(provider.helperPhone);},
+                                  child: _getText(provider.helperPhone, 14,
                                       FontWeight.bold, Colors.black, 1),
                                 ),
                               ],

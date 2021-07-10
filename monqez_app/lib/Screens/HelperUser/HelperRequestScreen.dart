@@ -487,9 +487,10 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         'Accept': 'application/json',
         'Authorization': 'Bearer $tempToken',
       },
-      body: jsonEncode(<String, double>{
+      body: jsonEncode(<String, dynamic>{
         'latitude': helperLocation.latitude,
-        'longitude': helperLocation.longitude
+        'longitude': helperLocation.longitude,
+        'uid': requestID
       }),
     );
     if (response.statusCode == 200) {
