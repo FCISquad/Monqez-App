@@ -43,8 +43,8 @@ class MyApp extends StatelessWidget {
 
       routes: {
         // '/': (context) => HelperRequestScreen("010", "12", 30.0, 31.2, 30.5, 31.4),
-        '/': (context) => MyHomePage(title: 'Monqez'),
-        // '/': (context) => Splash(),
+        // '/': (context) => MyHomePage(title: 'Monqez'),
+        '/': (context) => Splash(),
 
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),

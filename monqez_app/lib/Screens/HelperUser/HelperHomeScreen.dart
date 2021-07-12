@@ -203,15 +203,6 @@ class HelperHomeScreen extends StatelessWidget {
                   ),
                   ListTile(
                     title: getTitle(
-                        'Chat Queue', 18, firstColor, TextAlign.start, true),
-                    leading: Icon(Icons.chat, size: 30, color: firstColor),
-                    onTap: () {
-                      Navigator.pop(context);
-                      navigate(ChatQueueScreen(), context, false);
-                    },
-                  ),
-                  ListTile(
-                    title: getTitle(
                         'My Requests', 18, firstColor, TextAlign.start, true),
                     leading: Icon(Icons.history,
                         size: 30, color: firstColor),
@@ -297,13 +288,6 @@ class HelperHomeScreen extends StatelessWidget {
                         Provider.of<Helper>(context, listen: true).callCount.toString(),
                         CallingQueueScreen(),
                         Icons.call,
-                        MediaQuery.of(context).size.width,
-                        context),
-                    getCard(
-                        "Chat Queue",
-                        "3",
-                        ChatQueueScreen(),
-                        Icons.chat,
                         MediaQuery.of(context).size.width,
                         context),
                     getCard(

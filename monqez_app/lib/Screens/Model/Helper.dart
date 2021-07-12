@@ -10,7 +10,7 @@ import 'User.dart';
 
 class Helper extends User with ChangeNotifier  {
   String status;
-  Timer timer ;
+  static Timer timer ;
   final _samplingPeriod = 5;
   double longitude;
   double latitude;
@@ -34,10 +34,16 @@ class Helper extends User with ChangeNotifier  {
     super.setToken(token);
     await getState();
     if (status == "Available") {
-      requestGps();
-      startBackgroundProcess();
+      print("First:" + (timer == null).toString());
+      if (timer != null)
+      print("Second:" + (!isTimerRunning).toString());
+      if (timer == null) {
+        requestGps();
+        startBackgroundProcess();
+      }
     }
   }
+
   Future<void> getState() async {
     await super.getUser();
     http.Response response2 = await http.get(
@@ -62,7 +68,6 @@ class Helper extends User with ChangeNotifier  {
     notifyListeners();
   }
 
-
   startBackgroundProcess() async {
     await BackgroundLocation.setAndroidNotification(
       title: "Monqez is running",
@@ -79,21 +84,21 @@ class Helper extends User with ChangeNotifier  {
     if (!isTimerRunning ){
 
       print("1123");
+      timer?.cancel();
       timer = Timer.periodic(
           Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
       isTimerRunning = true ;
 
     }
-
   }
 
   stopBackgroundProcess() {
     print ("HATEM") ;
     if (timer != null){
       timer.cancel();
+      timer = null;
       isTimerRunning = false ;
       print ("Ehab");
-
     }
     BackgroundLocation.stopLocationService();
   }
@@ -125,7 +130,6 @@ class Helper extends User with ChangeNotifier  {
     }
   }
 
-
   Future requestGps() async {
     if (!await _location.serviceEnabled()) {
       stopBackgroundProcess();
@@ -135,6 +139,7 @@ class Helper extends User with ChangeNotifier  {
       }
     }
   }
+
   Future<void> sendPosition() async {
     if (!await _location.serviceEnabled()) {
 
