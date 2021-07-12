@@ -231,6 +231,16 @@ class NormalUser extends User {
             })
         } );
     }
+
+    validRequest(userId){
+        return new Promise( (resolve, reject) => {
+            User._database.validRequest(userId).then(function(){
+                resolve();
+            }).catch(function (error){
+                reject(error);
+            })
+        } );
+    }
 }
 
 module.exports = NormalUser;

@@ -337,21 +337,26 @@ app.post('/request', (request, response) => {
         else{
             tracker.track("good Auth - start process");
 
-            new NormalUser().request(userId, request.body, true).then((monqezIDs) => {
-                response.sendStatus(200);
+            new NormalUser().validRequest(userId).then(function (){
+                new NormalUser().request(userId, request.body, true).then((monqezIDs) => {
+                    response.sendStatus(200);
 
-                tracker.track("request is send");
-                tracker.track("start timer");
+                    tracker.track("request is send");
+                    tracker.track("start timer");
 
-                setTimeout(function (){
-                    requestTimeOut(userId, monqezIDs);
-                }, 30000);
-            })
-            .catch((error) => {
-                // service unavailable
+                    setTimeout(function (){
+                        requestTimeOut(userId, monqezIDs);
+                    }, 30000);
+                }).catch((error) => {
+                        // service unavailable
+                        tracker.error(error);
+                        response.sendStatus(503);
+                    });
+            }).catch(function (error){
                 tracker.error(error);
                 response.sendStatus(503);
             });
+
         }
     });
 
