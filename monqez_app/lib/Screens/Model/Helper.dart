@@ -10,13 +10,14 @@ import 'User.dart';
 
 class Helper extends User with ChangeNotifier  {
   String status;
-  Timer timer;
+  Timer timer ;
   final _samplingPeriod = 5;
   double longitude;
   double latitude;
   int callCount;
   double ratings;
   int myPoints = 0;
+  static bool isTimerRunning = false ;
 
   final loc.Location _location = loc.Location();
 
@@ -74,12 +75,26 @@ class Helper extends User with ChangeNotifier  {
       latitude = location.latitude;
       longitude = location.longitude;
     });
-    timer = Timer.periodic(
-        Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
+    print ("Hussien") ;
+    if (!isTimerRunning ){
+
+      print("1123");
+      timer = Timer.periodic(
+          Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
+      isTimerRunning = true ;
+
+    }
+
   }
 
   stopBackgroundProcess() {
-    timer.cancel();
+    print ("HATEM") ;
+    if (timer != null){
+      timer.cancel();
+      isTimerRunning = false ;
+      print ("Ehab");
+
+    }
     BackgroundLocation.stopLocationService();
   }
 
@@ -89,9 +104,9 @@ class Helper extends User with ChangeNotifier  {
       requestGps();
       startBackgroundProcess();
     } else {
-      if (timer != null) {
-        stopBackgroundProcess();
-      }
+      print("Khaled");
+      stopBackgroundProcess();
+      print("Ezzat");
     }
     notifyListeners();
     final http.Response response = await http.post(
@@ -116,9 +131,7 @@ class Helper extends User with ChangeNotifier  {
       stopBackgroundProcess();
       bool result = await _location.requestService();
       if (result == false) {
-
         changeStatus("Busy");
-
       }
     }
   }
@@ -144,7 +157,7 @@ class Helper extends User with ChangeNotifier  {
       );
 
       if (response.statusCode == 200) {
-        makeToast("Submitted");
+        print("Submitted");
       } else {
         makeToast('Failed to submit user.');
       }

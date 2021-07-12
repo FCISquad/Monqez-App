@@ -23,22 +23,12 @@ class User {
   User.empty();
 
 
-  /*User(String token) {
-    this.token = token;
-    fcm = new FirebaseCloudMessaging(token);
-  }*/
+
   setToken(String token) {
     this.token = token;
-    print("EHab");
     if (fcm == null) {
-      print("Husiien");
       fcm = new FirebaseCloudMessaging(token);
-      print("Hatem");
     }
-    /*if(!FirebaseCloudMessaging.tokenTaken){
-      FirebaseCloudMessaging.tokenTaken=true;
-    fcm = new FirebaseCloudMessaging(token);
-    }*/
   }
 
   getUser() async {

@@ -64,8 +64,11 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     })
     );
     if (response.statusCode == 200) {
+      print ("heeeeeeeeeeeeere") ;
       makeToast("Successful");
+
       Provider.of<Helper>(context, listen: false).changeStatus("Busy");
+      print ("hya hya hya") ;
       var parsed = jsonDecode(response.body).cast<String, dynamic>();
       phone = parsed["phone"] ;
 
@@ -140,6 +143,8 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                       onPressed: () async {
                         Provider.of<Helper>(context, listen: false).stopBackgroundProcess();
                         int result = await accept(context);
+                        print ("----------------");
+                        print (result) ;
                         if (result == 0){
                           await _getCurrentUserLocation();
                         navigate(HelperRequestScreen(phone,requestID,reqLatitude,reqLongitude,helperLocation.latitude,helperLocation.longitude),
