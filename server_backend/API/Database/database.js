@@ -1008,6 +1008,26 @@ class Database {
         } );
     }
 
+    validRequest(userId){
+        return new Promise( (resolve, reject) => {
+            admin.database().ref('requests/' + userId).limitToLast(1).once('value').then(function(snapshot) {
+                snapshot.forEach(function(childSnapshot) {
+
+                    if (snapshot.val()[childSnapshot.key]["status"] === null){
+                        reject();
+                    }
+                    else if (snapshot.val()[childSnapshot.key]["status"] === "Accepted"){
+                        reject();
+                    }
+                    else{
+                        resolve();
+                    }
+                });
+            }).catch(function (error){
+                reject(error);
+            })
+        } );
+    }
 
 }
 

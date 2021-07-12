@@ -21,9 +21,10 @@
   <component name="ChangeListManager">
     <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Controller/User/adminController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/adminController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Tools/requestFunctions.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Tools/requestFunctions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/monqez.js" beforeDir="false" afterPath="$PROJECT_DIR$/monqez.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Controller/User/userController.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Controller/User/userController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Database/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Database/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Model/User/normalUser.js" beforeDir="false" afterPath="$PROJECT_DIR$/API/Model/User/normalUser.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,19 +67,6 @@
     <property name="ts.external.directory.path" value="C:\Program Files\JetBrains\IntelliJ IDEA 2020.2.2\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="server.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/server.js" working-dir="$PROJECT_DIR$">
       <method v="2" />
     </configuration>
@@ -169,31 +157,31 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
-    <state width="1323" height="416" key="GridCell.Tab.0.bottom" timestamp="1625955846380">
+    <state width="1323" height="289" key="GridCell.Tab.0.bottom" timestamp="1626131427219">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="416" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1625955846380" />
+    <state width="1323" height="289" key="GridCell.Tab.0.bottom/0.0.1366.738@0.0.1366.738" timestamp="1626131427219" />
     <state width="1877" height="588" key="GridCell.Tab.0.bottom/0.0.1920.1050@0.0.1920.1050" timestamp="1625931394333" />
     <state width="725" height="627" key="GridCell.Tab.0.bottom/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.bottom/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
-    <state width="1323" height="416" key="GridCell.Tab.0.center" timestamp="1625955846379">
+    <state width="1323" height="289" key="GridCell.Tab.0.center" timestamp="1626131427219">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="416" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1625955846379" />
+    <state width="1323" height="289" key="GridCell.Tab.0.center/0.0.1366.738@0.0.1366.738" timestamp="1626131427219" />
     <state width="1877" height="588" key="GridCell.Tab.0.center/0.0.1920.1050@0.0.1920.1050" timestamp="1625931394333" />
     <state width="725" height="627" key="GridCell.Tab.0.center/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.center/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
-    <state width="1323" height="416" key="GridCell.Tab.0.left" timestamp="1625955846379">
+    <state width="1323" height="289" key="GridCell.Tab.0.left" timestamp="1626131427219">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="416" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1625955846379" />
+    <state width="1323" height="289" key="GridCell.Tab.0.left/0.0.1366.738@0.0.1366.738" timestamp="1626131427219" />
     <state width="1877" height="588" key="GridCell.Tab.0.left/0.0.1920.1050@0.0.1920.1050" timestamp="1625931394333" />
     <state width="725" height="627" key="GridCell.Tab.0.left/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.left/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
-    <state width="1323" height="416" key="GridCell.Tab.0.right" timestamp="1625955846380">
+    <state width="1323" height="289" key="GridCell.Tab.0.right" timestamp="1626131427219">
       <screen x="0" y="0" width="1366" height="738" />
     </state>
-    <state width="1323" height="416" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1625955846380" />
+    <state width="1323" height="289" key="GridCell.Tab.0.right/0.0.1366.738@0.0.1366.738" timestamp="1626131427219" />
     <state width="1877" height="588" key="GridCell.Tab.0.right/0.0.1920.1050@0.0.1920.1050" timestamp="1625931394333" />
     <state width="725" height="627" key="GridCell.Tab.0.right/0.0.768.1338@0.0.768.1338" timestamp="1622256657117" />
     <state width="1261" height="255" key="GridCell.Tab.0.right/62.0.1304.768@62.0.1304.768" timestamp="1621552806424" />
