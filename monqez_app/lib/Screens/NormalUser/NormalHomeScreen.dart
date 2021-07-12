@@ -71,6 +71,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
   Animation<double> animation;
   AnimationController controller;
+  GoogleMapController mapController;
+
 
   Completer<GoogleMapController> _controller = Completer();
   Marker _marker;
@@ -82,9 +84,21 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
-    _getCurrentUserLocation();
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
+    // print (_position1) ;
+    // _getCurrentUserLocation();
+    // print (_position1);
+    // final GoogleMapController controller = await _controller.future;
+    // controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        _position1
+      ),
+    );
+    showPinsOnMap();
+    setState(() {
+
+    });
+
   }
 
   showPinsOnMap() {
@@ -100,19 +114,19 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     );
   }
 
-  _onMapCreated(GoogleMapController controller) async {
-    await _getCurrentUserLocation();
-    final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
-    _controller.complete(controller);
-    setState(() {
-      _position1 = CameraPosition(
-          // bearing: 192.833,
-          target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          // tilt: 59.440,
-          zoom: 17.0);
-    });
-  }
+  // _onMapCreated(GoogleMapController controller) async {
+  //   await _getCurrentUserLocation();
+  //   final GoogleMapController controller = await _controller.future;
+  //   controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
+  //   _controller.complete(controller);
+  //   setState(() {
+  //     _position1 = CameraPosition(
+  //         // bearing: 192.833,
+  //         target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
+  //         // tilt: 59.440,
+  //         zoom: 17.0);
+  //   });
+  // }
 
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
@@ -479,6 +493,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
     } else {
       var provider = Provider.of<Normal>(context, listen: true);
+      double width = MediaQuery.of(context).size.width / 100;
+      double height =
+          (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
+              100;
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -670,7 +688,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           body: Stack(
             children: <Widget>[
               GoogleMap(
-                onMapCreated: _onMapCreated,
+                onMapCreated: (GoogleMapController controller) {
+                  mapController = controller;
+                },
                 initialCameraPosition: _position1,
                 mapType: _currentMapType,
                 markers: {_marker},
@@ -771,11 +791,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         ],
                          borderRadius: BorderRadius.circular(15.0),
                       ),
-
                       width: 220,
                       height: 100,
                       // ignore: deprecated_member_use
-                      child:  Column(
+                      child: Column(
                         // mainAxisAlignment: MainAxisAlignment.center,
                         // crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -844,7 +863,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 ),
                                 GestureDetector(
                                     onTap:(){ _launchCaller(provider.helperPhone);},
-                                  child: _getText(provider.helperPhone, 14,
+                                  child: _getText(provider.helperPhone, 10,
                                       FontWeight.bold, Colors.black, 1),
                                 ),
                               ],

@@ -12,15 +12,15 @@ app.use('/' , monqez);
 const port = process.env.PORT || '5000';
 app.listen(port, () => console.log(`Server started on Port ${port}`));
 
-// const localtunnel = require("localtunnel");
-// (async () => {
-//     const tunnel = await localtunnel({ port: 5000, subdomain: "monqez6" });
-//
-//     // the assigned public url for your tunnel
-//     // i.e. https://abcdefgjhij.localtunnel.me
-//     console.log(tunnel.url);
-//
-//     tunnel.on('close', () => {
-//         // tunnels are closed
-//     });
-// })();
+const localtunnel = require("localtunnel");
+(async () => {
+    const tunnel = await localtunnel({ port: 5000, subdomain: "monqez6" });
+
+    // the assigned public url for your tunnel
+    // i.e. https://abcdefgjhij.localtunnel.me
+    console.log(tunnel.url);
+
+    tunnel.on('close', () => {
+        // tunnels are closed
+    });
+})();

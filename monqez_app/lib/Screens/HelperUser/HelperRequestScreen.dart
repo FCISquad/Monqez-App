@@ -556,17 +556,22 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
 
   @override
   Widget build(BuildContext context) {
+
     CameraPosition initialCameraPosition = CameraPosition(
       zoom: CAMERA_ZOOM,
       tilt: CAMERA_TILT,
       bearing: CAMERA_BEARING,
       target: initialLatLng,
     );
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
+    double width = MediaQuery.of(context).size.width / 100;
+    double height =
+        (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
+            100;
+    // var height = MediaQuery.of(context).size.height;
+    // var width = MediaQuery.of(context).size.width;
     return Container(
-        height: height,
-        width: width,
+        height: height*100,
+        width: width*100,
         child: Scaffold(
           body: Stack(
             children: <Widget>[
@@ -589,15 +594,15 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  width: width,
-                  height: 90,
+                  width: width*100,
+                  height: height*15,
                   decoration: BoxDecoration(color: Colors.white),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                        width: 100,
-                        height: 50,
+                        width: 26*width,
+                        height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.deepOrange,
                             borderRadius: BorderRadius.circular(30.0)),
@@ -612,8 +617,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         ),
                       ),
                       Container(
-                        width: 100,
-                        height: 50,
+                        width: 26*width,
+                        height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(30.0)),
@@ -629,8 +634,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         ),
                       ),
                       Container(
-                        width: 100,
-                        height: 50,
+                        width: 26*width,
+                        height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(30.0)),
@@ -647,8 +652,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                          width: 50,
-                          height: 50,
+                          width: 14*width,
+                          height: 8*height,
                           child: FlatButton(
                               color: Colors.transparent,
                               splashColor: Colors.black26,

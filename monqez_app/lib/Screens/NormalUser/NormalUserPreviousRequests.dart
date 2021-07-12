@@ -11,7 +11,6 @@ import 'package:rating_dialog/rating_dialog.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 
-import '../rateDialog.dart';
 import 'BodyMap.dart';
 
 // ignore: must_be_immutable
@@ -32,6 +31,7 @@ class _Request {
   String address;
   String forMe;
   String info;
+  String uid;
   bool isExpanded = false;
   String dateId ;
   bool isRated = false;
@@ -103,7 +103,6 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
   }
 
   Widget getText(String text, double fontSize, bool isBold, Color color) {
-    print("Here: " + text);
     return AutoSizeText(text,
         textDirection: TextDirection.rtl,
         style: TextStyle(
@@ -420,7 +419,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         'subject': subject,
         'complaint': message,
         'time' :req.dateId,
-        'uid' : req.helperName
+        'uid' : req.uid
       }),
     );
     if (response.statusCode == 200) {
@@ -456,6 +455,8 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         value["accepted"].forEach((key2, value2) {
           if (key2 == "name")
             request.helperName = value2;
+          else if (key2.toString().startsWith("uid"))
+            request.uid = value2;
         });
 
         //request.show();

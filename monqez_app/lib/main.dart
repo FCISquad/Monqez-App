@@ -9,8 +9,8 @@ import 'Screens/ComplaintDialog.dart';
 import 'Screens/HelperUser/HelperRequestScreen.dart';
 import 'Screens/Model/Helper.dart';
 import 'Screens/Model/Normal.dart';
+import 'Screens/NormalUser/TestMap.dart';
 import 'Screens/SplashScreen.dart';
-import 'Screens/rateDialog.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
@@ -42,7 +42,10 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       routes: {
+        // '/': (context) => HelperRequestScreen("010", "12", 30.0, 31.2, 30.5, 31.4),
+        // '/': (context) => MyHomePage(title: 'Monqez'),
         '/': (context) => Splash(),
+
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),
