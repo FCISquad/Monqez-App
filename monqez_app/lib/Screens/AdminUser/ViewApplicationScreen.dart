@@ -26,13 +26,13 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
   String uid;
   Color color = Colors.white;
   String path;
-
   String name;
   String birthdate;
   String nationalID;
   String phone;
   String gender;
   String certificate;
+
   parseJson(var json) {
     var singleApplication = jsonDecode(json).cast<String, dynamic>();
 
@@ -42,7 +42,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
     phone = singleApplication['phone'];
     gender = singleApplication['gender'];
     certificate = singleApplication['certificate'];
-    print(singleApplication['certificate']);
   }
 
   Future<void> getApplication() async {
@@ -58,7 +57,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       body: jsonEncode(<String, String>{'userID': uid}),
     );
     if (response.statusCode == 200) {
-      print(response.body);
       parseJson(response.body);
       await loadPdf();
       setState(() {
@@ -66,7 +64,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       });
       return true;
     } else {
-      print(response.statusCode);
       setState(() {
         isLoading = false;
       });
@@ -85,7 +82,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
   }
 
   void setResult(bool isApproved) async {
-    print(isApproved.toString());
     String token = AdminHomeScreenState.token;
 
     final http.Response response = await http.post(
@@ -110,7 +106,6 @@ class _ViewApplicationScreenState extends State<ViewApplicationScreen> {
       Navigator.pop(context);
     } else {
       makeToast("Error!");
-      print(response.statusCode);
     }
     setState(() {});
   }

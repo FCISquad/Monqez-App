@@ -18,7 +18,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
     applicationsList = <ListTile>[];
     List<dynamic> applications = json.decode(jsonStr);
     int counter = 1;
-
     applications.forEach((application) {
       var singleApplication = application as Map<String, dynamic>;
       String uid = singleApplication['uid'];
@@ -47,14 +46,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       },
     );
     if (response.statusCode == 200) {
-      print(response.body);
       iterateJson(response.body);
       setState(() {
         isLoading = false;
       });
       return true;
     } else {
-      print(response.statusCode);
       setState(() {
         isLoading = false;
       });
@@ -107,21 +104,6 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
             return applicationsList[index];
           }),
     );
-    // return ListView.separated(
-    //   itemCount: 100,
-    //   itemBuilder: (context, index) {
-    //     return ListTile(
-    //       title: Text('Application from Name'),
-    //       subtitle: Text('Name of the pdf'),
-    //       leading: Text('$index'),
-    //       trailing: Icon(Icons.keyboard_arrow_right),
-    //       onTap: () => navigate(ViewApplicationScreen()),
-    //     );
-    //   },
-    //   separatorBuilder: (context, index) {
-    //     return Divider();
-    //   },
-    // );
   }
 
   void navigate(Widget map) async {

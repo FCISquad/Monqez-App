@@ -27,7 +27,6 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
   String complaintID;
   Color color = Colors.white;
   String path;
-
   String complainerName;
   String complainedName;
   String complainerUID;
@@ -64,15 +63,12 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
       }),
     );
     if (response.statusCode == 200) {
-      print(response.body);
       parseJson(response.body);
       setState(() {
         isLoading = false;
       });
       return true;
     } else {
-      makeToast("An error has occured");
-      print(response.statusCode);
       Navigator.pop(context);
       return false;
     }
@@ -84,16 +80,9 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
     this.date = date;
     this.complainedUID = complainedID;
     getComplaint();
-
-/*
-    this.complainerName = "Hussien";
-    this.complainedName = "Ehab";
-    this.complaint =
-        "This is a really huge complaint that i wrote coz i am bored and i want to see how it looks and how will it be divided";
-  */
   }
 
-  archieve() async {
+  archive() async {
     String token = AdminHomeScreenState.token;
     final http.Response response = await http.post(
       Uri.parse('$url/admin/archieve_complaint/'),
@@ -111,8 +100,6 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
       makeToast("Archieved Successfully");
     } else if (response.statusCode == 503) {
       makeToast("An admin has already reviewed this complaint!");
-    } else {
-      print(response.statusCode);
     }
   }
 
@@ -134,8 +121,6 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
       makeToast("Warning Sent");
     } else if (response.statusCode == 503) {
       makeToast("An admin has already reviewed this complaint!");
-    } else {
-      print(response.statusCode);
     }
   }
 
@@ -156,8 +141,6 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
       makeToast("User Banned");
     } else if (response.statusCode == 503) {
       makeToast("An admin has already reviewed this complaint!");
-    } else {
-      print(response.statusCode);
     }
   }
 
@@ -306,10 +289,11 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
                         width: MediaQuery.of(context).size.width / 3,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
-                                archieve();
+                                archive();
                                 Navigator.pop(context);
                               },
                               shape: RoundedRectangleBorder(
@@ -331,6 +315,7 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
                         width: MediaQuery.of(context).size.width / 3,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
@@ -356,12 +341,12 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
                         width: MediaQuery.of(context).size.width / 3,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                             elevation: 5.0,
                             onPressed: () {
                               ban();
                               Navigator.pop(context);
-                              //navigate(LoginScreen(), context, true);
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),

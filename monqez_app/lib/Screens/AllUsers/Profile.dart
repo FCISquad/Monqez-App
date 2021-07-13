@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:file_picker/file_picker.dart';
@@ -11,6 +10,7 @@ import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Models/User.dart';
 
+// ignore: must_be_immutable
 class ProfileScreen extends StatefulWidget {
   User user;
   ProfileScreen(User user) {
@@ -37,11 +37,8 @@ class _ProfileScreenState extends State<ProfileScreen>
   TextEditingController _streetController = TextEditingController();
   TextEditingController _buildNumberController = TextEditingController();
   TextEditingController _diseasesController = TextEditingController();
-
   String gender = "";
-
   ScreenState state = ScreenState.Viewing;
-
   bool _isLoading = true;
   ImageController imageController ;
 
@@ -129,6 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen>
       return null;
     }
   }
+
   Widget getText(String text, double fontSize, bool isBold, Color color) {
     return AutoSizeText(text,
         style: TextStyle(
@@ -137,10 +135,12 @@ class _ProfileScreenState extends State<ProfileScreen>
             fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
         maxLines: 3);
   }
+
   void _buildImagePicker(BuildContext context) async {
     imageController = await _uploadProfilePicture();
     setState(() {});
   }
+
   Future<void> _showMyDialog() async {
     return showDialog<void>(
       context: context,
@@ -153,7 +153,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                 TextButton(
                   child: getText('Replace', 22, true, Colors.green),
                   onPressed: () {
-                    print("Replaced");
                     Navigator.of(context).pop();
                     _buildImagePicker(context);
                   },
@@ -316,10 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                             backgroundColor: Colors.transparent,
                             borderColor: imageController == null ? getMainColor() : secondColor,
                             elevation: 5.0,
-                            cacheImage: true,
-                            onTap: () {
-                              print('Tabbed');
-                            }, // sets on tap
+                            cacheImage: true, // sets on tap
                           ),
                         ),
                         Center(
@@ -342,8 +338,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       child: getIcon(Icons.add_a_photo, 26, getMainColor())
                                   )),
                             ),
-
-
                           )
                         )
                       ]
@@ -374,8 +368,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                           MediaQuery.of(context).size.width,
                           Icons.accessibility_outlined),
                       SizedBox(height: 15.0),
-				
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -420,7 +412,6 @@ class _ProfileScreenState extends State<ProfileScreen>
                               _genderController,
                               MediaQuery.of(context).size.width,
                               Icons.account_circle_sharp)),
-
                       Visibility(
                         visible: state == ScreenState.Editing,
                         child: _addRadioGroup(),
