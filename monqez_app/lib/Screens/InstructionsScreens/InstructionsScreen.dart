@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Injury.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/InstructionsList.dart';
+import 'package:monqez_app/Models/Instructions/Injury.dart';
+import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
 import '../../main.dart';
 import 'ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
@@ -11,7 +11,6 @@ class InstructionsScreen extends StatelessWidget {
   final bool _isAdmin;
   final String _token;
   InstructionsScreen([this._isAdmin = false, this._token]);
-
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +38,6 @@ class InstructionsScreen extends StatelessWidget {
                   child: CircularProgressIndicator(
                     backgroundColor: secondColor,
                     strokeWidth: 5,
-                    //    valueColor:
-                    //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else {
       return MaterialApp(
@@ -88,7 +85,6 @@ class InstructionsScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           child: SizedBox(
                             width: 200,
-                            // ignore: deprecated_member_use
                             child: RaisedButton(
                               onPressed: () {
                                 provider.saveInjuries(_token);

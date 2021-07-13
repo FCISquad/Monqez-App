@@ -41,10 +41,9 @@ class Item {
 
 class _NormalHomeScreenState extends State<NormalHomeScreen>
     with SingleTickerProviderStateMixin {
-
   bool firstTimeLocation = true;
   static User user;
-  
+
   List<Icon> icons;
   var _detailedAddress = TextEditingController();
   var _aditionalNotes = TextEditingController();
@@ -57,9 +56,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   int firstStatusCode;
   final _drawerKey = GlobalKey<ScaffoldState>();
 
-
   _NormalHomeScreenState(String token) {
-
     Future.delayed(Duration.zero, () async {
       user = new User.empty();
       user.setToken(token);
@@ -73,32 +70,20 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   AnimationController controller;
   GoogleMapController mapController;
 
-
   Completer<GoogleMapController> _controller = Completer();
   Marker _marker;
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
   bool _radioValue;
 
-
   static CameraPosition _position1;
 
   Future<void> _goToPosition1() async {
-    // print (_position1) ;
-    // _getCurrentUserLocation();
-    // print (_position1);
-    // final GoogleMapController controller = await _controller.future;
-    // controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
     mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        _position1
-      ),
+      CameraUpdate.newCameraPosition(_position1),
     );
     showPinsOnMap();
-    setState(() {
-
-    });
-
+    setState(() {});
   }
 
   showPinsOnMap() {
@@ -106,27 +91,10 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       markerId: MarkerId(_newUserPosition.toString()),
       position: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
       draggable: true,
-      onDragEnd: ((newPosition) {
-        print(newPosition.latitude);
-        print(newPosition.longitude);
-      }),
+      onDragEnd: ((newPosition) {}),
       icon: BitmapDescriptor.defaultMarker,
     );
   }
-
-  // _onMapCreated(GoogleMapController controller) async {
-  //   await _getCurrentUserLocation();
-  //   final GoogleMapController controller = await _controller.future;
-  //   controller.animateCamera(CameraUpdate.newCameraPosition(_position1));
-  //   _controller.complete(controller);
-  //   setState(() {
-  //     _position1 = CameraPosition(
-  //         // bearing: 192.833,
-  //         target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-  //         // tilt: 59.440,
-  //         zoom: 17.0);
-  //   });
-  // }
 
   void _sendAdditionalInformation() async {
     String tempToken = user.token;
@@ -179,6 +147,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       makeToast('Failed to submit user.');
     }
   }
+
   Future<void> _cancelRequest() async {
     await _getCurrentUserLocation();
     String tempToken = user.token;
@@ -227,7 +196,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           return StatefulBuilder(builder: (context, setState) {
             return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Container(
                 height: 550,
                 child: Padding(
@@ -279,6 +248,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             fontWeight: fontWeight),
         maxLines: lines);
   }
+
   _showMaterialDialog([String notes = ""]) {
     _aditionalNotes.clear();
     _detailedAddress.clear();
@@ -289,7 +259,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           return StatefulBuilder(builder: (context, setState) {
             return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Container(
                 height: 400,
                 child: Padding(
@@ -315,7 +285,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               onChanged: (value) {
                                 setState(() {
                                   _radioValue = value;
-                                  print(_radioValue);
                                 });
                               },
                             ),
@@ -326,7 +295,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                               onChanged: (value) {
                                 setState(() {
                                   _radioValue = value;
-                                  print(_radioValue);
                                 });
                               },
                             ),
@@ -357,7 +325,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                 child: RaisedButton(
                                   onPressed: () {
                                     _showAvatar();
-                                    //Navigator.of(context).pop();
                                   },
                                   child: Text(
                                     "Show Avatar",
@@ -409,9 +376,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         .then((Position position) {
       _newUserPosition = position;
       _position1 = CameraPosition(
-          // bearing: 192.833,
           target: LatLng(_newUserPosition.latitude, _newUserPosition.longitude),
-          // tilt: 59.440,
           zoom: 17.0);
       setState(() {
         // to check if that step is valid or not
@@ -470,7 +435,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       checkNotification(context);
       isLoaded = true;
     }
-    if (!_locationLoaded || !_dataLoaded ) {
+    if (!_locationLoaded || !_dataLoaded) {
       if (firstTimeLocation) {
         firstTimeLocation = false;
         Future.delayed(Duration.zero, () async {
@@ -514,9 +479,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 ),
                 onPressed: () {
                   _showCallDialog("voice");
-                }
-                // do something
-                ,
+                },
               ),
               IconButton(
                 icon: Icon(
@@ -525,9 +488,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 ),
                 onPressed: () {
                   _showCallDialog("video");
-                }
-                // do something
-                ,
+                },
               )
             ],
           ),
@@ -560,9 +521,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                     : secondColor,
                                 elevation: 5.0,
                                 cacheImage: true,
-                                onTap: () {
-                                  print('Tabbed');
-                                }, // sets on tap
+                                onTap: () {},
                               ),
                             ),
                           ])),
@@ -577,8 +536,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     Visibility(
                       visible: user.name != "One Time Request",
                       child: ListTile(
-                        title: getTitle(
-                            'My Profile', 18, firstColor, TextAlign.start, true),
+                        title: getTitle('My Profile', 18, firstColor,
+                            TextAlign.start, true),
                         leading: Icon(Icons.account_circle_rounded,
                             size: 30, color: firstColor),
                         onTap: () {
@@ -590,12 +549,14 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                     Visibility(
                       visible: user.name != "One Time Request",
                       child: ListTile(
-                        title: getTitle(
-                            'My Requests', 18, firstColor, TextAlign.start, true),
-                        leading: Icon(Icons.history, size: 30, color: firstColor),
+                        title: getTitle('My Requests', 18, firstColor,
+                            TextAlign.start, true),
+                        leading:
+                            Icon(Icons.history, size: 30, color: firstColor),
                         onTap: () {
                           Navigator.pop(_drawerKey.currentContext);
-                          navigate(NormalPreviousRequests(user), context, false);
+                          navigate(
+                              NormalPreviousRequests(user), context, false);
                         },
                       ),
                     ),
@@ -697,58 +658,12 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 compassEnabled: true,
                 tiltGesturesEnabled: false,
                 onLongPress: (latlang) {
-                  print("HEREEEE");
-
                   _addMarkerLongPressed(latlang);
-                  print(latlang);
-                  print(_marker);
-                  setState(
-                      () {}); //we will call this function when pressed on the map
+                  setState(() {});
                 },
               ),
-              /*SizedBox(
-                width: MediaQuery.of(context).size.width,
-                child: SearchMapPlaceWidget(
-                  hasClearButton: true,
-                  placeType: PlaceType.address,
-                  placeholder: "Enter the location",
-                  apiKey: 'AIzaSyD3bOWy1Uu61RerNF9Mam9Ieh-0z4PDYPo',
-                  onSelected: (Place place) async {
-                    Geolocation geoLocation = await place.geolocation;
-                  },
-                ),
-              ),*/
-
               Visibility(
-                  visible: provider.visible[0] ,
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SizedBox(
-                        width: 200,
-                        height: 50,
-                        // ignore: deprecated_member_use
-                        child: RaisedButton(
-                          onPressed: () async {
-                            // await _makeRequest();
-                            await _makeRequest();
-                            if (firstStatusCode == 200){ _showMaterialDialog();
-                            provider.visible[0] = !provider.visible[0] ;
-                            provider.visible[1] = !provider.visible[1] ;
-                            setState(() {
-
-                            });}
-                          },
-                          child: Text('Get Help!'),
-                          color: Colors.deepOrange,
-                        ),
-                      ),
-                    ),
-                  ),
-              ),
-              Visibility(
-                visible: provider.visible[1] ,
+                visible: provider.visible[0],
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
@@ -759,14 +674,40 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
-                          await _cancelRequest() ;
-                          provider.visible[0] = !provider.visible[0] ;
-                          provider.visible[1] = !provider.visible[1] ;
-                          setState(() {
-
-                          });
+                          await _makeRequest();
+                          if (firstStatusCode == 200) {
+                            _showMaterialDialog();
+                            provider.visible[0] = !provider.visible[0];
+                            provider.visible[1] = !provider.visible[1];
+                            setState(() {});
+                          }
                         },
-                        child: Text('Cancel', style: TextStyle(color: Colors.black)),
+                        child: Text('Get Help!'),
+                        color: Colors.deepOrange,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: provider.visible[1],
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      width: 200,
+                      height: 50,
+                      // ignore: deprecated_member_use
+                      child: RaisedButton(
+                        onPressed: () async {
+                          await _cancelRequest();
+                          provider.visible[0] = !provider.visible[0];
+                          provider.visible[1] = !provider.visible[1];
+                          setState(() {});
+                        },
+                        child: Text('Cancel',
+                            style: TextStyle(color: Colors.black)),
                         color: Colors.red,
                       ),
                     ),
@@ -774,7 +715,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                 ),
               ),
               Visibility(
-                visible: provider.visible[2] ,
+                visible: provider.visible[2],
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 16.0),
                   child: Align(
@@ -786,131 +727,97 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           BoxShadow(
                             color: Colors.grey,
                             blurRadius: 4,
-                            offset: Offset(4, 8), // Shadow position
+                            offset: Offset(4, 8),
                           ),
                         ],
-                         borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(15.0),
                       ),
                       width: 220,
                       height: 100,
                       // ignore: deprecated_member_use
-                      child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.center,
-                        // crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(height: 15,),
-                        Align(
-                        alignment: Alignment.centerLeft,
-                        child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment
-                              .spaceEvenly,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(width: 8,),
-                            Container(
-                              height: 30,
-                              width: 110,
-                              decoration: BoxDecoration(
-                                color: Colors.deepOrange,
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child: Center(
-                                child: _getText('Monqez Name', 14,
-                                    FontWeight.bold, Colors.black, 1),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            _getText(provider.helperName, 14,
-                                FontWeight.bold, Colors.black, 1),
-                          ],
+                      child: Column(children: [
+                        SizedBox(
+                          height: 15,
                         ),
-                      ),
-                          SizedBox(height: 6,),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              mainAxisAlignment:
-                              MainAxisAlignment
-                                  .spaceEvenly,
-                              crossAxisAlignment:
-                              CrossAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(width: 8,),
-                                Container(
-                                  height: 30,
-                                  width: 110,
-                                  decoration: BoxDecoration(
-                                    color: Colors.deepOrange,
-                                    borderRadius: BorderRadius.circular(15.0),
-
-                                    // borderRadius:
-                                    // // BorderRadius.circular(
-                                    // //     20.0),
-                                  ),
-                                  child: Center(
-                                    child: _getText('Phone Number', 14,
-                                        FontWeight.bold, Colors.black, 1),
-                                  ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Container(
+                                height: 30,
+                                width: 110,
+                                decoration: BoxDecoration(
+                                  color: Colors.deepOrange,
+                                  borderRadius: BorderRadius.circular(15.0),
                                 ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                GestureDetector(
-                                    onTap:(){ _launchCaller(provider.helperPhone);},
-                                  child: _getText(provider.helperPhone, 10,
+                                child: Center(
+                                  child: _getText('Monqez Name', 14,
                                       FontWeight.bold, Colors.black, 1),
                                 ),
-                              ],
-                            ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              _getText(provider.helperName, 14, FontWeight.bold,
+                                  Colors.black, 1),
+                            ],
                           ),
-                      // child: Container(
-                      //     decoration: BoxDecoration(
-                      //       color: Colors.white,
-                      //       borderRadius: BorderRadius.circular(20.0),
-
-                          ]),
-                        // child: Column(
-                        //   mainAxisAlignment: MainAxisAlignment.center,
-                        //   crossAxisAlignment: CrossAxisAlignment.center,
-                        //   children: [
-                        //     Row(
-                        //       children: [
-                        //         SizedBox(width: 5,),
-                        //         Text('Monqez name:'),
-                        //         Text("Hatem") ,
-                        //       ],
-                        //     ),
-                        //     Row(
-                        //       children: [
-                        //         SizedBox(width: 5,),
-                        //         Text('Phone number:'),
-                        //         Text('01016192209') ,
-                        //       ],
-                        //     ),
-                        //
-                        //   ],
-                        // ),
-
-                      ),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Container(
+                                height: 30,
+                                width: 110,
+                                decoration: BoxDecoration(
+                                  color: Colors.deepOrange,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Center(
+                                  child: _getText('Phone Number', 14,
+                                      FontWeight.bold, Colors.black, 1),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  _launchCaller(provider.helperPhone);
+                                },
+                                child: _getText(provider.helperPhone, 10,
+                                    FontWeight.bold, Colors.black, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ]),
                     ),
                   ),
                 ),
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(16.0, 60.0, 16.0, 16.0),
                 child: Align(
                   alignment: Alignment.topRight,
                   child: Column(
                     children: <Widget>[
-                      // button(_onMapTypeButtonPressed, Icons.map, 'map'),
-                      // SizedBox(
-                      //   height: 16.0,
-                      // ),
                       button(
                           _goToPosition1, Icons.location_searching, 'position'),
                     ],
@@ -934,8 +841,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   }
 
   Future<void> _handleCameraAndMic(Permission permission) async {
-    final status = await permission.request();
-    print(status);
+    await permission.request();
   }
 
   Future<void> onJoin(String type) async {
@@ -956,10 +862,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         }));
 
     if (response.statusCode == 200) {
-      //var parsed = jsonDecode(response.body).cast<String, dynamic>();
       channelID = response.body;
     } else {
-      print(response.statusCode);
       return;
     }
     if (channelID != null) {
@@ -990,29 +894,9 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
       markerId: MarkerId(_newUserPosition.toString()),
       position: latlang,
       draggable: true,
-      onDragEnd: ((newPosition) {
-        print(newPosition.latitude);
-        print(newPosition.longitude);
-      }),
-
-      // infoWindow: InfoWindow(
-      //   title: 'This is a Title',
-      //   snippet: 'This is a snippet',
-      // ),
+      onDragEnd: ((newPosition) {}),
       icon: BitmapDescriptor.defaultMarker,
     );
-
-    // setState(() {
-    //   final MarkerId markerId = MarkerId("RANDOM_ID");
-    //   Marker marker = Marker(
-    //     markerId: markerId,
-    //     draggable: true,
-    //     position: latlang, //With this parameter you automatically obtain latitude and longitude
-    //     icon: BitmapDescriptor.defaultMarker,
-    //   );
-    //
-    //   _marker = marker;
-    // });
   }
 
   _showCallDialog(String type) {
@@ -1023,7 +907,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
           return StatefulBuilder(builder: (context, setState) {
             return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Container(
                 height: 200,
                 child: Padding(
