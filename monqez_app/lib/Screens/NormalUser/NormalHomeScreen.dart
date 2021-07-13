@@ -70,7 +70,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   AnimationController controller;
   GoogleMapController mapController;
 
-  Completer<GoogleMapController> _controller = Completer();
   Marker _marker;
   MapType _currentMapType = MapType.normal;
   Position _newUserPosition;
@@ -169,25 +168,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     }
   }
 
-  Future<void> _test() async {
-    String tempToken = user.token;
-    final http.Response response = await http.post(
-      Uri.parse('$url/user/notify_me/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $tempToken',
-      },
-    );
-    firstStatusCode = response.statusCode;
-    if (response.statusCode == 200) {
-      makeToast("Submitted");
-    } else if (response.statusCode == 503) {
-      makeToast("No Available Monqez");
-    } else {
-      makeToast('Failed to submit user.');
-    }
-  }
 
   void _showAvatar() {
     showDialog(
@@ -363,13 +343,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
         });
   }
 
-  _onMapTypeButtonPressed() {
-    setState(() {
-      _currentMapType = _currentMapType == MapType.normal
-          ? MapType.satellite
-          : MapType.normal;
-    });
-  }
 
   _getCurrentUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -458,10 +431,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           new AlwaysStoppedAnimation<Color>(firstColor)))));
     } else {
       var provider = Provider.of<Normal>(context, listen: true);
-      double width = MediaQuery.of(context).size.width / 100;
-      double height =
-          (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
-              100;
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(

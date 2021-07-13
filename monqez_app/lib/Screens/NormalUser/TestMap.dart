@@ -202,16 +202,4 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       } else return null;
     } else return null;
   }
-  Widget _getText(String text, double fontSize, FontWeight fontWeight,
-      Color color, int lines) {
-    return AutoSizeText(text,
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: color,
-            fontSize: fontSize,
-            fontFamily: 'Cairo',
-            fontWeight: fontWeight),
-        maxLines: lines);
-  }
 }

@@ -7,6 +7,7 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class HelperRatingsScreen extends StatefulWidget {
   double rating;
   HelperRatingsScreen(this.rating);

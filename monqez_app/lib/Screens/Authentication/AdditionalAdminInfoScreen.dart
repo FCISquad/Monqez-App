@@ -536,7 +536,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                 color: firstColor,
                 fontWeight: FontWeight.bold,
               )),
-          visible: !_addressError.isEmpty,
+          visible: _addressError.isNotEmpty,
         )
       ],
     );
