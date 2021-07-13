@@ -1,20 +1,35 @@
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'User.dart';
 
 class Normal extends User with ChangeNotifier  {
   List<bool> visible = [true,false,false];
   String helperPhone = "";
   String helperName = "";
+
+
   Normal.empty() : super.empty();
 
-  void setAccepted(String phone, String name) {
+  Future<void> setAccepted(String phone, String name) async {
     this.helperPhone = phone;
     this.helperName = name;
     visible = [false,false,true];
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("helperPhone", phone);
+    prefs.setString("helperName", helperName);
     notifyListeners();
   }
-  void setFinished() {
+  Future<void> setFinished() async {
     visible = [true, false, false];
-    notifyListeners();
+    helperName = helperPhone = "";
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getString("helperName") != null){
+      print("Here");
+      prefs.remove("helperName");
+      prefs.remove("helperPhone");
+      notifyListeners();
+    }
   }
+
+
 }

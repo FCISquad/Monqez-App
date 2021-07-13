@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -140,5 +141,6 @@ void logout() async {
   _prefs.remove('email');
   _prefs.remove('userID');
   _prefs.remove('userToken');
+  FirebaseMessaging.instance.deleteToken();
   makeToast('Logged out!');
 }

@@ -11,11 +11,15 @@ class NormalUserNotification extends NotificationRoute {
     var data = message.data;
     showNotification();
     if (data["description"] == "accept") {
+
       NotificationRoute.selectNavigate = NormalHomeScreen(token);
       Provider.of<Normal>(navigatorKey.currentContext, listen: false).setAccepted(data["phone"], data["name"]);
     } else if (data["description"] == "cancel" || data["description"] == "completed" || data["description"] == "timeout" ) {
       NotificationRoute.selectNavigate = NormalHomeScreen(token);
       Provider.of<Normal>(navigatorKey.currentContext, listen: false).setFinished();
+
+
+
     }
   }
 

@@ -5,8 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:email_validator/email_validator.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Screens/Authentication/AdditionalAdminInfoScreen.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Screens/Authentication/SecondSignupScreen.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
@@ -15,6 +13,8 @@ import 'package:progress_indicator_button/progress_button.dart';
 import '../../Backend/Authentication.dart';
 import '../Utils/UI.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'AdditionalAdminInfoScreen.dart';
+import 'SecondSignupScreen.dart';
 import 'SignupScreen.dart';
 import 'package:http/http.dart' as http;
 
@@ -162,7 +162,6 @@ class _LoginScreenState extends State<LoginScreen> {
         firstLogin = (sFirst == 'true') ? true : false;
       });
     } else {
-      print(response2.statusCode);
       makeToast("Error!");
     }
   }
@@ -291,7 +290,6 @@ class _LoginScreenState extends State<LoginScreen> {
             controller.reset();
             return;
           }
-          //bool result = await normalSignIn(_emailController, _passwordController);
           bool result ;
           var token;
           UserCredential userCredential;
@@ -307,15 +305,12 @@ class _LoginScreenState extends State<LoginScreen> {
             if (e.code == 'user-not-found') {
               makeToast('Email not found!');
               result = false;
-              print ("1") ;
             } else if (e.code == 'wrong-password') {
               makeToast('Wrong password!');
               result = false;
-              print ("2") ;
             } else {
               makeToast(e.code);
               result = false;
-              print ("3") ;
             }
           }
 
@@ -334,8 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 navigateReplacement(SecondSignupScreen());
               }
             } else {
-              print ("here") ;
-              print (type) ;
+
               saveUserToken(token, userCredential.user.uid);
               makeToast("Logged in Successfully");
               if (type == 0) {
@@ -410,7 +404,6 @@ class _LoginScreenState extends State<LoginScreen> {
             saveUserToken(token, authResult.user.uid);
             navigateReplacement(SecondSignupScreen());
           } else {
-            print ("heere") ;
             saveUserToken(token, authResult.user.uid);
             makeToast("Logged in Successfully");
             if (type == 0) {
@@ -498,7 +491,7 @@ class _LoginScreenState extends State<LoginScreen> {
           return StatefulBuilder(builder: (context, setState) {
             return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Container(
                 height: 200,
                 child: Padding(
@@ -528,6 +521,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               SizedBox(
                                 width: 200,
+                                // ignore: deprecated_member_use
                                 child: RaisedButton(
                                   onPressed: () async {
                                     if (_nationalIDController.text.isEmpty) {
@@ -542,13 +536,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       UserCredential userCredential =
                                           await FirebaseAuth.instance
                                               .signInAnonymously();
-                                      var user = userCredential.user;
-                                      String uid = user.uid;
                                       String token = await FirebaseAuth
                                           .instance.currentUser
                                           .getIdToken();
 
-                                      print("HEEEEE" + token);
                                       bool valid = await sendID(token);
                                       if (valid) {
                                         saveUserToken(token, FirebaseAuth.instance.currentUser.uid);
@@ -590,7 +581,6 @@ class _LoginScreenState extends State<LoginScreen> {
             <String, String>{"nationalId": _nationalIDController.text}));
 
     if (response.statusCode == 200) {
-      //var parsed = jsonDecode(response.body).cast<String, dynamic>();
       return true;
     } else if (response.statusCode == 503) {
       makeToast("Error, National ID already exists!");

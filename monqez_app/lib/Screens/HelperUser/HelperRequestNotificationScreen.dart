@@ -40,8 +40,6 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     );
     if (response.statusCode == 200) {
       makeToast("Successful");
-    } else {
-      print(response.statusCode);
     }
   }
 
@@ -74,9 +72,6 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     } else if (response.statusCode == 201){
       makeToast("Someone already accepted the request!");
       returned = 201;
-    }
-    else {
-      print(response.statusCode);
     }
     return returned;
   }
@@ -147,7 +142,7 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                         navigate(HelperRequestScreen(phone,requestID,reqLatitude,reqLongitude,helperLocation.latitude,helperLocation.longitude),
                             context, true);}
                         else{
-                          navigate(HelperHomeScreen(token), context, true); ///nfs error l t7t?
+                          navigate(HelperHomeScreen(token), context, true);
                         }
                       },
                     ),

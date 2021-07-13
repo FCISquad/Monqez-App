@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
@@ -30,7 +29,7 @@ class _CallPageState extends State<CallPage> {
   Future<void> callOut() async {
     var _prefs = await SharedPreferences.getInstance();
     String token = _prefs.getString("userToken");
-    final http.Response response = await http.post(
+     await http.post(
       Uri.parse('$url/user/call_out/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
@@ -288,6 +287,5 @@ class _CallPageState extends State<CallPage> {
 
   void _onSwitchCamera() {
     _engine.switchCamera();
-    print("Camera switched");
   }
 }

@@ -77,7 +77,7 @@ class _SplashState extends State<Splash> {
         _navigate = LoginScreen();
       } else {
         await checkUser(uid);
-        if (isDisabled) {
+        if (isDisabled != null && isDisabled ) {
           if (type == 0) {
             makeToast("Account is banned!");
             logout();
