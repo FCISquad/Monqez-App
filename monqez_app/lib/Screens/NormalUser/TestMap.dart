@@ -77,17 +77,19 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
+import 'package:monqez_app/Screens/Model/Helper.dart';
+import 'package:provider/provider.dart';
+
 
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin  {
   StreamSubscription _locationSubscription;
   Location _locationTracker = Location();
   Marker marker;
@@ -141,6 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       _locationSubscription = _locationTracker.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {
+
           _controller.animateCamera(CameraUpdate.newCameraPosition(new CameraPosition(
               // bearing: 192.8334901395799,
               target: LatLng(newLocalData.latitude, newLocalData.longitude),
@@ -167,19 +170,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final ValueNotifier<LocationData> _counter = ValueNotifier<LocationData>(Provider.of<Helper>(context, listen: false).helperTracker) ;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Monqez"),
       ),
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: initialLocation,
-        markers: Set.of((marker != null) ? [marker] : []),
-        circles: Set.of((circle != null) ? [circle] : []),
-        onMapCreated: (GoogleMapController controller) {
-          _controller = controller;
-        },
+      body:
+      ValueListenableBuilder(
+        valueListenable: _counter,
+        builder: (context, value, child) {
 
+          return Text(value.toString());
+        },
       ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.location_searching),

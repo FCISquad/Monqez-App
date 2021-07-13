@@ -24,6 +24,9 @@ class Helper extends User with ChangeNotifier  {
   String requestPhone;
   double requestLongitude;
   double requestLatitude;
+
+  loc.LocationData helperTracker ;
+
   Helper.empty ():super.empty();
 
   @override
@@ -198,4 +201,9 @@ class Helper extends User with ChangeNotifier  {
     prefs.remove("requestLongitude");
     notifyListeners();
   }
+  setHelperTracker (loc.LocationData newLocation){
+    helperTracker = newLocation ;
+    notifyListeners() ;
+  }
+
 }

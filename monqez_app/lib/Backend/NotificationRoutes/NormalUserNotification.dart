@@ -17,6 +17,9 @@ class NormalUserNotification extends NotificationRoute {
     } else if (data["description"] == "cancel" || data["description"] == "completed" || data["description"] == "timeout" ) {
       NotificationRoute.selectNavigate = NormalHomeScreen(token);
       Provider.of<Normal>(navigatorKey.currentContext, listen: false).setFinished();
+      Provider.of<Normal>(navigatorKey.currentContext, listen: false).saveRequest(data["phone"], data["name"]);
+
+
     }
   }
 

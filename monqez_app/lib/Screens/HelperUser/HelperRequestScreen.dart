@@ -4,9 +4,10 @@ import 'package:android_intent/android_intent.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+// import 'package:geolocator/geolocator.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as geo;
 
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
@@ -19,6 +20,10 @@ import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+
+import 'package:location/location.dart' ;
+
 
 // ignore: must_be_immutable
 class HelperRequestScreen extends StatefulWidget {
@@ -55,9 +60,12 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   TextEditingController _additionalNotesController;
   TextEditingController _forMeController;
 
-  // TextEditingController _injuryTypeController;
-  // TextEditingController _genderController;
-  Position helperLocation;
+  Location _locationTracker = Location();
+  StreamSubscription _locationSubscription;
+
+
+
+  geo.Position helperLocation;
   var _prefs;
 
   int bodyMapValue;
@@ -116,8 +124,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         markerId: MarkerId(initialLatLng.toString()),
         position: LatLng(initialLatLng.latitude, initialLatLng.longitude),
         infoWindow: InfoWindow(
-          title: 'This is a Title',
-          snippet: 'This is a snippet',
+
         ),
         icon: BitmapDescriptor.defaultMarker,
       ),
@@ -493,8 +500,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   _getCurrentUserLocation() async {
-    helperLocation = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    helperLocation = await geo.Geolocator.getCurrentPosition(
+        desiredAccuracy: geo.LocationAccuracy.high);
   }
 
   Future<void> _completeRequest() async {
@@ -602,7 +609,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                        width: 26*width,
+                        width: 19*width,
                         height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.deepOrange,
@@ -618,7 +625,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         ),
                       ),
                       Container(
-                        width: 26*width,
+                        width: 19*width,
                         height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.green,
@@ -635,7 +642,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         ),
                       ),
                       Container(
-                        width: 26*width,
+                        width: 19*width,
                         height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.red,
@@ -649,6 +656,22 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           },
                           child: _getText(
                               'Cancel', 14, FontWeight.w700, Colors.white, 1,false),
+                        ),
+                      ),
+                      Container(
+                        width: 19*width,
+                        height: 8*height,
+                        decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(30.0)),
+                        child: FlatButton(
+                          color: Colors.transparent,
+                          splashColor: Colors.black26,
+                          onPressed: () {
+                            _trackMonqez();
+                          },
+                          child: _getText(
+                              'Track me', 14, FontWeight.w700, Colors.white, 1,false),
                         ),
                       ),
                       Padding(
@@ -675,6 +698,18 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
             ],
           ),
         ));
+  }
+  _trackMonqez() async{
+    var location = await _locationTracker.getLocation();
+
+    if (_locationSubscription != null) {
+      _locationSubscription.cancel();
+    }
+
+    _locationSubscription = _locationTracker.onLocationChanged.listen((newLocalData) {
+      Provider.of<Helper>(context, listen: false).setHelperTracker(newLocalData);
+
+    });
   }
   _launchCaller(String number) async {
     String url = "tel:$number";

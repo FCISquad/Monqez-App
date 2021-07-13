@@ -8,6 +8,7 @@ import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Screens/Model/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -439,6 +440,14 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
   void initState() {
     super.initState();
     avatar = BodyMap();
+    Future.delayed(Duration.zero, () async {
+      var _prefs = await SharedPreferences.getInstance();
+      if (_prefs.getString("helperName") != null ){
+        Provider.of<Normal>(context, listen: true).helperPhone = _prefs.getString("helperPhone");
+        Provider.of<Normal>(context, listen: true).helperName = _prefs.getString("helperName");
+        Provider.of<Normal>(context, listen: true).visible = [false,false,true];
+      }
+    });
     _radioValue = true;
     controller = new AnimationController(
         duration: const Duration(milliseconds: 3000), vsync: this);
@@ -657,6 +666,22 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           }
                         });
                       },
+                    ),
+                    Visibility(
+                      visible: Provider.of<Normal>(context, listen: false).hasActiveRequest(),
+                      child: ListTile(
+                        title:
+                        getTitle(
+                            'Active Request', 18, firstColor, TextAlign.start, true),
+                        // onTap: () async {
+                        //
+                        //   var provider = Provider.of<Normal>(context, listen: false);
+                        //   await _getCurrentUserLocation();
+                        //   navigate(NormalHomeScreen(provider.requestPhone,provider.requestID,provider.requestLatitude,provider.requestLongitude,helperLocation.latitude,helperLocation.longitude),
+                        //       context, true);
+                        // },
+                        leading: Icon(Icons.navigation, size: 30, color: firstColor),
+                      ),
                     ),
                     Expanded(
                       child: Align(
