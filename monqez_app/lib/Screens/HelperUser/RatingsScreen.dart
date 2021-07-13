@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Model/Helper.dart';
+import 'package:monqez_app/Models/Helper.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class HelperRatingsScreen extends StatefulWidget {
   double rating;
   HelperRatingsScreen(this.rating);
@@ -16,7 +17,6 @@ class HelperRatingsScreen extends StatefulWidget {
 
 class _Rating {
   _Rating();
-  _Rating.init(this.name, this.comment, this.rate);
   String name;
   String comment;
   double rate;
@@ -38,12 +38,6 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
 
     Future.delayed(Duration.zero, () async {
       await getRatings();
-      /*_ratingsList = <Widget>[
-        getCard(_Rating.init("Khaled Ezzat", "Great Person! I suggest him.",5), null, MediaQuery.of(context).size.width ),
-        getCard(_Rating.init("Hussien Ashraf", "He was late, but he saved my life !",5 ), null, MediaQuery.of(context).size.width),
-        getCard(_Rating.init("Hatem Mamdoh", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felis, tristique vel fringilla sed, suscipit sit amet orci. Sed dapibus mass",5), null, MediaQuery.of(context).size.width),
-        getCard(_Rating.init("Ehab Fawzy", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nisl felci. Sed dapibus mass",5), null, MediaQuery.of(context).size.width),
-      ];*/
       _isLoading = false;
       setState((){});
     });
@@ -56,6 +50,7 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
         _Rating rating = _Rating();
         requestsJson[i].forEach((key, value) {
           if (key == 'request') {
+            if (value != null)
             value.forEach((reqKey, reqVal){
               if (reqKey == 'ratingInfo') {
                 reqVal.forEach((infoKey, infoVal){
@@ -78,7 +73,6 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
   }
 
   getRatings() async{
-    // will be http request
     String token = Provider.of<Helper>(context, listen: false).token;
     http.Response response = await http.get(
       Uri.parse('$url/helper/get_requests'),
@@ -91,7 +85,6 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
     if (response.statusCode == 200) {
       _iterateJson(response.body);
     } else {
-      print(response.statusCode);
       makeToast("Error!");
     }
   }

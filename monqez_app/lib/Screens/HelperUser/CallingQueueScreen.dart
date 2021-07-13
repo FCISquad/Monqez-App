@@ -1,16 +1,15 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/CallPage.dart';
-import 'package:monqez_app/Screens/Model/Helper.dart';
+import 'package:monqez_app/Models/Helper.dart';
+import 'package:monqez_app/Screens/Calls/VideoPage.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-import '../VoicePage.dart';
+import '../Calls/VoicePage.dart';
 
 class CallingQueueScreen extends StatefulWidget {
   Widget build(BuildContext context) {
@@ -40,8 +39,6 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
     //m7taga ttshal bs ana 5ayf asheel l for each
     callss.forEach((call) {
       var singleCall = call as Map<String, dynamic>;
-      print("SINGLE");
-      print(singleCall);
       if (singleCall == null) return;
       for (int i = 0; i < singleCall.keys.length; i++) {
         var key = singleCall.keys.elementAt(i);
@@ -76,15 +73,12 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
       },
     );
     if (response.statusCode == 200) {
-      print("Response");
-      print(response.body);
       iterateJson(response.body);
       setState(() {
         _isLoading = false;
       });
       return true;
     } else {
-      print(response.statusCode);
       setState(() {
         _isLoading = false;
       });
@@ -259,7 +253,6 @@ class _CallingQueueScreenState extends State<CallingQueueScreen>
   }
 
   Future<void> _handleCameraAndMic(Permission permission) async {
-    final status = await permission.request();
-    print(status);
+     await permission.request();
   }
 }

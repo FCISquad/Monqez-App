@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:monqez_app/Screens/HelperRequestNotificationScreen.dart';
-import 'package:monqez_app/Screens/Instructions/ModifyInstruction.dart';
-import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
-import 'package:monqez_app/Screens/Instructions/InjuryScreen.dart';
-import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/ModifyInstruction.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/InjuryScreen.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/InstructionsScreen.dart';
 import 'package:provider/provider.dart';
-import 'Screens/ComplaintDialog.dart';
-import 'Screens/HelperUser/HelperRequestScreen.dart';
-import 'Screens/Model/Helper.dart';
-import 'Screens/Model/Normal.dart';
-import 'Screens/NormalUser/TestMap.dart';
-import 'Screens/SplashScreen.dart';
+import 'Models/Helper.dart';
+import 'Models/Instructions/InstructionsList.dart';
+import 'Models/Normal.dart';
+import 'Screens/AllUsers/SplashScreen.dart';
+import 'Screens/HelperUser/HelperRequestNotificationScreen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
@@ -36,16 +33,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      //home: Splash(),
       onGenerateRoute: onGenerateRoute,
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-
       routes: {
-        // '/': (context) => HelperRequestScreen("010", "12", 30.0, 31.2, 30.5, 31.4),
-        // '/': (context) => MyHomePage(title: 'Monqez'),
         '/': (context) => Splash(),
-
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),

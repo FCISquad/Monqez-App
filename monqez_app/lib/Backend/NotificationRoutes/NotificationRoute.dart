@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -9,7 +8,7 @@ abstract class NotificationRoute{
   static Widget selectNavigate;
   RemoteNotification notification ;
   AndroidNotification android ;
-  bool isBackground = false; // it was true, why ?
+  bool isBackground = false;
   final AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -27,10 +26,8 @@ abstract class NotificationRoute{
 
   NotificationRoute(RemoteMessage message, bool isBackground) {
     getToken();
-    print("Notification Route");
     this.message = message;
     notification = message.notification;
-    print (notification);
     android = message.notification?.android;
     initializationSettingsAndroid = new AndroidInitializationSettings('launch_background');
     initializationSettings = InitializationSettings(
@@ -45,7 +42,6 @@ abstract class NotificationRoute{
   Future onSelectNotification (String payload);
 
   showNotification() {
-    print("Showed");
     if (notification != null && android != null && !isBackground) {
       flutterLocalNotificationsPlugin.show(
           0,

@@ -1,38 +1,35 @@
-import 'package:http/http.dart' as http;
-import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:circular_profile_avatar/circular_profile_avatar.dart';
+
 import 'package:flutter/material.dart';
+import 'package:monqez_app/Backend/Authentication.dart';
+import 'package:http/http.dart' as http;
 import 'package:agora_rtc_engine/rtc_engine.dart';
-import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
+import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
+import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:shared_preferences/shared_preferences.dart';
 
 const appID = '0ab37d96b60442c8985a93189f3402cb';
+const token =
+    'https://console.agora.io/invite?sign=99a3b91cfcb1a04c29743fe6f79ccaf4%253A9862f0f5706788b17a8711068bb194e64e6e848b21ddb726719fb93f97aeefac';
 
-class VoicePage extends StatefulWidget {
+class CallPage extends StatefulWidget {
   final String channelName;
-
   final String userType;
-  const VoicePage({Key key, this.channelName, this.userType}) : super(key: key);
+  const CallPage({Key key, this.channelName, this.userType}) : super(key: key);
 
   @override
-  _VoicePageState createState() => _VoicePageState();
+  _CallPageState createState() => _CallPageState();
 }
 
-class _VoicePageState extends State<VoicePage> {
+class _CallPageState extends State<CallPage> {
   static final _users = <int>[];
   final _infoStrings = <String>[];
   bool muted = false;
-  bool speaker = false;
   RtcEngine _engine;
-  bool screenEnabled = true;
-  bool _monqezJoined = false;
-  String textEnabled = "Double tap to lock the controls";
-  String textDisabled = "Double tap to unlock the controls";
 
   Future<void> callOut() async {
     var _prefs = await SharedPreferences.getInstance();
     String token = _prefs.getString("userToken");
-    final http.Response response = await http.post(
+     await http.post(
       Uri.parse('$url/user/call_out/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
@@ -76,7 +73,6 @@ class _VoicePageState extends State<VoicePage> {
     _addAgoraEventHandlers();
 
     //await _engine.enableWebSdkInteroperability(true);
-    await _engine.setDefaultAudioRoutetoSpeakerphone(speaker);
     await _engine.joinChannel(null, widget.channelName, null, 0);
   }
 
@@ -112,15 +108,19 @@ class _VoicePageState extends State<VoicePage> {
           final info = 'userJoined: $uid';
           _infoStrings.add(info);
           _users.add(uid);
-          _monqezJoined = true;
         });
       },
       userOffline: (uid, reason) {
         setState(() {
           final info = 'userOffline: $uid , reason: $reason';
-          _monqezJoined = false;
           _infoStrings.add(info);
           _users.remove(uid);
+        });
+      },
+      firstRemoteVideoFrame: (uid, width, height, elapsed) {
+        setState(() {
+          final info = 'firstRemoteVideoFrame: $uid';
+          _infoStrings.add(info);
         });
       },
     ));
@@ -159,15 +159,15 @@ class _VoicePageState extends State<VoicePage> {
             padding: const EdgeInsets.all(15.0),
           ),
           RawMaterialButton(
-            onPressed: _onSwitchSpeaker,
+            onPressed: _onSwitchCamera,
             child: Icon(
-              Icons.volume_up,
-              color: speaker ? Colors.white : Colors.blueAccent,
+              Icons.switch_camera,
+              color: Colors.blueAccent,
               size: 20.0,
             ),
             shape: CircleBorder(),
             elevation: 2.0,
-            fillColor: speaker ? Colors.blueAccent : Colors.white,
+            fillColor: Colors.white,
             padding: const EdgeInsets.all(12.0),
           )
         ],
@@ -175,81 +175,48 @@ class _VoicePageState extends State<VoicePage> {
     );
   }
 
-  String titleWait = "Voice Call - waiting";
-  String titleJoined = "Voice Call - InCall";
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_monqezJoined ? titleJoined : titleWait),
-        leading: IconButton(
-            icon: new Icon(Icons.arrow_back),
-            onPressed: () {
-              if (screenEnabled) {
-                Navigator.pop(context);
-              }
-              //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
-            }),
+        title: Text('Video Call'),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.green,
       body: Center(
         child: Stack(
           children: <Widget>[
-            Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: CircularProfileAvatar(
-                  null,
-                  child: Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.white,
-                  ),
-                  radius: 50,
-                  backgroundColor: Colors.transparent,
-                  borderColor: _monqezJoined ? Colors.green : firstColor,
-                  elevation: 5.0,
-                  cacheImage: true,
-                  onTap: () {
-                    print('tapped');
-                  }, // sets on tap
-                ),
-              ),
-            ),
-            //_viewRows(),
-            Align(
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  onDoubleTap: () {
-                    setState(() {
-                      screenEnabled = !screenEnabled;
-                    });
-                  },
-                  child: Container(
-                    decoration:
-                        BoxDecoration(border: Border.all(), color: Colors.red),
-                    child: Text(
-                      screenEnabled ? textEnabled : textDisabled,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                )),
-            //_toolbar()
-            IgnorePointer(ignoring: !screenEnabled, child: _toolbar()),
+            _viewRows(),
+            _toolbar(),
           ],
         ),
       ),
     );
   }
 
+  /// Helper function to get list of native views
+  List<Widget> _getRenderViews() {
+    final List<StatefulWidget> list = [];
+    list.add(RtcLocalView.SurfaceView());
+    _users.forEach((int uid) => list.add(RtcRemoteView.SurfaceView(uid: uid)));
+    return list;
+  }
+
+  /// Video view wrapper
+  Widget _videoView(view) {
+    return Expanded(child: Container(child: view));
+  }
+
+  /// Video view row wrapper
+  Widget _expandedVideoRow(List<Widget> views) {
+    final wrappedViews = views.map<Widget>(_videoView).toList();
+    return Expanded(
+      child: Row(
+        children: wrappedViews,
+      ),
+    );
+  }
+
   /// Video layout wrapper
-  ///
-  /*
   Widget _viewRows() {
     final views = _getRenderViews();
     switch (views.length) {
@@ -261,7 +228,22 @@ class _VoicePageState extends State<VoicePage> {
               _videoView(views[0]),
             ],
           ),
-          Text("Please wait until a Monqez joins the call"),
+          Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration:
+                      BoxDecoration(border: Border.all(), color: Colors.red),
+                  child: Text(
+                    "Please wait until a Monqez joins",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )),
         ]));
       case 2:
         return Container(
@@ -291,7 +273,6 @@ class _VoicePageState extends State<VoicePage> {
     }
     return Container();
   }
-  */
 
   void _onCallEnd(BuildContext context) {
     Navigator.pop(context);
@@ -304,10 +285,7 @@ class _VoicePageState extends State<VoicePage> {
     _engine.muteLocalAudioStream(muted);
   }
 
-  void _onSwitchSpeaker() {
-    setState(() {
-      speaker = !speaker;
-    });
-    _engine.setEnableSpeakerphone(speaker);
+  void _onSwitchCamera() {
+    _engine.switchCamera();
   }
 }

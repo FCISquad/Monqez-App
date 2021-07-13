@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 Color primary = Colors.deepOrange;
 Color firstColor = Colors.deepOrangeAccent;
 Color secondColor = Colors.white;
-
-
 
 void navigate(Widget map, BuildContext context, bool replace) {
   PageRouteBuilder pageRouteBuilder = PageRouteBuilder(
@@ -24,22 +21,25 @@ void navigate(Widget map, BuildContext context, bool replace) {
       pageBuilder: (context, animation, animationTime) {
         return map;
       });
-  replace ? Navigator.pushReplacement(context,pageRouteBuilder) : Navigator.push(context,pageRouteBuilder);
+  replace
+      ? Navigator.pushReplacement(context, pageRouteBuilder)
+      : Navigator.push(context, pageRouteBuilder);
 }
-Widget getTitle(String title, double size, Color color, TextAlign align, bool isBold){
+
+Widget getTitle(
+    String title, double size, Color color, TextAlign align, bool isBold) {
   return Text(
     title,
     style: TextStyle(
         color: color,
         fontSize: size,
         letterSpacing: 1.5,
-        fontWeight: isBold ? FontWeight.bold : FontWeight.normal
-    ),
+        fontWeight: isBold ? FontWeight.bold : FontWeight.normal),
     textAlign: align,
   );
 }
 
-Widget getIcon (IconData icon, double size, Color color) {
+Widget getIcon(IconData icon, double size, Color color) {
   return Icon(
     icon,
     color: color,

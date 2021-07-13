@@ -1,69 +1,70 @@
 const User = require("./user");
 
-class Admin extends User{
+class Admin extends User {
     constructor(userJson) {
         super(userJson);
     }
 
-    addAdmin(userID){
-        return new Promise( (resolve, reject) => {
-            User._database.addAdmin(userID , {
+    addAdmin(userID) {
+        return new Promise((resolve, reject) => {
+            User._database.addAdmin(userID, {
                 "type": "2",
                 "disable": "false",
                 "firstLogin": "true"
-            }).then( () => {
+            }).then(() => {
                 resolve();
-            } ).catch( (error) => {
-                    reject(error);
-                } );
-        } );
+            }).catch((error) => {
+                reject(error);
+            });
+        });
     }
 
-    setApproval(adminID , applicationJson){
-        return new Promise( (resolve, reject) => {
-            User._database.setApproval(adminID , applicationJson).then(function (){
+    setApproval(adminID, applicationJson) {
+        return new Promise((resolve, reject) => {
+            User._database.setApproval(adminID, applicationJson).then(function () {
                 User._database.deleteApplication(applicationJson);
                 resolve();
             })
-            .catch(function (error){
-                reject(error);
-            })
-        } );
+                .catch(function (error) {
+                    reject(error);
+                })
+        });
     }
 
     saveInstructions(adminID, instructionJson) {
         User._database.saveInstructions(adminID, instructionJson);
     }
-    getApplication(userID){
+
+    getApplication(userID) {
         return new Promise((resolve, _) => {
-            User._database.getApplication(userID , function (applicationJson){
+            User._database.getApplication(userID, function (applicationJson) {
                 resolve(applicationJson);
             })
         });
     }
 
-    getAllApplicationRequests(){
-        return new Promise( (resolve, _) => {
-            User._database.getApplicationQueue(function (json){
+    getAllApplicationRequests() {
+        return new Promise((resolve, _) => {
+            User._database.getApplicationQueue(function (json) {
                 resolve(json);
             });
-        } );
+        });
     }
 
-    getState(){
+    getState() {
 
-        return new Promise( (resolve, reject) => {
-            User._database.getState().then( (stateJSON) => {
+        return new Promise((resolve, reject) => {
+            User._database.getState().then((stateJSON) => {
                 resolve(stateJSON);
-            } ).catch( (error) => {
+            }).catch((error) => {
                 reject(error);
-            } );
-        } );
+            });
+        });
     }
 
-    addAdditionalInformation(userID, userObject){
-        return new Promise( (resolve, reject) => {
-            User._database.addAdminAdditionalInformation(userID , {
+    addAdditionalInformation(userID, userObject) {
+        return new Promise((resolve, reject) => {
+            User._database.addAdminAdditionalInformation(userID, {
                 name: userObject.name,
                 national_id: userObject.national_id,
                 phone: userObject.phone,
@@ -75,75 +76,75 @@ class Admin extends User{
                 buildNumber: userObject.buildNumber,
                 chronicDiseases: "",
                 firstLogin: "false",
-            }).then( () => {
+            }).then(() => {
                 resolve();
-            } ).catch( (error) => {
+            }).catch((error) => {
                 reject(error);
-            } );
-        } );
+            });
+        });
     }
 
-    banUser(userId){
-        return new Promise( (resolve, reject) => {
-            User._database.banUser(userId).then(function (){
+    banUser(userId) {
+        return new Promise((resolve, reject) => {
+            User._database.banUser(userId).then(function () {
                 resolve();
-            }).catch(function (error){
-                    reject(error);
+            }).catch(function (error) {
+                reject(error);
             })
-        } );
+        });
     }
 
-    sendWarningToUser(complaintObject){
-        return new Promise( (resolve, reject) => {
+    sendWarningToUser(complaintObject) {
+        return new Promise((resolve, reject) => {
             User._database.sendWarining(complaintObject)
-                .then(function(){
+                .then(function () {
                     resolve();
                 })
-                .catch(function(error){
+                .catch(function (error) {
                     reject(error);
                 })
-        } );
+        });
     }
 
-    archiveComplaint(complaintObject){
-        return new Promise( (resolve, reject) => {
+    archiveComplaint(complaintObject) {
+        return new Promise((resolve, reject) => {
             User._database.archiveComplaint(complaintObject)
-                .then(function(){
+                .then(function () {
                     resolve();
                 })
-                .catch(function(error){
+                .catch(function (error) {
                     reject(error);
                 })
-        } );
+        });
     }
 
-    getAllComplaints(){
-        return new Promise( (resolve, reject) => {
+    getAllComplaints() {
+        return new Promise((resolve, reject) => {
             User._database.getAllComplaints()
-                .then( function (comps){
+                .then(function (comps) {
                     resolve(comps);
-                } )
-                .catch( function (error){
+                })
+                .catch(function (error) {
                     reject(error);
-                } )
-        } );
+                })
+        });
     }
 
-    getComplaint(compJson){
-        return new Promise( (resolve, reject) => {
+    getComplaint(compJson) {
+        return new Promise((resolve, reject) => {
             User._database.getComplaint(compJson)
-                .then(async function (complaint){
-                    complaint["complainerUID" ] = compJson["nuid"];
+                .then(async function (complaint) {
+                    complaint["complainerUID"] = compJson["nuid"];
                     complaint["complainerName"] = (await User._database.getuser(compJson["nuid"]))["name"];
 
-                    complaint["complainedUID" ] = compJson["huid"];
+                    complaint["complainedUID"] = compJson["huid"];
                     complaint["complainedName"] = (await User._database.getuser(compJson["huid"]))["name"];
                     resolve(complaint);
                 })
-                .catch(function (error){
+                .catch(function (error) {
                     reject(error);
                 })
-        } );
+        });
     }
 
 }

@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// String url = "https://monqez.herokuapp.com";
-String url = "https://monqez6.loca.lt";
+String url = "https://monqez.herokuapp.com";
+// String url = "https://monqez6.loca.lt";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -56,7 +57,6 @@ Future<UserCredential> newAdmin(TextEditingController _emailController,
     var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text, password: _passwordController.text);
     if (result != null) {
-      var token = await FirebaseAuth.instance.currentUser.getIdToken();
       return result;
     } else {
       makeToast('Please try later');
@@ -109,29 +109,6 @@ Future<bool> signInWithGoogle() async {
   return false;
 }
 
-/*
-Future<bool> signInWithFacebook() async {
-  try {
-    var facebookLogin = new FacebookLogin();
-    var result = await facebookLogin.logIn(['email']);
-
-    if(result.status == FacebookLoginStatus.loggedIn) {
-
-      final AuthCredential credential = FacebookAuthProvider.credential(
-          result.accessToken.token
-      );
-
-      final FirebaseUser user = (await FirebaseAuth.instance.signInWithCredential(credential)).user;
-      print('signed in ' + user.displayName);
-
-    }
-  }catch (e) {
-    print(e.message);
-  }
-}
-
- */
-
 Future<bool> normalSignIn(TextEditingController _emailController,
     TextEditingController _passwordController) async {
   try {
@@ -159,17 +136,11 @@ Future<bool> normalSignIn(TextEditingController _emailController,
   }
 }
 
-//not used
-Future<void> signOutGoogle() async {
-  await googleSignIn.signOut();
-
-  print("User Signed Out");
-}
-
 void logout() async {
   var _prefs = await SharedPreferences.getInstance();
   _prefs.remove('email');
   _prefs.remove('userID');
   _prefs.remove('userToken');
+  FirebaseMessaging.instance.deleteToken();
   makeToast('Logged out!');
 }

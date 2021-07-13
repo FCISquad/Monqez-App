@@ -3,15 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
-import '../Backend/Authentication.dart';
+import 'package:monqez_app/Screens/Authentication/LoginScreen.dart';
+import '../../Backend/Authentication.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'AdminUser/AdminHomeScreen.dart';
-import 'HelperUser/HelperHomeScreen.dart';
-import 'NormalUser/NormalHomeScreen.dart';
-import 'SecondSignupScreen.dart';
+import '../AdminUser/AdminHomeScreen.dart';
+import '../HelperUser/HelperHomeScreen.dart';
+import '../NormalUser/NormalHomeScreen.dart';
+import '../Authentication/SecondSignupScreen.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -48,7 +48,6 @@ class _SplashState extends State<Splash> {
       if (once) {
         once = false;
         token = await FirebaseAuth.instance.currentUser.getIdToken(true);
-        print("HERE");
         saveUserToken(token, uid);
         setState(() {});
       } else {
@@ -61,7 +60,6 @@ class _SplashState extends State<Splash> {
     } else {
       logout();
       token = null;
-      print(response2.statusCode);
       makeToast("Error!");
       makeToast(response2.statusCode.toString());
     }
@@ -73,36 +71,13 @@ class _SplashState extends State<Splash> {
     token = _prefs.getString("userToken");
     uid = _prefs.getString("userID");
     Widget _navigate = LoginScreen();
-
     bool enter = true;
-    /*await FirebaseMessaging.instance
-      .getInitialMessage()
-      .then((RemoteMessage message) {
-
-        if (message != null) {
-          enter = false;
-          var data = message.data;
-
-          if (data['type'] == "helper") {
-            FirebaseCloudMessaging.route = new HelperUserNotification(message);
-            HelperRequestNotificationScreen.hideBackButton = true;
-          } else if (data['type'] == "normal") {
-            _navigate = NormalHomeScreen(token);
-          } else if (data['type'] == "admin"){
-            _navigate = AdminHomeScreen();
-          } else {
-            makeToast("Invalid notification received");
-          }
-          _navigate = NotificationRoute.selectNavigate;
-        }
-    });*/
-
     if (enter) {
       if (token == null) {
         _navigate = LoginScreen();
       } else {
         await checkUser(uid);
-        if (isDisabled) {
+        if (isDisabled != null && isDisabled ) {
           if (type == 0) {
             makeToast("Account is banned!");
             logout();

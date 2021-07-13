@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
-import 'package:monqez_app/Screens/Instructions/ImageController.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
 
 class User {
   String name;
@@ -17,12 +17,8 @@ class User {
   String token;
   ImageController image;
   String diseases = "";
-
   static FirebaseCloudMessaging fcm;
-
   User.empty();
-
-
 
   setToken(String token) {
     this.token = token;
@@ -56,9 +52,7 @@ class User {
         this.image = parsed['image'].toString().length < 5 ? null : new ImageController.fromBase64(parsed['image']);
       this.diseases = parsed['chronicDiseases'];
     } else {
-      print("HERE!");
-      print(response2.statusCode);
-      //makeToast("Error!");
+      makeToast("Error getting profile");
     }
   }
 
@@ -88,7 +82,6 @@ class User {
       makeToast("Saved");
       return true;
     } else {
-      print(response.statusCode);
       makeToast('Failed to save changes');
       return false;
     }

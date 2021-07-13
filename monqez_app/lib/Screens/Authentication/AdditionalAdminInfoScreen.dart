@@ -9,8 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'UI.dart';
-import '../Backend/Authentication.dart';
+import '../Utils/UI.dart';
+import '../../Backend/Authentication.dart';
 
 class AdditionalAdminInfoScreen extends StatefulWidget {
   @override
@@ -210,8 +210,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
     String chronic = " ";
     if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
-    print("Token: " + token);
-    print("Uid: " + uid);
+
 
     final http.Response response = await http.post(
       Uri.parse('$url/admin/addAdditionalInformation/'),
@@ -240,7 +239,6 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       navigateReplacement(AdminHomeScreen());
       return true;
     } else {
-      print(response.statusCode);
       throw Exception('Failed to create user.');
     }
   }
@@ -538,7 +536,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
                 color: firstColor,
                 fontWeight: FontWeight.bold,
               )),
-          visible: !_addressError.isEmpty,
+          visible: _addressError.isNotEmpty,
         )
       ],
     );
@@ -549,6 +547,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       height: 90,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: _click,

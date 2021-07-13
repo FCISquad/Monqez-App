@@ -4,37 +4,6 @@ const database = new Database();
 // const rp = require('request-promise');
 
 module.exports = {
-    // RequestToJson(request){
-    //     let body = '';
-    //     request.on('data' , function (data){
-    //         body += data
-    //         if (body.length > 1e6){
-    //             request.connection.destroy()
-    //             return null;
-    //         }
-    //     });
-    //     request.on('end' , ()=>{
-    //         return JSON.parse(body);
-    //     });
-    // },
-
-    // verifyToken(requestJson , callback){
-    //     const bearerHeader = requestJson.headers['authorization'];
-    //
-    //     if (bearerHeader) {
-    //         const bearer = bearerHeader.split(' ');
-    //         const bearerToken = bearer[1];
-    //         admin.auth().verifyIdToken(bearerToken).then((decodedToken) => {
-    //             callback(decodedToken.uid);
-    //         }).catch((error) => {
-    //             callback(null);
-    //         })
-    //     }
-    //     else{
-    //         callback(null);
-    //     }
-    // },
-
     verifyToken(requestJson, controllerType , callback){
         let bearerHeader = requestJson.headers['authorization'];
 
@@ -88,31 +57,5 @@ module.exports = {
                 });
         }).then(function (){})
             .catch(function (error){})
-    },
-
-    // getToken(userId){
-    //     return new Promise( (resolve, reject) => {
-    //
-    //         admin.auth().createCustomToken(userId)
-    //             .then(async (customToken)=>{
-    //
-    //                 let FIREBASE_API_KEY = "AIzaSyAV1jNma63PVN33-FvVFWSN2hMqqAJH_zU";
-    //                 rp({
-    //                     url: `https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyCustomToken?key=${FIREBASE_API_KEY}`,
-    //                     method: 'POST',
-    //                     body: {
-    //                         token: customToken,
-    //                         returnSecureToken: true
-    //                     },
-    //                     json: true,
-    //                 }).then((idToken)=>{
-    //                     resolve(idToken);
-    //                 })
-    //
-    //             })
-    //             .catch( (error) => {
-    //                 reject(error);
-    //             })
-    //     } );
-    // }
+    }
 }

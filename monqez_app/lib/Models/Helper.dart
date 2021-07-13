@@ -5,21 +5,26 @@ import 'package:background_location/background_location.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'User.dart';
 
 class Helper extends User with ChangeNotifier  {
-  String status;
   static Timer timer ;
-  final _samplingPeriod = 5;
+  static bool isTimerRunning = false ;
+  final _samplingPeriod = 60;
+  final loc.Location _location = loc.Location();
+  String status;
   double longitude;
   double latitude;
   int callCount;
   double ratings;
   int myPoints = 0;
-  static bool isTimerRunning = false ;
+  String requestID;
+  String requestPhone;
+  double requestLongitude;
+  double requestLatitude;
 
-  final loc.Location _location = loc.Location();
+  loc.LocationData helperTracker ;
 
   Helper.empty ():super.empty();
 
@@ -33,10 +38,8 @@ class Helper extends User with ChangeNotifier  {
   Future<void> setToken(String token) async {
     super.setToken(token);
     await getState();
+    await getActiveRequest();
     if (status == "Available") {
-      print("First:" + (timer == null).toString());
-      if (timer != null)
-      print("Second:" + (!isTimerRunning).toString());
       if (timer == null) {
         requestGps();
         startBackgroundProcess();
@@ -56,14 +59,11 @@ class Helper extends User with ChangeNotifier  {
     );
 
     if (response2.statusCode == 200) {
-      print(response2.body);
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
       this.status = parsed['status'];
       this.callCount = (parsed['calls'] == 0 || parsed['calls'] == null) ? 0 : parsed['calls'];
       this.ratings = (parsed['sum'] == 0 || parsed['sum'] == null) ? 0 : (parsed['sum'] / parsed['total']);
       this.myPoints = (parsed['points'] == 0 || parsed['points'] == null) ? 0 : parsed['points'];
-    } else {
-      print(response2.statusCode);
     }
     notifyListeners();
   }
@@ -80,10 +80,7 @@ class Helper extends User with ChangeNotifier  {
       latitude = location.latitude;
       longitude = location.longitude;
     });
-    print ("Hussien") ;
     if (!isTimerRunning ){
-
-      print("1123");
       timer?.cancel();
       timer = Timer.periodic(
           Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
@@ -93,12 +90,10 @@ class Helper extends User with ChangeNotifier  {
   }
 
   stopBackgroundProcess() {
-    print ("HATEM") ;
     if (timer != null){
       timer.cancel();
       timer = null;
       isTimerRunning = false ;
-      print ("Ehab");
     }
     BackgroundLocation.stopLocationService();
   }
@@ -109,9 +104,7 @@ class Helper extends User with ChangeNotifier  {
       requestGps();
       startBackgroundProcess();
     } else {
-      print("Khaled");
       stopBackgroundProcess();
-      print("Ezzat");
     }
     notifyListeners();
     final http.Response response = await http.post(
@@ -142,11 +135,9 @@ class Helper extends User with ChangeNotifier  {
 
   Future<void> sendPosition() async {
     if (!await _location.serviceEnabled()) {
-
       changeStatus("Busy");
     }
     if (longitude != null && latitude != null && status == "Available") {
-
       String tempToken = token;
       final http.Response response = await http.post(
         Uri.parse('$url/helper/update_location/'),
@@ -160,12 +151,52 @@ class Helper extends User with ChangeNotifier  {
           'longitude': longitude
         }),
       );
-
       if (response.statusCode == 200) {
-        print("Submitted");
+        print("Sampling");
       } else {
         makeToast('Failed to submit user.');
       }
     }
   }
+
+  void saveRequest(String phone, String requestID, double reqLatitude, double reqLongitude) async {
+    this.requestPhone = phone;
+    this.requestID = requestID;
+    this.requestLatitude = reqLatitude;
+    this.requestLongitude = reqLongitude;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("requestPhone", phone);
+    prefs.setString("requestID", requestID);
+    prefs.setDouble("requestLatitude", reqLatitude);
+    prefs.setDouble("requestLongitude", reqLongitude);
+    notifyListeners();
+  }
+
+  getActiveRequest() async {
+    var _prefs = await SharedPreferences.getInstance();
+    requestPhone = _prefs.getString("requestPhone");
+    requestID = _prefs.getString("requestID");
+    requestLatitude = _prefs.getDouble("requestLatitude");
+    requestLongitude = _prefs.getDouble("requestLongitude");
+  }
+
+  hasActiveRequest() {
+    return requestID != null && requestID.isNotEmpty;
+  }
+
+  removeRequest() async {
+    requestPhone = requestID = "";
+    requestLongitude = requestLatitude = 0;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("requestPhone");
+    prefs.remove("requestID");
+    prefs.remove("requestLatitude");
+    prefs.remove("requestLongitude");
+    notifyListeners();
+  }
+  setHelperTracker (loc.LocationData newLocation){
+    helperTracker = newLocation ;
+    notifyListeners() ;
+  }
+
 }

@@ -2,27 +2,28 @@ import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
+import 'package:monqez_app/Models/Helper.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
-import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
-import 'package:monqez_app/Screens/Model/Helper.dart';
-import 'package:monqez_app/Screens/Utils/Profile.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
+import 'package:monqez_app/Screens/AllUsers/Profile.dart';
+import 'package:monqez_app/Screens/Authentication/LoginScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 
+import 'HelperRequestScreen.dart';
 import 'HelperUserPreviousRequests.dart';
 
 // ignore: must_be_immutable
 class HelperHomeScreen extends StatelessWidget {
   String token;
+  Position helperLocation ;
 
   HelperHomeScreen(String token) {
-    print("Constructor");
     this.token = token;
   }
 
@@ -75,10 +76,12 @@ class HelperHomeScreen extends StatelessWidget {
       ),
     );
   }
-
+  _getCurrentUserLocation() async {
+    helperLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
   @override
   Widget build(BuildContext context) {
-    print("Is Loaded: " + _isLoaded.toString());
     if (!_isLoaded) {
       _isLoaded = true;
       Provider.of<Helper>(context, listen: false).setToken(token);
@@ -96,8 +99,6 @@ class HelperHomeScreen extends StatelessWidget {
                   child: CircularProgressIndicator(
                     backgroundColor: secondColor,
                     strokeWidth: 5,
-                    //    valueColor:
-                    //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else
       return Scaffold(
@@ -114,7 +115,6 @@ class HelperHomeScreen extends StatelessWidget {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton(
                   dropdownColor: firstColor,
-                  //hint: Text('Status'), // Not necessary for Option 1
                   value: Provider.of<Helper>(context, listen: true).status,
                   onChanged: (newValue) {
                     Provider.of<Helper>(context, listen: false).status =
@@ -122,7 +122,8 @@ class HelperHomeScreen extends StatelessWidget {
                     Provider.of<Helper>(context, listen: false)
                         .changeStatus(newValue);
                   },
-                  items: _statusDropDown.map((location) {
+                  items: (Provider.of<Helper>(context, listen: false).hasActiveRequest()) ? null :
+                  _statusDropDown.map((location) {
                     return DropdownMenuItem(
                         child: SizedBox(
                           width: 140,
@@ -165,7 +166,6 @@ class HelperHomeScreen extends StatelessWidget {
                               elevation: 5.0,
                               cacheImage: true,
                               onTap: () {
-                                print('Tabbed');
                               }, // sets on tap
                             ),
                           ),
@@ -207,7 +207,6 @@ class HelperHomeScreen extends StatelessWidget {
                     leading: Icon(Icons.history,
                         size: 30, color: firstColor),
                     onTap: () {
-                      //Navigator.pop(context);
                       navigate(HelperPreviousRequests(Provider.of<Helper>(context, listen: false)), context, false);
                     },
                   ),
@@ -232,6 +231,22 @@ class HelperHomeScreen extends StatelessWidget {
                     ),
                     leading: Icon(Icons.money, size: 30, color: firstColor),
                   ),
+                  Visibility(
+                    visible: Provider.of<Helper>(context, listen: false).hasActiveRequest(),
+                    child: ListTile(
+                      title:
+                          getTitle(
+                              'Active Request', 18, firstColor, TextAlign.start, true),
+                      onTap: () async {
+
+                        var provider = Provider.of<Helper>(context, listen: false);
+                        await _getCurrentUserLocation();
+                        navigate(HelperRequestScreen(provider.requestPhone,provider.requestID,provider.requestLatitude,provider.requestLongitude,helperLocation.latitude,helperLocation.longitude),
+                            context, true);
+                      },
+                      leading: Icon(Icons.navigation, size: 30, color: firstColor),
+                    ),
+                  ),
                   Expanded(
                     child: Align(
                       alignment: Alignment.bottomCenter,
@@ -250,7 +265,6 @@ class HelperHomeScreen extends StatelessWidget {
                                 Provider.of<Helper>(context, listen: false)
                                     .changeStatus("Busy");
                               }
-                              print("Logging out");
                               logout();
                               navigate(LoginScreen(), context, true);
                             },
@@ -309,11 +323,9 @@ class HelperHomeScreen extends StatelessWidget {
 }
 
 void checkNotification(BuildContext context) async {
-  print("Check Helper 1");
   FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage message) {
     if (message != null) {
       FirebaseCloudMessaging.route = new HelperUserNotification(message, true);
-      print("Navigating");
       navigate(NotificationRoute.selectNavigate, context, true);
     }
   });

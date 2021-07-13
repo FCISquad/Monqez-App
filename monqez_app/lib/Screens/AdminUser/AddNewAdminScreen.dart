@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import '../UI.dart';
+import '../Utils/UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:email_validator/email_validator.dart';
 import '../../Backend/Authentication.dart';
@@ -305,13 +304,13 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () async {
           if (_correctEmail && _correctPassword && _correctConfirmPassword) {
             UserCredential result =
                 await newAdmin(_emailController, _passwordController);
-            //there could be an error here!!
             if (result != null) {
               bool isAdmin = await makeAdmin(result);
               if (isAdmin) {
@@ -357,7 +356,6 @@ class _AddNewAdminScreenState extends State<AddNewAdminScreen> {
       makeToast("Admin Created Successfully!");
       return true;
     } else {
-      print(response.statusCode);
       return false;
     }
   }

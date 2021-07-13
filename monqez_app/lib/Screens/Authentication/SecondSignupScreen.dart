@@ -8,13 +8,12 @@ import 'package:flutter/widgets.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'UI.dart';
+import '../Utils/UI.dart';
 import 'LoginScreen.dart';
-import '../Backend/Authentication.dart';
+import '../../Backend/Authentication.dart';
 
 class SecondSignupScreen extends StatefulWidget {
   @override
@@ -79,7 +78,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   void _validateCertificate(String text) {
     setState(() {
       if (_isMonqez) {
-        print(_fileName);
         if (_fileName == "File Path") {
           _certificateError = "You must enter your certificate";
           _correctCertificate = false;
@@ -208,8 +206,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     String chronic = " ";
     if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
-    print("Token: " + token);
-    print("Uid: " + uid);
+
     final http.Response response = await http.post(
       Uri.parse('$url/user/signup'),
       headers: <String, String>{
@@ -235,7 +232,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       makeToast("Submitted");
       navigateReplacement(NormalHomeScreen(token));
     } else {
-      print(response.statusCode);
       makeToast('Failed to submit user.');
     }
   }
@@ -244,8 +240,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     String chronic = " ";
     if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
-    print("Token: " + token);
-    print("Uid: " + uid);
+
 
     String base64Image = base64Encode(certificateFile.readAsBytesSync());
     final http.Response response = await http.post(
@@ -277,7 +272,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       logout();
       navigateReplacement(LoginScreen());
     } else {
-      print(response.statusCode);
       throw Exception('Failed to create user.');
     }
   }
@@ -286,13 +280,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     try {
       _path = (await FilePicker.platform.pickFiles());
 
-      /*
-        type: FileType.any,
-        allowMultiple: false,
-        //allowedExtensions: _types
-      ))
-          ?.files;
-         */
     } on PlatformException catch (e) {
       makeToast("Unsupported operation" + e.toString());
     } catch (ex) {
@@ -307,18 +294,9 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     _validateCertificate(_fileName);
   }
 
-  ///ERRORS HERE
   void _uploadID() async {
     try {
       _path = (await FilePicker.platform.pickFiles());
-      /*
-        type: FileType.any,
-        allowMultiple: false,
-        //allowedExtensions: _types
-      ))
-          ?.files;
-
-       */
     } on PlatformException catch (e) {
       makeToast("Unsupported operation" + e.toString());
     } catch (ex) {
@@ -348,7 +326,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         });
       },
       controlAffinity:
-          ListTileControlAffinity.trailing, //  <-- leading Checkbox
+          ListTileControlAffinity.trailing,
     );
   }
 
@@ -780,15 +758,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     );
   }
 
-  void _openCamera(BuildContext context) async {
-    // ignore: deprecated_member_use
-    /*var picture = await ImagePicker.pickImage(source: ImageSource.camera);
-    this.setState(() {
-      imageFile = picture;
-    });*/
-    //Navigator.of(context).pop();
-  }
-
   void _buildImagePicker(BuildContext context) async {
     return showDialog(
         context: context,
@@ -808,7 +777,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     GestureDetector(
                       child: Text("Camera"),
                       onTap: () {
-                        _openCamera(context);
                       },
                     )
                   ],
@@ -822,6 +790,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       height: 90,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: _click,

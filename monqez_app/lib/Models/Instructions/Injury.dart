@@ -1,8 +1,7 @@
-import 'package:monqez_app/Screens/Instructions/ImageController.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
 import 'Pair.dart';
 
 class Injury {
-  /// { {Photo, Caption}, {Photo, Caption}, {Photo, Caption} }
   Pair _title;
   List<Pair> _instructions;
 
@@ -10,28 +9,21 @@ class Injury {
     _title = new Pair(image, caption);
     _instructions = [];
   }
+
   void addStep (ImageController image, String caption) {
     _instructions.add(Pair(image, caption));
   }
+
   Pair getTitle () {
     return _title;
   }
+
   void setInstructions(List<Pair> instructions) {
     _instructions = instructions;
   }
+
   List<Pair> getInstructions() {
     return _instructions;
-  }
-
-  void load() {
-    /// HTTP Request
-    /*_instructions.add(new Pair(_title.getImage(), "ARSAD AD SSADA SDA SJ FJGG IRFJ VJNF"));
-
-    _instructions.add(new Pair(_title.getImage(), "AR SAD ADSSA DAS DAS JFJGGI RFJVJNF"));
-
-    _instructions.add(new Pair(_title.getImage(), "ARSADAD SSA DAS DASJFJ GGIRF JVJNF"));
-
-    _instructions.add(new Pair(_title.getImage(), "ARSA DADSS ADASDA SJF JGGIRFJVJ NF"));*/
   }
 
   Map<String, dynamic> getJson() {
@@ -39,7 +31,6 @@ class Injury {
     for (Pair p in _instructions) {
       instructionsMap.add(p.getJson());
     }
-
     Map<String, dynamic> injuryMap = {
       "Title": _title.getCaption(),
       "Thumbnail": _title.getImage().base_64,

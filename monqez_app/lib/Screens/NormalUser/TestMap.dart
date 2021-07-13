@@ -18,7 +18,7 @@
 // import 'dart:convert';
 // import '../Instructions/InstructionsScreen.dart';
 // import 'package:permission_handler/permission_handler.dart';
-// import '../CallPage.dart';
+// import '../VideoPage.dart';
 // import '../LoginScreen.dart';
 // import '../VoicePage.dart';
 // import 'Chatbot.dart';
@@ -79,15 +79,16 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 
 
+
+
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin  {
   StreamSubscription _locationSubscription;
   Location _locationTracker = Location();
   Marker marker;
@@ -141,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       _locationSubscription = _locationTracker.onLocationChanged.listen((newLocalData) {
         if (_controller != null) {
+
           _controller.animateCamera(CameraUpdate.newCameraPosition(new CameraPosition(
               // bearing: 192.8334901395799,
               target: LatLng(newLocalData.latitude, newLocalData.longitude),
@@ -164,15 +166,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Monqez"),
       ),
       body: GoogleMap(
-        mapType: MapType.normal,
+        mapType: MapType.hybrid,
         initialCameraPosition: initialLocation,
         markers: Set.of((marker != null) ? [marker] : []),
         circles: Set.of((circle != null) ? [circle] : []),
@@ -184,7 +185,6 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.location_searching),
           onPressed: () {
-            getAddressFromLatLng(context,37.42796133580664, -122.085749655962) ;
             getCurrentLocation();
           }),
     );
@@ -201,17 +201,5 @@ class _MyHomePageState extends State<MyHomePage> {
         return _formattedAddress;
       } else return null;
     } else return null;
-  }
-  Widget _getText(String text, double fontSize, FontWeight fontWeight,
-      Color color, int lines) {
-    return AutoSizeText(text,
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            color: color,
-            fontSize: fontSize,
-            fontFamily: 'Cairo',
-            fontWeight: fontWeight),
-        maxLines: lines);
   }
 }

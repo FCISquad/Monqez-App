@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mime/mime.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Model/Instructions/Injury.dart';
-import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
-import 'package:monqez_app/Screens/Model/Instructions/Pair.dart';
+import 'package:monqez_app/Models/Instructions/Injury.dart';
+import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
+import 'package:monqez_app/Models/Instructions/Pair.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
@@ -19,7 +19,9 @@ class ModifyInstruction extends StatefulWidget {
 }
 
 class ModifyInstructionState extends State<ModifyInstruction> {
-  List<TextEditingController> stepsControllers = [TextEditingController()]; // First is title
+  List<TextEditingController> stepsControllers = [
+    TextEditingController()
+  ]; // First is title
   List<ImageController> images = [null]; // First is thumbnail
 
   Injury injury;
@@ -77,13 +79,10 @@ class ModifyInstructionState extends State<ModifyInstruction> {
                 TextButton(
                   child: getText('Replace', 22, true, Colors.green),
                   onPressed: () {
-                    print("Replaced");
-                    print(instructions.length);
-                    print("Khaled:" + instructions.length.toString() + " " + images.length.toString() + " " + stepsControllers.length.toString());
                     Navigator.of(context).pop();
                     _buildImagePicker(context, i);
                   },
-                ), // button 1
+                ),
                 TextButton(
                   child: getText('Remove', 22, true, Color(0xFFF27169)),
                   onPressed: () {
@@ -91,7 +90,7 @@ class ModifyInstructionState extends State<ModifyInstruction> {
                     setState(() {});
                     Navigator.of(context).pop();
                   },
-                ) // button 2
+                )
               ]),
         );
       },
@@ -107,7 +106,6 @@ class ModifyInstructionState extends State<ModifyInstruction> {
       width: 100,
       decoration: BoxDecoration(
         color: Color(0xFFF3F3F3),
-        //border: Border.all(color: Colors.blueAccent),
         borderRadius: BorderRadius.circular(5),
       ),
       child: MaterialButton(
@@ -124,7 +122,6 @@ class ModifyInstructionState extends State<ModifyInstruction> {
           } else {
             _showMyDialog(i);
           }
-          print("Tapped");
         },
       ),
     );
@@ -138,7 +135,7 @@ class ModifyInstructionState extends State<ModifyInstruction> {
           return StatefulBuilder(builder: (context, setState) {
             return Dialog(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)), //this right here
+                  borderRadius: BorderRadius.circular(20.0)),
               child: Container(
                 height: _height * 60,
                 width: _width * 90,
@@ -155,11 +152,8 @@ class ModifyInstructionState extends State<ModifyInstruction> {
                             fontWeight: FontWeight.bold, fontSize: 20),
                       )),
                       SizedBox(height: 20),
-                      _buildField(
-                          context,
-                          "Step Title",
-                          MediaQuery.of(context).size.width,
-                          i),
+                      _buildField(context, "Step Title",
+                          MediaQuery.of(context).size.width, i),
                       SizedBox(height: 10.0),
                       SizedBox(
                         width: 200,
@@ -188,7 +182,6 @@ class ModifyInstructionState extends State<ModifyInstruction> {
 
   Widget _buildBtn(BuildContext context, String text) {
     return Container(
-      //padding: EdgeInsets.symmetric(vertical: 25.0),
       width: MediaQuery.of(context).size.width / 2,
       height: 45,
       // ignore: deprecated_member_use
@@ -200,15 +193,16 @@ class ModifyInstructionState extends State<ModifyInstruction> {
               makeToast("Please insert title correctly!");
               return;
             }
-            injury = new Injury(images[0], stepsControllers[0].text );
-            for (int i=0 ; i<instructions.length ; i++) {
-              instructions[i] = new Pair(images[i+1], stepsControllers[i+1].text);
+            injury = new Injury(images[0], stepsControllers[0].text);
+            for (int i = 0; i < instructions.length; i++) {
+              instructions[i] =
+                  new Pair(images[i + 1], stepsControllers[i + 1].text);
             }
             injury.setInstructions(instructions);
 
-             Provider.of<InstructionsList>(context, listen: false).addInjury(injury);
-             Navigator.pop(context);
-
+            Provider.of<InstructionsList>(context, listen: false)
+                .addInjury(injury);
+            Navigator.pop(context);
           } else {
             addStep();
           }
@@ -233,7 +227,6 @@ class ModifyInstructionState extends State<ModifyInstruction> {
   Widget _buildField(BuildContext context, String title, double width,
       [int index = 0]) {
     if (stepsControllers.length <= index) {
-      print("Adding");
       stepsControllers.add(new TextEditingController());
     }
     return Container(
@@ -298,34 +291,30 @@ class ModifyInstructionState extends State<ModifyInstruction> {
     );
   }
 
-  /*
-  @protected
-  @mustCallSuper
-  void dispose() {
-    super.dispose();
-  }*/
-
   @protected
   @mustCallSuper
   void deactivate() {
     super.deactivate();
     Provider.of<InstructionsList>(context, listen: false).unSelect();
   }
+
   @override
   void initState() {
     super.initState();
     var provider = Provider.of<InstructionsList>(context, listen: false);
-    if (provider.edit){
+    if (provider.edit) {
       injury = provider.getSelected();
       stepsControllers[0].text = injury.getTitle().getCaption();
       images[0] = injury.getTitle().getImage();
       instructions = injury.getInstructions();
-      for(Pair pair in instructions) {
-        stepsControllers.add(new TextEditingController(text: pair.getCaption()));
+      for (Pair pair in instructions) {
+        stepsControllers
+            .add(new TextEditingController(text: pair.getCaption()));
         images.add(pair.getImage());
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     _width = MediaQuery.of(context).size.width / 100;
@@ -338,8 +327,6 @@ class ModifyInstructionState extends State<ModifyInstruction> {
       _height = temp;
     }
 
-
-    // TODO: implement build
     return Scaffold(
       backgroundColor: secondColor,
       appBar: AppBar(
@@ -353,7 +340,7 @@ class ModifyInstructionState extends State<ModifyInstruction> {
           icon: Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-            },
+          },
         ),
       ),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -385,11 +372,12 @@ class ModifyInstructionState extends State<ModifyInstruction> {
                         shrinkWrap: true,
                         itemCount: instructions.length,
                         itemBuilder: (BuildContext context, int index) {
-                          print(instructions.length);
                           return _buildField(
                               context, "Step Text", _width * 100, index + 1);
                         }),
-                    SizedBox(height: 20,),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Center(child: _buildBtn(context, "Add Step")),
                     SizedBox(height: 10.0),
                     Center(child: _buildBtn(context, "Submit"))

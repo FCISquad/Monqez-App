@@ -5,18 +5,15 @@ import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Backend/Authentication.dart';
+import '../../Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
-import 'HelperUser/HelperRequestScreen.dart';
-import 'Model/Helper.dart';
+import '../../main.dart';
+import 'HelperRequestScreen.dart';
+import '../../Models/Helper.dart';
 
 // ignore: must_be_immutable
 class HelperRequestNotificationScreen extends StatelessWidget {
 
-  //static bool hideBackButton;
-  HelperRequestNotificationScreen() {
-    print("HelperRequest");
-  }
   static String requestID;
   static double reqLongitude;
   static double reqLatitude;
@@ -24,6 +21,7 @@ class HelperRequestNotificationScreen extends StatelessWidget {
   var _prefs;
   String token;
   Position helperLocation ;
+
 
   Future<void> decline(BuildContext context) async {
     _prefs = await SharedPreferences.getInstance();
@@ -42,15 +40,17 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     );
     if (response.statusCode == 200) {
       makeToast("Successful");
-    } else {
-      print(response.statusCode);
     }
   }
 
   Future<int> accept(BuildContext context) async {
+    token = Provider.of<Helper>(context, listen: false).token;
     _prefs = await SharedPreferences.getInstance();
-    token = _prefs.getString("userToken");
-    Provider.of<Helper>(context, listen: false).setToken(token);
+    if (token == null) {
+      _prefs = await SharedPreferences.getInstance();
+      token = _prefs.getString("userToken");
+      Provider.of<Helper>(context, listen: false).setToken(token);
+    }
     int returned = 0;
     final http.Response response = await http.post(
       Uri.parse('$url/helper/accept_request'),
@@ -64,20 +64,14 @@ class HelperRequestNotificationScreen extends StatelessWidget {
     })
     );
     if (response.statusCode == 200) {
-      print ("heeeeeeeeeeeeere") ;
       makeToast("Successful");
-
       Provider.of<Helper>(context, listen: false).changeStatus("Busy");
-      print ("hya hya hya") ;
       var parsed = jsonDecode(response.body).cast<String, dynamic>();
       phone = parsed["phone"] ;
 
     } else if (response.statusCode == 201){
       makeToast("Someone already accepted the request!");
       returned = 201;
-    }
-    else {
-      print(response.statusCode);
     }
     return returned;
   }
@@ -96,7 +90,6 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                   onPressed: (){
                     decline(context);
                     Navigator.pop(context);
-                    //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                   }
               ),
               visible: true,
@@ -141,16 +134,15 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                           primary: Colors.green, shape: CircleBorder()),
                       onPressed: () async {
-                        //Provider.of<Helper>(context, listen: false).stopBackgroundProcess();
                         int result = await accept(context);
-                        print ("----------------");
-                        print (result) ;
                         if (result == 0){
                           await _getCurrentUserLocation();
+
+                          Provider.of<Helper>(navigatorKey.currentContext, listen: false).saveRequest(phone, requestID, reqLatitude, reqLongitude);
                         navigate(HelperRequestScreen(phone,requestID,reqLatitude,reqLongitude,helperLocation.latitude,helperLocation.longitude),
                             context, true);}
                         else{
-                          navigate(HelperHomeScreen(token), context, true); ///nfs error l t7t?
+                          navigate(HelperHomeScreen(token), context, true);
                         }
                       },
                     ),
@@ -162,7 +154,6 @@ class HelperRequestNotificationScreen extends StatelessWidget {
                         await decline(context);
 
                         Navigator.pop(context);
-                        //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
                       },
                     ),
                   ],

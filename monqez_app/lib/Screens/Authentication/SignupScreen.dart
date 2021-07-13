@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'UI.dart';
+import '../Utils/UI.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:monqez_app/Screens/SecondSignupScreen.dart';
 import 'LoginScreen.dart';
-import '../Backend/Authentication.dart';
+import '../../Backend/Authentication.dart';
+import 'SecondSignupScreen.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -309,6 +309,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () async {
