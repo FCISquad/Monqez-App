@@ -1,27 +1,24 @@
 import 'dart:convert';
 import 'dart:ui';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'package:monqez_app/Screens/NormalUser/NormalHomeScreen.dart';
+import 'package:monqez_app/Screens/AdminUser/AdminHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'UI.dart';
-import 'LoginScreen.dart';
-import '../Backend/Authentication.dart';
+import '../Utils/UI.dart';
+import '../../Backend/Authentication.dart';
 
-class SecondSignupScreen extends StatefulWidget {
+class AdditionalAdminInfoScreen extends StatefulWidget {
   @override
-  _SecondSignupScreenState createState() => _SecondSignupScreenState();
+  _AdditionalAdminInfoScreenState createState() =>
+      _AdditionalAdminInfoScreenState();
 }
 
-class _SecondSignupScreenState extends State<SecondSignupScreen> {
+class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
   var _prefs;
   var _nameController = TextEditingController();
   var _phoneController = TextEditingController();
@@ -30,7 +27,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   var _cityController = TextEditingController();
   var _streetController = TextEditingController();
   var _buildNumberController = TextEditingController();
-  var _certificateController = TextEditingController();
   var _diseaseController = TextEditingController();
   var token;
   var uid;
@@ -38,23 +34,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
   String _phoneNumberError = '';
   String _nationalIdError = '';
   String _addressError = '';
-  String _certificateError = '';
 
   bool _correctFullName = false;
   bool _correctPhoneNumber = false;
   bool _correctNationalId = false;
   bool _correctAddress = false;
-  bool _correctCertificate = false;
 
   String gender;
   DateTime selectedDate = DateTime.now();
-  File imageFile;
-  String _fileName = "File Path", _imageName = "Image Path";
-  //List<String> _types = ["pdf", "jpg", "png"];
-  FilePickerResult _path;
-  File certificateFile;
-
-  bool _isMonqez = false;
 
   void makeToast(String text) {
     Fluttertoast.showToast(
@@ -68,28 +55,11 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
     if (_correctFullName &&
         _correctPhoneNumber &&
         _correctNationalId &&
-        _correctAddress &&
-        ((_isMonqez && _correctCertificate) || !_isMonqez)) {
+        _correctAddress) {
       return true;
     } else {
       return false;
     }
-  }
-
-  void _validateCertificate(String text) {
-    setState(() {
-      if (_isMonqez) {
-        print(_fileName);
-        if (_fileName == "File Path") {
-          _certificateError = "You must enter your certificate";
-          _correctCertificate = false;
-        } else {
-          _correctCertificate = true;
-          _certificateError = "";
-        }
-      }
-    });
-    return;
   }
 
   void _validateFullName(String text) {
@@ -135,6 +105,42 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
       }
     });
     return;
+  }
+
+  Widget _buildDiseaseTF() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        getTitle("Diseases"),
+        SizedBox(height: 10.0),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: kBoxDecorationStyle,
+          height: 50.0,
+          child: TextField(
+            keyboardType: TextInputType.multiline,
+            controller: _diseaseController,
+            style: TextStyle(
+              color: firstColor,
+              fontFamily: 'OpenSans',
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 14.0),
+              prefixIcon: Icon(
+                Icons.accessibility_outlined,
+                color: firstColor,
+              ),
+              hintText: 'Enter any diseases',
+              hintStyle: TextStyle(
+                color: firstColor,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 5.0),
+      ],
+    );
   }
 
   Widget getTitle(String text) {
@@ -194,34 +200,33 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
 
   void _click() {
     if (_validateAllFields()) {
-      if (_isMonqez) {
-        _apply();
-      } else {
-        _submit();
-      }
+      _adminData();
     } else {
       makeToast("Data is incomplete");
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _adminData() async {
     String chronic = " ";
     if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
     print("Token: " + token);
     print("Uid: " + uid);
+
     final http.Response response = await http.post(
-      Uri.parse('$url/user/signup'),
+      Uri.parse('$url/admin/addAdditionalInformation/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
+        'token': token,
+        'uid': uid,
         'name': _nameController.text,
         'national_id': _idController.text,
-        'phone_number': _phoneController.text,
-        'dob': selectedDate.toString(),
+        'phone': _phoneController.text,
+        'birthdate': selectedDate.toString(),
         'gender': gender,
         'country': _countryController.text,
         'city': _cityController.text,
@@ -230,126 +235,14 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
         'chronicDiseases': chronic
       }),
     );
-
     if (response.statusCode == 200) {
-      makeToast("Submitted");
-      navigateReplacement(NormalHomeScreen(token));
-    } else {
-      print(response.statusCode);
-      makeToast('Failed to submit user.');
-    }
-  }
-
-  Future<void> _apply() async {
-    String chronic = " ";
-    if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
-    await intializeData();
-    print("Token: " + token);
-    print("Uid: " + uid);
-
-    String base64Image = base64Encode(certificateFile.readAsBytesSync());
-    final http.Response response = await http.post(
-      Uri.parse('$url/user/apply/'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(<String, String>{
-        'name': _nameController.text,
-        'national_id': _idController.text,
-        'phone_number': _phoneController.text,
-        'dob': selectedDate.toString(),
-        'gender': gender,
-        'country': _countryController.text,
-        'city': _cityController.text,
-        'street': _streetController.text,
-        'buildNumber': _buildNumberController.text,
-        'certificate': base64Image,
-        'certificateName': _fileName,
-        'submissionDate': DateTime.now().toString(),
-        'chronicDiseases': chronic
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      makeToast("Please wait while your application is reviewed");
-      logout();
-      navigateReplacement(LoginScreen());
+      makeToast("Information Added Successfully!");
+      navigateReplacement(AdminHomeScreen());
+      return true;
     } else {
       print(response.statusCode);
       throw Exception('Failed to create user.');
     }
-  }
-
-  void _uploadCertificate() async {
-    try {
-      _path = (await FilePicker.platform.pickFiles());
-
-      /*
-        type: FileType.any,
-        allowMultiple: false,
-        //allowedExtensions: _types
-      ))
-          ?.files;
-         */
-    } on PlatformException catch (e) {
-      makeToast("Unsupported operation" + e.toString());
-    } catch (ex) {
-      makeToast(ex);
-    }
-
-    if (!mounted) return;
-    setState(() {
-      certificateFile = File(_path.files.single.path);
-      _fileName = certificateFile.path.split("/").last;
-    });
-    _validateCertificate(_fileName);
-  }
-
-  ///ERRORS HERE
-  void _uploadID() async {
-    try {
-      _path = (await FilePicker.platform.pickFiles());
-      /*
-        type: FileType.any,
-        allowMultiple: false,
-        //allowedExtensions: _types
-      ))
-          ?.files;
-
-       */
-    } on PlatformException catch (e) {
-      makeToast("Unsupported operation" + e.toString());
-    } catch (ex) {
-      makeToast(ex);
-    }
-    if (!mounted) return;
-    setState(() {
-      imageFile = File(_path.files.single.path);
-      _imageName = imageFile.path.split("/").last;
-    });
-  }
-
-  Widget _buildCheckBox() {
-    return CheckboxListTile(
-      title: Text(
-        "Signup as Monqez?",
-        style: TextStyle(
-          color: firstColor,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      value: _isMonqez,
-      onChanged: (newValue) {
-        setState(() {
-          _isMonqez = newValue;
-          _validateCertificate("");
-        });
-      },
-      controlAffinity:
-          ListTileControlAffinity.trailing, //  <-- leading Checkbox
-    );
   }
 
   Widget _buildNameTF() {
@@ -392,42 +285,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
           ),
           visible: _fullNameError.isNotEmpty,
         ),
-      ],
-    );
-  }
-
-  Widget _buildDiseaseTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        getTitle("Diseases"),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: TextField(
-            keyboardType: TextInputType.multiline,
-            controller: _diseaseController,
-            style: TextStyle(
-              color: firstColor,
-              fontFamily: 'OpenSans',
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.accessibility_outlined,
-                color: firstColor,
-              ),
-              hintText: 'Enter any diseases',
-              hintStyle: TextStyle(
-                color: firstColor,
-              ),
-            ),
-          ),
-        ),
-        SizedBox(height: 5.0),
       ],
     );
   }
@@ -501,15 +358,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                   Icons.assignment_ind_outlined,
                   color: firstColor,
                 ),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    _buildImagePicker(context);
-                  },
-                  child: Icon(
-                    Icons.camera_alt,
-                    color: firstColor,
-                  ),
-                ),
                 hintText: 'Enter your ID Number',
                 hintStyle: TextStyle(
                   color: firstColor,
@@ -527,91 +375,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
             ),
             visible: _nationalIdError.isNotEmpty,
           ),
-          Visibility(
-            child: TextField(
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14.0),
-                suffixIcon: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _imageName = "Image Path";
-                      imageFile = null;
-                    });
-                  },
-                  child: Icon(
-                    Icons.highlight_remove,
-                    color: firstColor,
-                  ),
-                ),
-                hintText: _imageName,
-                hintStyle: TextStyle(
-                  color: firstColor,
-                ),
-              ),
-            ),
-            visible: _imageName != "Image Path",
-          )
         ]);
-  }
-
-  Widget _buildCertificateTF() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          "First-Aid Certificate",
-          style: TextStyle(
-            color: firstColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: 10.0),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
-          height: 50.0,
-          child: TextFormField(
-            controller: _certificateController,
-            onChanged: _validateCertificate,
-            readOnly: true,
-            style: TextStyle(
-              color: firstColor,
-              fontFamily: 'OpenSans',
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.book,
-                color: firstColor,
-              ),
-              suffixIcon: GestureDetector(
-                onTap: _uploadCertificate,
-                child: Icon(
-                  Icons.file_copy,
-                  color: firstColor,
-                ),
-              ),
-              hintText: _fileName,
-              hintStyle: TextStyle(
-                color: firstColor,
-              ),
-            ),
-          ),
-        ),
-        Visibility(
-          child: Text(
-            _certificateError,
-            style: TextStyle(
-              color: firstColor,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          visible: _certificateError.isNotEmpty,
-        ),
-      ],
-    );
   }
 
   Future<void> _selectDate() async {
@@ -774,47 +538,10 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 color: firstColor,
                 fontWeight: FontWeight.bold,
               )),
-          visible: _addressError.isNotEmpty,
+          visible: !_addressError.isEmpty,
         )
       ],
     );
-  }
-
-  void _openCamera(BuildContext context) async {
-    // ignore: deprecated_member_use
-    /*var picture = await ImagePicker.pickImage(source: ImageSource.camera);
-    this.setState(() {
-      imageFile = picture;
-    });*/
-    //Navigator.of(context).pop();
-  }
-
-  void _buildImagePicker(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-              title: Text("From where do you want to take the photo?"),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Text("Gallery"),
-                      onTap: () {
-                        _uploadID();
-                      },
-                    ),
-                    Padding(padding: EdgeInsets.all(8.0)),
-                    GestureDetector(
-                      child: Text("Camera"),
-                      onTap: () {
-                        _openCamera(context);
-                      },
-                    )
-                  ],
-                ),
-              ));
-        });
   }
 
   Widget _buildSubmitBtn() {
@@ -886,7 +613,7 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    'Add Additional Information',
+                    'Add Additional Admin Information',
                     style: TextStyle(
                       color: firstColor,
                       fontSize: 23.0,
@@ -917,10 +644,6 @@ class _SecondSignupScreenState extends State<SecondSignupScreen> {
                     addRadioButton(2, "Female"),
                   ]),
                   SizedBox(height: 10.0),
-                  _buildCheckBox(),
-                  SizedBox(height: 10.0),
-                  Visibility(visible: _isMonqez, child: _buildCertificateTF()),
-                  SizedBox(height: 20.0),
                   _buildSubmitBtn()
                 ],
               ),

@@ -11,7 +11,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
-import 'package:monqez_app/Screens/Model/Helper.dart';
+import 'package:monqez_app/Models/Helper.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 
 import 'package:http/http.dart' as http;

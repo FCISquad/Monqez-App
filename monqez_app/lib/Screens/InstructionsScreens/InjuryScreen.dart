@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:monqez_app/Screens/Model/Instructions/Injury.dart';
-import 'package:monqez_app/Screens/Model/Instructions/InstructionsList.dart';
-import 'package:monqez_app/Screens/Model/Instructions/Pair.dart';
+import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Injury.dart';
+import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/InstructionsList.dart';
+import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Pair.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 

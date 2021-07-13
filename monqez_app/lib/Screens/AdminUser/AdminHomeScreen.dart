@@ -7,16 +7,16 @@ import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Screens/AdminUser/AddNewAdminScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ApplicationsScreen.dart';
 import 'package:monqez_app/Screens/AdminUser/ComplaintsScreen.dart';
-import 'package:monqez_app/Screens/Instructions/InstructionsScreen.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:monqez_app/Screens/AllUsers/Profile.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/InstructionsScreen.dart';
+import 'package:monqez_app/Models/User.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:monqez_app/Screens/Utils/Profile.dart';
 
-import '../LoginScreen.dart';
+import '../Authentication/LoginScreen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
   @override

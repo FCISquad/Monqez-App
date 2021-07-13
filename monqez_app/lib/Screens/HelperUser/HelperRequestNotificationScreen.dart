@@ -5,11 +5,11 @@ import 'package:monqez_app/Screens/HelperUser/HelperHomeScreen.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Backend/Authentication.dart';
+import '../../Backend/Authentication.dart';
 import 'package:http/http.dart' as http;
-import '../main.dart';
-import 'HelperUser/HelperRequestScreen.dart';
-import 'Model/Helper.dart';
+import '../../main.dart';
+import 'HelperRequestScreen.dart';
+import '../../Models/Helper.dart';
 
 // ignore: must_be_immutable
 class HelperRequestNotificationScreen extends StatelessWidget {

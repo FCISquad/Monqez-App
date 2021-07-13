@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/CallPage.dart';
-import 'package:monqez_app/Screens/Model/Helper.dart';
+import 'package:monqez_app/Models/Helper.dart';
+import 'package:monqez_app/Screens/Calls/VideoPage.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
-import '../VoicePage.dart';
+import '../Calls/VoicePage.dart';
 
 class CallingQueueScreen extends StatefulWidget {
   Widget build(BuildContext context) {

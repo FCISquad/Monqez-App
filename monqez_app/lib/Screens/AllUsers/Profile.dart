@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mime/mime.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Instructions/ImageController.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:monqez_app/Models/User.dart';
 
 class ProfileScreen extends StatefulWidget {
   User user;
