@@ -44,17 +44,8 @@ class FirebaseCloudMessaging {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
-      /*
-      var data = message.data;
-      String requestID;
-      if (data != null){
-        requestID = data['userId'];
-        HelperRequestNotificationScreenState.requestID = requestID;
-        print("Request ID: "+ requestID);
-      }
-       */
+
       initalizeRoutes(message, true);
-      //navigatorKey.currentState.pushNamed('notification');
     });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {

@@ -2,6 +2,7 @@ import 'package:circular_profile_avatar/circular_profile_avatar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
@@ -15,11 +16,13 @@ import 'package:provider/provider.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 
+import 'HelperRequestScreen.dart';
 import 'HelperUserPreviousRequests.dart';
 
 // ignore: must_be_immutable
 class HelperHomeScreen extends StatelessWidget {
   String token;
+  Position helperLocation ;
 
   HelperHomeScreen(String token) {
     print("Constructor");
@@ -75,7 +78,10 @@ class HelperHomeScreen extends StatelessWidget {
       ),
     );
   }
-
+  _getCurrentUserLocation() async {
+    helperLocation = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
   @override
   Widget build(BuildContext context) {
     print("Is Loaded: " + _isLoaded.toString());
@@ -122,7 +128,8 @@ class HelperHomeScreen extends StatelessWidget {
                     Provider.of<Helper>(context, listen: false)
                         .changeStatus(newValue);
                   },
-                  items: _statusDropDown.map((location) {
+                  items: (Provider.of<Helper>(context, listen: false).hasActiveRequest()) ? null :
+                  _statusDropDown.map((location) {
                     return DropdownMenuItem(
                         child: SizedBox(
                           width: 140,
@@ -231,6 +238,24 @@ class HelperHomeScreen extends StatelessWidget {
                                 .myPoints).toString(), 18, firstColor, TextAlign.start, true),                      ],
                     ),
                     leading: Icon(Icons.money, size: 30, color: firstColor),
+                  ),
+                  Visibility(
+                    visible: Provider.of<Helper>(context, listen: false).hasActiveRequest(),
+                    child: ListTile(
+                      title:
+                          getTitle(
+                              'Active Request', 18, firstColor, TextAlign.start, true),
+                      onTap: () async {
+
+                        var provider = Provider.of<Helper>(context, listen: false);
+                        await _getCurrentUserLocation();
+                        print("Khaled: "+ (provider.requestLatitude == null).toString());
+                        print("HAtem: "+ (helperLocation.latitude == null).toString());
+                        navigate(HelperRequestScreen(provider.requestPhone,provider.requestID,provider.requestLatitude,provider.requestLongitude,helperLocation.latitude,helperLocation.longitude),
+                            context, true);
+                      },
+                      leading: Icon(Icons.navigation, size: 30, color: firstColor),
+                    ),
                   ),
                   Expanded(
                     child: Align(

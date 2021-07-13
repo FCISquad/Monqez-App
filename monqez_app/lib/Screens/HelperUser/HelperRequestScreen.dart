@@ -36,6 +36,7 @@ class HelperRequestScreen extends StatefulWidget {
     this.helperLat = helperLat;
     this.requestID =requestID ;
     this.phone = phone ;
+
   }
 
   @override
@@ -626,8 +627,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           color: Colors.transparent,
                           splashColor: Colors.black26,
                           onPressed: () async {
+                            Provider.of<Helper>(context, listen: false).removeRequest();
                             _completeRequest();
-
                           },
                           child: _getText(
                               'Complete', 14, FontWeight.w700, Colors.white, 1,false),
@@ -643,6 +644,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           color: Colors.transparent,
                           splashColor: Colors.black26,
                           onPressed: () {
+                            Provider.of<Helper>(context, listen: false).removeRequest();
                             _cancelRequest();
                           },
                           child: _getText(

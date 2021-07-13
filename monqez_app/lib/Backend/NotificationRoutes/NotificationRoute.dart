@@ -23,6 +23,7 @@ abstract class NotificationRoute{
   void getToken () async {
     var _prefs = await SharedPreferences.getInstance();
     this.token = _prefs.getString("userToken");
+    print("HHH:" + (token == null).toString());
   }
 
   NotificationRoute(RemoteMessage message, bool isBackground) {
