@@ -20,6 +20,7 @@ class NormalUserNotification extends NotificationRoute {
       Provider.of<Normal>(navigatorKey.currentContext, listen: false).saveRequest(data["phone"], data["name"]);
 
 
+
     }
   }
 

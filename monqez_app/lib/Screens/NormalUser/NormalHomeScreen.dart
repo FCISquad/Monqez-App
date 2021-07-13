@@ -194,6 +194,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     firstStatusCode = response.statusCode;
     if (response.statusCode == 200) {
       makeToast("Submitted");
+      Provider.of<Normal>(context, listen: false).setFinished();
     } else if (response.statusCode == 503) {
       makeToast("No Available Monqez");
     } else {

@@ -167,28 +167,25 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
     }
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
-
-    final ValueNotifier<LocationData> _counter = ValueNotifier<LocationData>(Provider.of<Helper>(context, listen: false).helperTracker) ;
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Monqez"),
       ),
-      body:
-      ValueListenableBuilder(
-        valueListenable: _counter,
-        builder: (context, value, child) {
-
-          return Text(value.toString());
+      body: GoogleMap(
+        mapType: MapType.hybrid,
+        initialCameraPosition: initialLocation,
+        markers: Set.of((marker != null) ? [marker] : []),
+        circles: Set.of((circle != null) ? [circle] : []),
+        onMapCreated: (GoogleMapController controller) {
+          _controller = controller;
         },
+
       ),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.location_searching),
           onPressed: () {
-            getAddressFromLatLng(context,37.42796133580664, -122.085749655962) ;
             getCurrentLocation();
           }),
     );

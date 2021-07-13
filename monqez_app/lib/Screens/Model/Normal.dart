@@ -16,8 +16,12 @@ class Normal extends User with ChangeNotifier  {
     visible = [false,false,true];
     notifyListeners();
   }
-  void setFinished() {
+  Future<void> setFinished() async {
     visible = [true, false, false];
+    helperName = helperPhone = "";
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("helperName");
+    prefs.remove("helperPhone");
     notifyListeners();
   }
   void saveRequest(String phone,String helperName) async {
@@ -40,12 +44,5 @@ class Normal extends User with ChangeNotifier  {
   hasActiveRequest() {
     return helperName != null && helperName.isNotEmpty;
   }
-  removeRequest() async {
-    helperName = helperPhone = "";
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.remove("helperName");
-    prefs.remove("helperPhone");
 
-    notifyListeners();
-  }
 }
