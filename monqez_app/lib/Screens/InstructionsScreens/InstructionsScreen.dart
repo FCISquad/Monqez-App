@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Models/Instructions/Injury.dart';
 import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
 import '../../main.dart';
@@ -85,6 +84,7 @@ class InstructionsScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           child: SizedBox(
                             width: 200,
+                            // ignore: deprecated_member_use
                             child: RaisedButton(
                               onPressed: () {
                                 provider.saveInjuries(_token);

@@ -112,7 +112,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
     );
   }
 
-  Widget _showMaterialDialog(_Request req) {
+  void _showMaterialDialog(_Request req) {
     double width = MediaQuery.of(context).size.width / 100;
     double height =
         (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
@@ -249,7 +249,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
         });
   }
 
-  Widget buildScreen2(_Request req) {
+  void buildScreen2(_Request req) {
     double width = MediaQuery.of(context).size.width / 100;
     double height =
         (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /

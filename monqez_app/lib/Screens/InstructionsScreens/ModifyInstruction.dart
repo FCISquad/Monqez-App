@@ -291,13 +291,6 @@ class ModifyInstructionState extends State<ModifyInstruction> {
     );
   }
 
-  /*
-  @protected
-  @mustCallSuper
-  void dispose() {
-    super.dispose();
-  }*/
-
   @protected
   @mustCallSuper
   void deactivate() {
