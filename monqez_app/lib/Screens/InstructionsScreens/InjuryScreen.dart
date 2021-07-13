@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Injury.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/InstructionsList.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Pair.dart';
+import 'package:monqez_app/Models/Instructions/Injury.dart';
+import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
+import 'package:monqez_app/Models/Instructions/Pair.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 
@@ -40,72 +40,69 @@ class _InjuryScreenState extends State<InjuryScreen> {
     Pair title = injury.getTitle();
     List<Pair> instructions = injury.getInstructions();
 
-    // TODO: implement build
     return MaterialApp(
         home: Scaffold(
             body: Scaffold(
                 body: CustomScrollView(
-              slivers: <Widget>[
-                SliverAppBar(
-                  pinned: true,
-                  snap: false,
-                  floating: false,
-                  expandedHeight: height*24,
-
-                  leading: IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      }),
-                  backgroundColor: firstColor,
-                  //backgroundColor: Color(0xffe0825c),
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    titlePadding: EdgeInsets.only(bottom: 10),
-                    title: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: getText(title.getCaption(), 22, true, secondColor),
-                    ),
-                    background: Padding(
-                      padding: EdgeInsets.all(50),
-                      child: Center(
-                        child: Image.memory(
-                          title.getImage().decode(),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
+      slivers: <Widget>[
+        SliverAppBar(
+          pinned: true,
+          snap: false,
+          floating: false,
+          expandedHeight: height * 24,
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
+          backgroundColor: firstColor,
+          flexibleSpace: FlexibleSpaceBar(
+            centerTitle: true,
+            titlePadding: EdgeInsets.only(bottom: 10),
+            title: Align(
+              alignment: Alignment.bottomCenter,
+              child: getText(title.getCaption(), 22, true, secondColor),
+            ),
+            background: Padding(
+              padding: EdgeInsets.all(50),
+              child: Center(
+                child: Image.memory(
+                  title.getImage().decode(),
+                  fit: BoxFit.cover,
                 ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(
-                    height: 8,
-                  ),
+              ),
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: SizedBox(
+            height: 8,
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) {
+              return Container(
+                color: index.isOdd ? Colors.white : Colors.black12,
+                height: height * 34,
+                padding: EdgeInsets.all(8),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    getText(instructions[index].getCaption(), 24, false,
+                        Colors.black),
+                    Image.memory(
+                      instructions[index].getImage().decode(),
+                      height: height * 14,
+                    )
+                  ],
                 ),
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (BuildContext context, int index) {
-                      return Container(
-                        color: index.isOdd ? Colors.white : Colors.black12,
-                        height: height * 34,
-                        padding: EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            getText(instructions[index].getCaption(), 24, false,
-                                Colors.black),
-                            Image.memory(
-                              instructions[index].getImage().decode(),
-                              height: height * 14,
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                    childCount: instructions.length,
-                  ),
-                ),
-              ],
-            ))));
+              );
+            },
+            childCount: instructions.length,
+          ),
+        ),
+      ],
+    ))));
   }
 }
