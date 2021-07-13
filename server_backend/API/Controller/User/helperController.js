@@ -274,7 +274,7 @@ app.post('/cancel_request', function (request, response) {
                 const payload = {
                     notification: {
                         title: 'Request is cancelled',
-                        body: 'Request is cancelled'
+                        body: 'The Monqez has cancel the request!'
                     },
                     data: {
                         type: 'normal',
