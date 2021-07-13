@@ -33,16 +33,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepOrange,
       ),
-      //home: Splash(),
       onGenerateRoute: onGenerateRoute,
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-
       routes: {
-        // '/': (context) => HelperRequestScreen("010", "12", 30.0, 31.2, 30.5, 31.4),
-        // '/': (context) => MyHomePage(title: 'Monqez'),
         '/': (context) => Splash(),
-
         'notification': (context) => HelperRequestNotificationScreen(),
         'instructions': (context) => InstructionsScreen(),
         'injury': (context) => InjuryScreen(),
