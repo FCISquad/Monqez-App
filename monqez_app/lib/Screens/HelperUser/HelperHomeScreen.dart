@@ -8,7 +8,6 @@ import 'package:monqez_app/Backend/NotificationRoutes/HelperUserNotification.dar
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:monqez_app/Models/Helper.dart';
 import 'package:monqez_app/Screens/HelperUser/CallingQueueScreen.dart';
-import 'package:monqez_app/Screens/HelperUser/ChatQueue.dart';
 import 'package:monqez_app/Screens/HelperUser/RatingsScreen.dart';
 import 'package:monqez_app/Screens/AllUsers/Profile.dart';
 import 'package:monqez_app/Screens/Authentication/LoginScreen.dart';
@@ -25,7 +24,6 @@ class HelperHomeScreen extends StatelessWidget {
   Position helperLocation ;
 
   HelperHomeScreen(String token) {
-    print("Constructor");
     this.token = token;
   }
 
@@ -84,7 +82,6 @@ class HelperHomeScreen extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    print("Is Loaded: " + _isLoaded.toString());
     if (!_isLoaded) {
       _isLoaded = true;
       Provider.of<Helper>(context, listen: false).setToken(token);
@@ -102,8 +99,6 @@ class HelperHomeScreen extends StatelessWidget {
                   child: CircularProgressIndicator(
                     backgroundColor: secondColor,
                     strokeWidth: 5,
-                    //    valueColor:
-                    //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else
       return Scaffold(
@@ -120,7 +115,6 @@ class HelperHomeScreen extends StatelessWidget {
               child: DropdownButtonHideUnderline(
                 child: DropdownButton(
                   dropdownColor: firstColor,
-                  //hint: Text('Status'), // Not necessary for Option 1
                   value: Provider.of<Helper>(context, listen: true).status,
                   onChanged: (newValue) {
                     Provider.of<Helper>(context, listen: false).status =
@@ -172,7 +166,6 @@ class HelperHomeScreen extends StatelessWidget {
                               elevation: 5.0,
                               cacheImage: true,
                               onTap: () {
-                                print('Tabbed');
                               }, // sets on tap
                             ),
                           ),
@@ -214,7 +207,6 @@ class HelperHomeScreen extends StatelessWidget {
                     leading: Icon(Icons.history,
                         size: 30, color: firstColor),
                     onTap: () {
-                      //Navigator.pop(context);
                       navigate(HelperPreviousRequests(Provider.of<Helper>(context, listen: false)), context, false);
                     },
                   ),
@@ -331,11 +323,9 @@ class HelperHomeScreen extends StatelessWidget {
 }
 
 void checkNotification(BuildContext context) async {
-  print("Check Helper 1");
   FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage message) {
     if (message != null) {
       FirebaseCloudMessaging.route = new HelperUserNotification(message, true);
-      print("Navigating");
       navigate(NotificationRoute.selectNavigate, context, true);
     }
   });

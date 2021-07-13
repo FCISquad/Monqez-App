@@ -37,7 +37,6 @@ class _ChatQueueScreenState extends State<ChatQueueScreen> with SingleTickerProv
       _isLoading = false;
     });
 
-    //chatController.addListener();
   }
   Widget getCard(String name, String comment, Widget nextScreen, double rating, double width) {
     return Card (
@@ -65,7 +64,6 @@ class _ChatQueueScreenState extends State<ChatQueueScreen> with SingleTickerProv
                 title: getTitle(comment, 16, secondColor, TextAlign.start, false),
                 trailing: getTitle("Severity: " + rating.toString(), 16, secondColor, TextAlign.end, true),
               ),
-              //ListT
             ],
           ),
         ),

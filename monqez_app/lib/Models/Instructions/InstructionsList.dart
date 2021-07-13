@@ -1,11 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Injury.dart';
-import '../../main.dart';
-import 'Pair.dart';
+import 'package:monqez_app/Models/Instructions/Injury.dart';
 import 'package:http/http.dart' as http;
 
 class InstructionsList with ChangeNotifier {

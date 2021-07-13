@@ -210,8 +210,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
     String chronic = " ";
     if (_diseaseController.text.isNotEmpty) chronic = _diseaseController.text;
     await intializeData();
-    print("Token: " + token);
-    print("Uid: " + uid);
+
 
     final http.Response response = await http.post(
       Uri.parse('$url/admin/addAdditionalInformation/'),
@@ -240,7 +239,6 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       navigateReplacement(AdminHomeScreen());
       return true;
     } else {
-      print(response.statusCode);
       throw Exception('Failed to create user.');
     }
   }
@@ -549,6 +547,7 @@ class _AdditionalAdminInfoScreenState extends State<AdditionalAdminInfoScreen> {
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       height: 90,
+      // ignore: deprecated_member_use
       child: RaisedButton(
         elevation: 5.0,
         onPressed: _click,

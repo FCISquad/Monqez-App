@@ -32,7 +32,7 @@ class _VoicePageState extends State<VoicePage> {
   Future<void> callOut() async {
     var _prefs = await SharedPreferences.getInstance();
     String token = _prefs.getString("userToken");
-    final http.Response response = await http.post(
+    await http.post(
       Uri.parse('$url/user/call_out/'),
       headers: <String, String>{
         'Content-Type': 'application/json',
@@ -44,9 +44,7 @@ class _VoicePageState extends State<VoicePage> {
 
   @override
   void dispose() {
-    // clear users
     _users.clear();
-    // destroy sdk
     _engine.leaveChannel();
     _engine.destroy();
     if (widget.userType == "normal") {
@@ -58,7 +56,6 @@ class _VoicePageState extends State<VoicePage> {
   @override
   void initState() {
     super.initState();
-    // initialize agora sdk
     initialize();
   }
 
@@ -75,18 +72,15 @@ class _VoicePageState extends State<VoicePage> {
     await _initAgoraRtcEngine();
     _addAgoraEventHandlers();
 
-    //await _engine.enableWebSdkInteroperability(true);
     await _engine.setDefaultAudioRoutetoSpeakerphone(speaker);
     await _engine.joinChannel(null, widget.channelName, null, 0);
   }
 
-  /// Create agora sdk instance and initialize
   Future<void> _initAgoraRtcEngine() async {
     _engine = await RtcEngine.create(appID);
     await _engine.enableVideo();
   }
 
-  /// Add agora event handlers
   void _addAgoraEventHandlers() {
     _engine.setEventHandler(RtcEngineEventHandler(
       error: (code) {
@@ -126,7 +120,6 @@ class _VoicePageState extends State<VoicePage> {
     ));
   }
 
-  /// Toolbar layout
   Widget _toolbar() {
     return Container(
       alignment: Alignment.bottomCenter,
@@ -189,7 +182,6 @@ class _VoicePageState extends State<VoicePage> {
               if (screenEnabled) {
                 Navigator.pop(context);
               }
-              //navigate(HelperHomeScreen(token), context, true); ///Momkn y error hena w token tb2a b null lw m3mlsh await
             }),
       ),
       backgroundColor: Colors.white,
@@ -213,12 +205,10 @@ class _VoicePageState extends State<VoicePage> {
                   elevation: 5.0,
                   cacheImage: true,
                   onTap: () {
-                    print('tapped');
-                  }, // sets on tap
+                  },
                 ),
               ),
             ),
-            //_viewRows(),
             Align(
                 alignment: Alignment.center,
                 child: GestureDetector(
@@ -239,60 +229,12 @@ class _VoicePageState extends State<VoicePage> {
                     ),
                   ),
                 )),
-            //_toolbar()
             IgnorePointer(ignoring: !screenEnabled, child: _toolbar()),
           ],
         ),
       ),
     );
   }
-
-  /// Video layout wrapper
-  ///
-  /*
-  Widget _viewRows() {
-    final views = _getRenderViews();
-    switch (views.length) {
-      case 1:
-        return Container(
-            child: Stack(children: <Widget>[
-          Column(
-            children: <Widget>[
-              _videoView(views[0]),
-            ],
-          ),
-          Text("Please wait until a Monqez joins the call"),
-        ]));
-      case 2:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow([views[0]]),
-            _expandedVideoRow([views[1]])
-          ],
-        ));
-      case 3:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 3))
-          ],
-        ));
-      case 4:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4))
-          ],
-        ));
-      default:
-    }
-    return Container();
-  }
-  */
-
   void _onCallEnd(BuildContext context) {
     Navigator.pop(context);
   }

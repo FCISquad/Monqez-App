@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:monqez_app/Backend/Authentication.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Injury.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/InstructionsList.dart';
+import 'package:monqez_app/Models/Instructions/Injury.dart';
+import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
+
 import '../../main.dart';
 import 'ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';

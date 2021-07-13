@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mime/mime.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Injury.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/InstructionsList.dart';
-import 'file:///C:/Users/Khaled-Predator/Desktop/FCI/GP/Monqez-App/monqez_app/lib/Models/Instructions/Pair.dart';
+import 'package:monqez_app/Models/Instructions/Injury.dart';
+import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
+import 'package:monqez_app/Models/Instructions/Pair.dart';
+
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';

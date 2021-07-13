@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:android_intent/android_intent.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:geolocator/geolocator.dart';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as geo;
@@ -79,10 +77,8 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     this.helperLong = helperLong;
     this.requestID = requestID ;
     this.phone = phone;
-    // calcualteDistance() ;
   }
-  // LatLng initialLatLng = LatLng(30.029585, 31.022356);
-  // LatLng destinationLatLng = LatLng(30.060567, 30.962413);
+
 
   initializeSourceAndDestination() {
     setState(() {
@@ -91,9 +87,9 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     });
   }
 
-  double CAMERA_ZOOM = 16;
-  double CAMERA_TILT = 40;
-  double CAMERA_BEARING = 110;
+  double cameraZoom = 16;
+  double cameraTitl = 40;
+  double cameraBearing = 110;
 
   final startAddressController = TextEditingController();
   final destinationAddressController = TextEditingController();
@@ -110,8 +106,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     _detailedAddressController = TextEditingController(text: "Detailed Address");
     _additionalNotesController = TextEditingController(text: 'Additional Notes');
     _forMeController = TextEditingController(text: ' ');
-    // _injuryTypeController = TextEditingController(text: 'Internal or External');
-    // _genderController = TextEditingController(text: 'Gender');
     polylinePoints = PolylinePoints();
 
     initializeSourceAndDestination();
@@ -129,7 +123,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         icon: BitmapDescriptor.defaultMarker,
       ),
     );
-    print(_markers);
     _markers.add(
       Marker(
         markerId: MarkerId(destinationLatLng.toString()),
@@ -140,12 +133,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
     );
   }
 
-  void setUrl() {
-    String url =
-        'https://www.google.com/maps/dir/?api=1&origin=${initialLatLng.latitude},${initialLatLng.longitude} &destination=${destinationLatLng.latitude},${destinationLatLng.longitude}'
-        '&travelmode=driving&dir_action=navigate';
-  }
-
+  // ignore: missing_return
   Future<bool> getAdditionalInformation() async {
     if (_additionalNotesController.text == "Additional Notes" &&
         _detailedAddressController.text == "Detailed Address" && _forMeController.text== ' ') {
@@ -165,7 +153,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         if (response.body.length == 0) {
           return false;
         }
-        print("-------------" + response.body);
         Map mp = jsonDecode(response.body);
 
         _additionalNotesController.text = mp["Additional Notes"];
@@ -176,11 +163,9 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
           _forMeController.text = "No";
 
         bodyMapValue = int.parse(mp["avatarBody"]);
-        print(bodyMapValue);
         avatar = BodyMap.init(bodyMapValue, 200);
         return true;
       } else {
-        print(response.statusCode);
         return false;
       }
     }
@@ -215,14 +200,12 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   void setPolylines() async {
-    print(initialLatLng);
-    print(destinationLatLng);
+
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
       "AIzaSyBd1Dn-iC1y3-OeYcbdHv-gWUP883X5AMg",
       PointLatLng(initialLatLng.latitude, initialLatLng.longitude),
       PointLatLng(destinationLatLng.latitude, destinationLatLng.longitude),
     );
-    print(result.status);
     if (result.status == 'OK') {
       result.points.forEach((PointLatLng point) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
@@ -262,15 +245,13 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         builder: (builder) {
           return new Container(
             height: 300,
-            color: Colors.transparent, //could change this to Color(0xFF737373),
-            //so you don't have to change MaterialApp canvasColor
+            color: Colors.transparent,
             child: new Container(
                 decoration: new BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(20))),
                 child: ListView(shrinkWrap: true, children: [
                   SizedBox(height: 200, child: avatar),
-                      // SizedBox(height: 250, child: BodyMap()),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -426,7 +407,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                               ],
                             ),
                           ),
-                          //SizedBox(height: 4,),
                           SizedBox(
                             height: 8,
                           ),
@@ -522,8 +502,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         'uid': requestID
       }),
     );
-    print ("-------------") ;
-    print (response.statusCode) ;
     if (response.statusCode == 200) {
       makeToast("Submitted");
       Provider.of<Helper>(context, listen: false).changeStatus("Available");
@@ -566,17 +544,15 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   Widget build(BuildContext context) {
 
     CameraPosition initialCameraPosition = CameraPosition(
-      zoom: CAMERA_ZOOM,
-      tilt: CAMERA_TILT,
-      bearing: CAMERA_BEARING,
+      zoom: cameraZoom,
+      tilt: cameraTitl,
+      bearing: cameraBearing,
       target: initialLatLng,
     );
     double width = MediaQuery.of(context).size.width / 100;
     double height =
         (MediaQuery.of(context).size.height - AppBar().preferredSize.height) /
             100;
-    // var height = MediaQuery.of(context).size.height;
-    // var width = MediaQuery.of(context).size.width;
     return Container(
         height: height*100,
         width: width*100,
@@ -614,6 +590,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         decoration: BoxDecoration(
                             color: Colors.deepOrange,
                             borderRadius: BorderRadius.circular(30.0)),
+                        // ignore: deprecated_member_use
                         child: FlatButton(
                           color: Colors.transparent,
                           splashColor: Colors.black26,
@@ -630,6 +607,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         decoration: BoxDecoration(
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(30.0)),
+                        // ignore: deprecated_member_use
                         child: FlatButton(
                           color: Colors.transparent,
                           splashColor: Colors.black26,
@@ -647,6 +625,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         decoration: BoxDecoration(
                             color: Colors.red,
                             borderRadius: BorderRadius.circular(30.0)),
+                        // ignore: deprecated_member_use
                         child: FlatButton(
                           color: Colors.transparent,
                           splashColor: Colors.black26,
@@ -664,6 +643,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         decoration: BoxDecoration(
                             color: Colors.black,
                             borderRadius: BorderRadius.circular(30.0)),
+                        // ignore: deprecated_member_use
                         child: FlatButton(
                           color: Colors.transparent,
                           splashColor: Colors.black26,
@@ -679,6 +659,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         child: Container(
                           width: 14*width,
                           height: 8*height,
+                          // ignore: deprecated_member_use
                           child: FlatButton(
                               color: Colors.transparent,
                               splashColor: Colors.black26,
@@ -700,7 +681,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
         ));
   }
   _trackMonqez() async{
-    var location = await _locationTracker.getLocation();
+     await _locationTracker.getLocation();
 
     if (_locationSubscription != null) {
       _locationSubscription.cancel();
