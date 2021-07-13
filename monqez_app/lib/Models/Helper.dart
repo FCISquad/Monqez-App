@@ -11,7 +11,7 @@ import 'User.dart';
 class Helper extends User with ChangeNotifier  {
   String status;
   static Timer timer ;
-  final _samplingPeriod = 5;
+  final _samplingPeriod = 60;
   double longitude;
   double latitude;
   int callCount;
