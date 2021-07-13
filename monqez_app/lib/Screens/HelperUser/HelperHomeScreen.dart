@@ -249,8 +249,6 @@ class HelperHomeScreen extends StatelessWidget {
 
                         var provider = Provider.of<Helper>(context, listen: false);
                         await _getCurrentUserLocation();
-                        print("Khaled: "+ (provider.requestLatitude == null).toString());
-                        print("HAtem: "+ (helperLocation.latitude == null).toString());
                         navigate(HelperRequestScreen(provider.requestPhone,provider.requestID,provider.requestLatitude,provider.requestLongitude,helperLocation.latitude,helperLocation.longitude),
                             context, true);
                       },
@@ -275,7 +273,6 @@ class HelperHomeScreen extends StatelessWidget {
                                 Provider.of<Helper>(context, listen: false)
                                     .changeStatus("Busy");
                               }
-                              print("Logging out");
                               logout();
                               navigate(LoginScreen(), context, true);
                             },

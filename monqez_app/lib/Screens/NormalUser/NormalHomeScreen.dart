@@ -279,6 +279,7 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
             fontSize: fontSize,
             fontFamily: 'Cairo',
             fontWeight: fontWeight),
+        overflow: TextOverflow.ellipsis,
         maxLines: lines);
   }
   _showMaterialDialog([String notes = ""]) {
@@ -444,9 +445,8 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
     Future.delayed(Duration.zero, () async {
       var _prefs = await SharedPreferences.getInstance();
       if (_prefs.getString("helperName") != null ){
-        Provider.of<Normal>(context, listen: true).helperPhone = _prefs.getString("helperPhone");
-        Provider.of<Normal>(context, listen: true).helperName = _prefs.getString("helperName");
-        Provider.of<Normal>(context, listen: true).visible = [false,false,true];
+        Provider.of<Normal>(context, listen: false).setAccepted(_prefs.getString("helperPhone"),_prefs.getString("helperName"));
+
       }
     });
     _radioValue = true;
@@ -668,22 +668,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                         });
                       },
                     ),
-                    Visibility(
-                      visible: Provider.of<Normal>(context, listen: false).hasActiveRequest(),
-                      child: ListTile(
-                        title:
-                        getTitle(
-                            'Active Request', 18, firstColor, TextAlign.start, true),
-                        // onTap: () async {
-                        //
-                        //   var provider = Provider.of<Normal>(context, listen: false);
-                        //   await _getCurrentUserLocation();
-                        //   navigate(NormalHomeScreen(provider.requestPhone,provider.requestID,provider.requestLatitude,provider.requestLongitude,helperLocation.latitude,helperLocation.longitude),
-                        //       context, true);
-                        // },
-                        leading: Icon(Icons.navigation, size: 30, color: firstColor),
-                      ),
-                    ),
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
@@ -786,8 +770,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                       child: RaisedButton(
                         onPressed: () async {
                           await _cancelRequest() ;
-                          provider.visible[0] = !provider.visible[0] ;
-                          provider.visible[1] = !provider.visible[1] ;
                           setState(() {
 
                           });
@@ -836,16 +818,18 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             SizedBox(width: 8,),
-                            Container(
-                              height: 30,
-                              width: 110,
-                              decoration: BoxDecoration(
-                                color: Colors.deepOrange,
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child: Center(
-                                child: _getText('Monqez Name', 14,
-                                    FontWeight.bold, Colors.black, 1),
+                            Flexible(
+                              child: Container(
+                                height: 30,
+                                width: 110,
+                                decoration: BoxDecoration(
+                                  color: Colors.deepOrange,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                ),
+                                child: Center(
+                                  child: _getText('Monqez Name', 14,
+                                      FontWeight.bold, Colors.black, 1),
+                                ),
                               ),
                             ),
                             SizedBox(
@@ -874,10 +858,6 @@ class _NormalHomeScreenState extends State<NormalHomeScreen>
                                   decoration: BoxDecoration(
                                     color: Colors.deepOrange,
                                     borderRadius: BorderRadius.circular(15.0),
-
-                                    // borderRadius:
-                                    // // BorderRadius.circular(
-                                    // //     20.0),
                                   ),
                                   child: Center(
                                     child: _getText('Phone Number', 14,
