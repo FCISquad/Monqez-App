@@ -6,7 +6,8 @@ import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NormalUserNotification.dart';
 import 'package:monqez_app/Backend/NotificationRoutes/NotificationRoute.dart';
 import 'package:flutter/material.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/InstructionsScreen.dart';
+import 'package:monqez_app/Models/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -14,18 +15,17 @@ import '../../Backend/Authentication.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:monqez_app/Screens/Utils/Profile.dart';
+import 'package:monqez_app/Screens/AllUsers/Profile.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Instructions/InstructionsScreen.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../CallPage.dart';
-import '../LoginScreen.dart';
-import '../VoicePage.dart';
+import '../Calls/VideoPage.dart';
+import '../Authentication/LoginScreen.dart';
+import '../Calls/VoicePage.dart';
 import 'Chatbot.dart';
 import 'NormalUserPreviousRequests.dart';
 import 'package:provider/provider.dart';
-import 'package:monqez_app/Screens/Model/Normal.dart';
+import 'package:monqez_app/Models/Normal.dart';
 
 // ignore: must_be_immutable
 class NormalHomeScreen extends StatefulWidget {

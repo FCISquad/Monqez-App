@@ -3,15 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-import 'package:monqez_app/Screens/LoginScreen.dart';
-import '../Backend/Authentication.dart';
+import 'package:monqez_app/Screens/Authentication/LoginScreen.dart';
+import '../../Backend/Authentication.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'AdminUser/AdminHomeScreen.dart';
-import 'HelperUser/HelperHomeScreen.dart';
-import 'NormalUser/NormalHomeScreen.dart';
-import 'SecondSignupScreen.dart';
+import '../AdminUser/AdminHomeScreen.dart';
+import '../HelperUser/HelperHomeScreen.dart';
+import '../NormalUser/NormalHomeScreen.dart';
+import '../Authentication/SecondSignupScreen.dart';
 
 class Splash extends StatefulWidget {
   @override

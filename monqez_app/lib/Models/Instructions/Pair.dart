@@ -1,4 +1,4 @@
-import 'package:monqez_app/Screens/Instructions/ImageController.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
 
 class Pair {
   ImageController _image;

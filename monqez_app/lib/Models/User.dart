@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Backend/FirebaseCloudMessaging.dart';
-import 'package:monqez_app/Screens/Instructions/ImageController.dart';
+import 'package:monqez_app/Screens/InstructionsScreens/ImageController.dart';
 
 class User {
   String name;

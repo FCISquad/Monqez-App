@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:monqez_app/Models/User.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
 import 'package:rating_dialog/rating_dialog.dart';

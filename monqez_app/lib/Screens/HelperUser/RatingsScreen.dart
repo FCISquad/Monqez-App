@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Model/Helper.dart';
+import 'package:monqez_app/Models/Helper.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;

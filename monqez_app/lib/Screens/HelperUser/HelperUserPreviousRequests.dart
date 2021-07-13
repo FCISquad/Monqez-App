@@ -5,7 +5,7 @@ import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Backend/Authentication.dart';
-import 'package:monqez_app/Screens/Model/User.dart';
+import 'package:monqez_app/Models/User.dart';
 import 'package:monqez_app/Screens/NormalUser/BodyMap.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 import 'package:http/http.dart' as http;
