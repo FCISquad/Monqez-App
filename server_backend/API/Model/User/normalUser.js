@@ -1,6 +1,5 @@
 const User = require("./user");
 const sphericalGeometry = require('spherical-geometry-js');
-const admin = require('firebase-admin');
 
 const max_distance = 3000; // 3 Km = 3000 Meter
 const helper = require('../../Tools/requestFunctions');
@@ -10,27 +9,28 @@ class NormalUser extends User {
         super(userJson);
     }
 
-    checkOneTimeRequest(userId, nationalId){
-        return new Promise( (resolve, reject) => {
+    checkOneTimeRequest(userId, nationalId) {
+        return new Promise((resolve, reject) => {
             User._database.checkNationalId(userId, nationalId)
-                .then( function (){
+                .then(function () {
                     resolve();
-                } )
-                .catch( function (error){
+                })
+                .catch(function (error) {
                     reject(error);
-                } )
-        } );
+                })
+        });
     }
 
     signUp(userId, userJson) {
-        return new Promise( (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             User._database.createUser(userId, userJson)
-                .then(() => {resolve();})
+                .then(() => {
+                    resolve();
+                })
                 .catch((error) => {
                     reject(error);
                 });
-        } );
-
+        });
     }
 
     request(userID, userJson, isFirst) {
@@ -62,25 +62,23 @@ class NormalUser extends User {
                 min_three.push(userJson["longitude"]);
 
                 let minimumHelper = 3;
-                if (isFirst === false){
+                if (isFirst === false) {
                     minimumHelper = 6;
                 }
 
                 for (let i = 0; i < Math.min(minimumHelper, distance.length); ++i) {
-                    if ( distance[i]["uid"] <= max_distance ){
+                    if (distance[i]["uid"] <= max_distance) {
                         min_three.push(distance[i]["uid"]);
-                    }
-                    else{
+                    } else {
                         // to be removed
                         min_three.push(distance[i]["uid"]);
                     }
                 }
 
-                if ( min_three.length > 3 ){
+                if (min_three.length > 3) {
                     User._database.insertRequest(userID, userJson, min_three.length - 3, isFirst);
                     this.notify_monqez(min_three);
-                }
-                else{
+                } else {
                     reject('No available helpers');
                 }
                 resolve(min_three);
@@ -95,14 +93,12 @@ class NormalUser extends User {
     notify_monqez(min_three) {
         for (let i = 3; i < min_three.length; i++) {
             User._database.getFCMToken(min_three[i]).then((token) => {
-                // let registrationTokens = [];
-                // registrationTokens.push(token);
                 const payload = {
                     notification: {
                         title: 'Help is needed!',
                         body: 'A person nearby requires your help!'
                     },
-                    data : {
+                    data: {
                         type: 'helper',
                         description: 'request',
                         userId: min_three[0],
@@ -117,129 +113,131 @@ class NormalUser extends User {
                 };
 
                 helper.send_notifications(min_three[i], payload, options);
-
-                // admin.messaging().sendToDevice(registrationTokens, payload, options)
-                //     .then(function (response) {
-                //         // See the MessagingDevicesResponse reference documentation for
-                //         // the contents of response.
-                //         console.log('Successfully sent message:', response);
-                //     })
-                //     .catch(function (error) {
-                //         console.log('Error sending message:', error);
-                //     });
             });
         }
     }
 
-    getLongLat(userId){
-        return new Promise( (resolve, _) => {
-            User._database.getLongLat(userId)
-                .then( (location) => {
-                    resolve(location);
-                } )
-        } );
-    }
-
-    insertCall(userId, Json){
-        return new Promise( (resolve, _) => {
-            User._database.insertCall(userId, Json).then( (channelId) => {
-                resolve(channelId);
-            } )
-        } );
-    }
-
-    isTimeOut(userId){
+    getLongLat(userId) {
         return new Promise((resolve, _) => {
-            User._database.requestAcceptCount(userId).then( (acceptCount) => {resolve(acceptCount);} );
-        } );
+            User._database.getLongLat(userId)
+                .then((location) => {
+                    resolve(location);
+                })
+        });
     }
 
-    requestTimeOut(userId, monqezId){
-        return new Promise( (resolve, reject) => {
-            User._database.requestDecline(monqezId, {"uid" : userId})
-                .then( (allDecline) => {
+    insertCall(userId, Json) {
+        return new Promise((resolve, _) => {
+            User._database.insertCall(userId, Json).then((channelId) => {
+                resolve(channelId);
+            })
+        });
+    }
+
+    isTimeOut(userId) {
+        return new Promise((resolve, _) => {
+            User._database.requestAcceptCount(userId).then((acceptCount) => {
+                resolve(acceptCount);
+            });
+        });
+    }
+
+    requestTimeOut(userId, monqezId) {
+        return new Promise((resolve, reject) => {
+            User._database.requestDecline(monqezId, {"uid": userId})
+                .then((allDecline) => {
                     resolve(allDecline);
-                } )
+                })
                 .catch((error) => {
                     reject(error);
                 });
-        } );
+        });
     }
 
-    callOut(userId){
-        return new Promise( (resolve, reject) => {
+    callOut(userId) {
+        return new Promise((resolve, reject) => {
             User._database.callOut(userId)
-                .then( () => {
+                .then(() => {
                     resolve();
-                } )
+                })
                 .catch((error) => {
                     reject(error);
                 });
-        } );
+        });
     }
 
-    logCallRequest(userJson){
-        return new Promise( (resolve, _) => {
-            User._database.archiveCallRequest(userJson).then(()=>{ resolve() });
-        } );
+    logCallRequest(userJson) {
+        return new Promise((resolve, _) => {
+            User._database.archiveCallRequest(userJson).then(() => {
+                resolve()
+            });
+        });
     }
 
-    getRequestLog(userId){
-        return new Promise( (resolve, reject) => {
+    getRequestLog(userId) {
+        return new Promise((resolve, reject) => {
             User._database.getRequests(userId)
-                .then( function (requestLog){
+                .then(function (requestLog) {
                     resolve(requestLog);
-                } )
-                .catch( function (error){
+                })
+                .catch(function (error) {
                     reject(error);
-                } );
-        } );
+                });
+        });
     }
 
-    rate(userId, json){
-        return new Promise( (resolve, reject) => {
-            User._database.setRequestRate(userId, json).then( ()=>{resolve();} ).catch((error) => {reject(error);});
+    rate(userId, json) {
+        return new Promise((resolve, reject) => {
+            User._database.setRequestRate(userId, json).then(() => {
+                resolve();
+            }).catch((error) => {
+                reject(error);
+            });
             User._database.setMonqezRate(json)
-                .then( () => {resolve();} )
-                .catch( function (error){
+                .then(() => {
+                    resolve();
+                })
+                .catch(function (error) {
                     reject(error);
-                } );
-        } );
+                });
+        });
     }
 
-    cancel_request(userId){
-        return new Promise( (resolve, _) => {
-            User._database.cancel_request(userId).then(function (){
+    cancel_request(userId) {
+        return new Promise((resolve, _) => {
+            User._database.cancel_request(userId).then(function () {
                 resolve();
             })
-        } );
+        });
     }
 
-    addComplaint(userId, json){
-        return new Promise( (resolve, reject) => {
-            User._database.addComplaint(userId, json).then(() => {resolve();})
-                .catch( function (error){
+    addComplaint(userId, json) {
+        return new Promise((resolve, reject) => {
+            User._database.addComplaint(userId, json).then(() => {
+                resolve();
+            })
+                .catch(function (error) {
                     reject(error);
-                } )
-        } );
+                })
+        });
     }
 
-    isCancelled(userId){
-        return new Promise( (resolve, _) => {
-            User._database.isCancelled(userId).then(function (result){
+    isCancelled(userId) {
+        return new Promise((resolve, _) => {
+            User._database.isCancelled(userId).then(function (result) {
                 resolve(result);
             })
-        } );
+        });
     }
 
-    validRequest(userId){
-        return new Promise( (resolve, reject) => {
-            User._database.validRequest(userId).then(function(){
+    validRequest(userId) {
+        return new Promise((resolve, reject) => {
+            User._database.validRequest(userId).then(function () {
                 resolve();
-            }).catch(function (error){
+            }).catch(function (error) {
                 reject(error);
             })
-        } );
+        });
     }
 }
 

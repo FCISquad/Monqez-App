@@ -28,12 +28,4 @@ app.use('/admin' , adminRoute);
 const helperRoute = require('./API/Controller/User/helperController');
 app.use('/helper' , helperRoute);
 
-// const helper = require('./API/Tools/requestFunctions');
-// app.get('/getToken' , (request, response) => {
-//     console.log("*INFO", request.body["uid"]);
-//     helper.getToken(request.body["uid"]).then( (token) => {
-//         response.status(200).send(token);
-//     })
-// });
-
 module.exports = app;

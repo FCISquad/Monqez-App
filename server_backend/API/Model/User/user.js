@@ -5,7 +5,7 @@ class User{
     // abstract class definition
     static _database = new Database();
 
-    constructor(userJson) {
+    constructor() {
         if (this.constructor == User) {
             throw new Error("Abstract classes can't be instantiated.");
         }
@@ -21,7 +21,6 @@ class User{
                     reject(error);
                 } )
         } );
-
     }
 
     static getProfile(userID) {

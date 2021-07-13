@@ -1,5 +1,5 @@
-class Address{
-    constructor(Country , City , street , buildNumber) {
+class Address {
+    constructor(Country, City, street, buildNumber) {
         this.country = Country;
         this.city = City;
         this.street = street;

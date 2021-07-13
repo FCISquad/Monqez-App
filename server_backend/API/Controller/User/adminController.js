@@ -6,32 +6,31 @@ const adminModel = require('../../Model/User/adminUser');
 const tracker = require('../../Tools/debugger');
 const controllerType = "admin";
 
-app.post('/add' , (request , response) => {
+app.post('/add', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     helper.verifyToken(request, controllerType, (userID) => {
-        if ( userID === null ){
+        if (userID === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
 
             new adminModel().addAdmin(request.body["newUserID"])
-                .then( () => {
+                .then(() => {
                     tracker.track("request finished without errors");
                     response.sendStatus(200);
-                } )
-                .catch( (error) => {
+                })
+                .catch((error) => {
                     tracker.error(error);
                     response.send(error);
-                } );
+                });
         }
     });
 });
 
-app.post('/get_state', (request , response) => {
+app.post('/get_state', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
@@ -53,7 +52,7 @@ app.post('/get_state', (request , response) => {
     });
 });
 
-app.post('/get_application' , (request , response) => {
+app.post('/get_application', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
@@ -75,7 +74,7 @@ app.post('/get_application' , (request , response) => {
     });
 })
 
-app.post('/get_application_queue', (request , response) => {
+app.post('/get_application_queue', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
@@ -96,72 +95,69 @@ app.post('/get_application_queue', (request , response) => {
     });
 });
 
-app.post('/addAdditionalInformation' , (request , response) => {
+app.post('/addAdditionalInformation', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     helper.verifyToken(request, controllerType, (userID) => {
-        if ( userID === null ){
+        if (userID === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
 
             new adminModel().addAdditionalInformation(userID, request.body)
-                .then( () => {
+                .then(() => {
                     tracker.track("request finished without errors");
                     response.sendStatus(200);
-                } )
-                .catch( (error) => {
+                })
+                .catch((error) => {
                     tracker.error(error);
                     response.send(error);
-                } );
+                });
         }
     });
 });
 
-app.post( '/set_approval' , (request , response) => {
+app.post('/set_approval', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     helper.verifyToken(request, controllerType, (userID) => {
-        if ( userID === null ){
+        if (userID === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
-            new adminModel().setApproval(userID , request.body)
-                .then(function (){
+            new adminModel().setApproval(userID, request.body)
+                .then(function () {
                     response.sendStatus(200);
                     tracker.track("request finished without errors");
                 })
-                .catch(function (error){
+                .catch(function (error) {
                     tracker.error(error);
                     response.send(error);
                 })
         }
     });
-} );
+});
 
-app.post('/ban', function (request, response){
+app.post('/ban', function (request, response) {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     helper.verifyToken(request, controllerType, (userId) => {
-        if (userId === null){
+        if (userId === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
             new adminModel().banUser(request.body["uid"])
-                .then(function (){
+                .then(function () {
                     tracker.track("request finished without errors");
                     response.send(200);
                 })
-                .catch(function (error){
+                .catch(function (error) {
                     tracker.error(error);
                     response.status(503).send(error);
                 })
@@ -169,48 +165,46 @@ app.post('/ban', function (request, response){
     })
 });
 
-app.post('/getComplaints', function (request, response){
+app.post('/getComplaints', function (request, response) {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     helper.verifyToken(request, controllerType, (userId) => {
-        if (userId === null){
+        if (userId === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
             new adminModel().getAllComplaints()
-                .then( function (comps){
+                .then(function (comps) {
                     tracker.track("request finished without errors");
                     response.status(200).send(comps);
-                } )
-                .catch( function (error){
+                })
+                .catch(function (error) {
                     tracker.error(error);
                     response.send(503);
-                } )
+                })
         }
     })
 });
 
-app.post('/getComplaint', function (request, response){
+app.post('/getComplaint', function (request, response) {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     tracker.track(request.body);
     helper.verifyToken(request, controllerType, (userId) => {
-        if (userId === null){
+        if (userId === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
             new adminModel().getComplaint(request.body)
-                .then(function (complaint){
+                .then(function (complaint) {
                     tracker.track("request finished without errors");
                     response.status(200).send(complaint);
                 })
-                .catch(function (error){
+                .catch(function (error) {
                     tracker.error(error);
                     response.status(503).send(error);
                 })
@@ -218,26 +212,26 @@ app.post('/getComplaint', function (request, response){
     })
 });
 
-app.post('/mail_complaint_warnings', function (request, response){
+app.post('/mail_complaint_warnings', function (request, response) {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
-    new adminModel().sendWarningToUser(request.body);
+    new adminModel().sendWarningToUser(request.body).then(function () {
+    });
 
     helper.verifyToken(request, controllerType, (userId) => {
-        if (userId === null){
+        if (userId === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
 
             new adminModel().sendWarningToUser(request.body)
-                .then(function (){
+                .then(function () {
                     tracker.track("request finished without errors");
                     response.sendStatus(200);
                 })
-                .catch(function (error){
+                .catch(function (error) {
                     tracker.error(error);
                     response.status(503).send(error);
                 })
@@ -245,24 +239,23 @@ app.post('/mail_complaint_warnings', function (request, response){
     })
 });
 
-app.post('/archive_complaint', function (request, response){
+app.post('/archive_complaint', function (request, response) {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
     helper.verifyToken(request, controllerType, (userId) => {
-        if (userId === null){
+        if (userId === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
 
             new adminModel().archiveComplaint(request.body)
-                .then(function (){
+                .then(function () {
                     tracker.track("request finished without errors");
                     response.sendStatus(200);
                 })
-                .catch(function(error){
+                .catch(function (error) {
                     tracker.error(error);
                     response.sendStatus(503);
                 })
@@ -270,28 +263,22 @@ app.post('/archive_complaint', function (request, response){
     })
 });
 
-app.post( '/save_instructions' , (request , response) => {
-    // console.log("Here");
-    // let admin = new adminModel(request.body);
-    // admin.saveInstructions("Khaled" , request.body);
-    // response.sendStatus(200);
+app.post('/save_instructions', (request, response) => {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
     helper.verifyToken(request, controllerType, (userID) => {
-        if ( userID === null ){
+        if (userID === null) {
             tracker.error("Auth error, null userId");
             response.sendStatus(403);
-        }
-        else{
+        } else {
             tracker.track("good Auth - start process");
             let admin = new adminModel(request.body);
-            admin.saveInstructions(userID , request.body);
+            admin.saveInstructions(userID, request.body);
             tracker.track("request finished without errors");
             response.sendStatus(200);
         }
     });
-} );
-
+});
 
 
 module.exports = app;
