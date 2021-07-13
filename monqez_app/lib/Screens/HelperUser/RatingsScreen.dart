@@ -56,6 +56,7 @@ class _HelperHomeScreenState extends State<HelperRatingsScreen> with SingleTicke
         _Rating rating = _Rating();
         requestsJson[i].forEach((key, value) {
           if (key == 'request') {
+            if (value != null)
             value.forEach((reqKey, reqVal){
               if (reqKey == 'ratingInfo') {
                 reqVal.forEach((infoKey, infoVal){
