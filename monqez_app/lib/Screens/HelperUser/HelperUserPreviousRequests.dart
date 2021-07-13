@@ -105,6 +105,7 @@ class _HelperPreviousRequestsState extends State<HelperPreviousRequests>
         _Request request = _Request();
         requestsJson[i].forEach((key, value) {
           if (key == 'request') {
+            if (value != null)
             value.forEach((reqKey, reqVal){
               if (reqKey == 'additionalInfo') {
                 reqVal.forEach((infoKey, infoVal){
