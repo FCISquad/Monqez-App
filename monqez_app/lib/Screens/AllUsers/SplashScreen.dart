@@ -48,7 +48,6 @@ class _SplashState extends State<Splash> {
       if (once) {
         once = false;
         token = await FirebaseAuth.instance.currentUser.getIdToken(true);
-        print("HERE");
         saveUserToken(token, uid);
         setState(() {});
       } else {
@@ -61,7 +60,6 @@ class _SplashState extends State<Splash> {
     } else {
       logout();
       token = null;
-      print(response2.statusCode);
       makeToast("Error!");
       makeToast(response2.statusCode.toString());
     }
@@ -73,30 +71,7 @@ class _SplashState extends State<Splash> {
     token = _prefs.getString("userToken");
     uid = _prefs.getString("userID");
     Widget _navigate = LoginScreen();
-
     bool enter = true;
-    /*await FirebaseMessaging.instance
-      .getInitialMessage()
-      .then((RemoteMessage message) {
-
-        if (message != null) {
-          enter = false;
-          var data = message.data;
-
-          if (data['type'] == "helper") {
-            FirebaseCloudMessaging.route = new HelperUserNotification(message);
-            HelperRequestNotificationScreen.hideBackButton = true;
-          } else if (data['type'] == "normal") {
-            _navigate = NormalHomeScreen(token);
-          } else if (data['type'] == "admin"){
-            _navigate = AdminHomeScreen();
-          } else {
-            makeToast("Invalid notification received");
-          }
-          _navigate = NotificationRoute.selectNavigate;
-        }
-    });*/
-
     if (enter) {
       if (token == null) {
         _navigate = LoginScreen();

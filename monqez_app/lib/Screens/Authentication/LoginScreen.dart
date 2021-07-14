@@ -533,13 +533,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       makeToast(
                                           "Your National ID is not correct");
                                     } else {
-                                      UserCredential userCredential =
-                                          await FirebaseAuth.instance
+                                      await FirebaseAuth.instance
                                               .signInAnonymously();
                                       String token = await FirebaseAuth
                                           .instance.currentUser
                                           .getIdToken();
-
                                       bool valid = await sendID(token);
                                       if (valid) {
                                         saveUserToken(token, FirebaseAuth.instance.currentUser.uid);

@@ -57,7 +57,6 @@ Future<UserCredential> newAdmin(TextEditingController _emailController,
     var result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text, password: _passwordController.text);
     if (result != null) {
-      var token = await FirebaseAuth.instance.currentUser.getIdToken();
       return result;
     } else {
       makeToast('Please try later');
@@ -110,29 +109,6 @@ Future<bool> signInWithGoogle() async {
   return false;
 }
 
-/*
-Future<bool> signInWithFacebook() async {
-  try {
-    var facebookLogin = new FacebookLogin();
-    var result = await facebookLogin.logIn(['email']);
-
-    if(result.status == FacebookLoginStatus.loggedIn) {
-
-      final AuthCredential credential = FacebookAuthProvider.credential(
-          result.accessToken.token
-      );
-
-      final FirebaseUser user = (await FirebaseAuth.instance.signInWithCredential(credential)).user;
-      print('signed in ' + user.displayName);
-
-    }
-  }catch (e) {
-    print(e.message);
-  }
-}
-
- */
-
 Future<bool> normalSignIn(TextEditingController _emailController,
     TextEditingController _passwordController) async {
   try {
@@ -158,13 +134,6 @@ Future<bool> normalSignIn(TextEditingController _emailController,
       return false;
     }
   }
-}
-
-//not used
-Future<void> signOutGoogle() async {
-  await googleSignIn.signOut();
-
-  print("User Signed Out");
 }
 
 void logout() async {

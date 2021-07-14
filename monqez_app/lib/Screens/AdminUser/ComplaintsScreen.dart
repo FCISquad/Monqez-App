@@ -20,7 +20,6 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
     int counter = 1;
 
     complaints.forEach((complaint) {
-      //var singleComplaint = complaints as Map<String, dynamic>;
       String nuid = complaint['nuid'];
       String helperUid = complaint['huid'];
       String name = complaint['name'];
@@ -47,14 +46,12 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
       },
     );
     if (response.statusCode == 200) {
-      print(response.body);
       iterateJson(response.body);
       setState(() {
         isLoading = false;
       });
       return true;
     } else {
-      print(response.statusCode);
       setState(() {
         isLoading = false;
       });
@@ -64,15 +61,6 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
 
   _ComplaintsScreenState() {
     getAllComplaints();
-/*
-    complaintsList.add(ListTile(
-      title: Text('Complaint from "Hussien"'),
-      subtitle: Text("On Today"),
-      leading: Text('1'),
-      trailing: Icon(Icons.keyboard_arrow_right),
-      onTap: () => navigate(ViewComplaintScreen("1")),
-    ));
-    */
   }
 
   @override
@@ -116,21 +104,6 @@ class _ComplaintsScreenState extends State<ComplaintsScreen> {
             return complaintsList[index];
           }),
     );
-    // return ListView.separated(
-    //   itemCount: 100,
-    //   itemBuilder: (context, index) {
-    //     return ListTile(
-    //       title: Text('Application from Name'),
-    //       subtitle: Text('Name of the pdf'),
-    //       leading: Text('$index'),
-    //       trailing: Icon(Icons.keyboard_arrow_right),
-    //       onTap: () => navigate(ViewApplicationScreen()),
-    //     );
-    //   },
-    //   separatorBuilder: (context, index) {
-    //     return Divider();
-    //   },
-    // );
   }
 
   void navigate(Widget map) async {

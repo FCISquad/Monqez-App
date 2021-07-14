@@ -9,17 +9,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'User.dart';
 
 class Helper extends User with ChangeNotifier  {
-  String status;
   static Timer timer ;
+  static bool isTimerRunning = false ;
   final _samplingPeriod = 60;
+  final loc.Location _location = loc.Location();
+  String status;
   double longitude;
   double latitude;
   int callCount;
   double ratings;
   int myPoints = 0;
-  static bool isTimerRunning = false ;
-  final loc.Location _location = loc.Location();
-
   String requestID;
   String requestPhone;
   double requestLongitude;
@@ -35,7 +34,6 @@ class Helper extends User with ChangeNotifier  {
     notifyListeners();
     return ret;
   }
-
 
   Future<void> setToken(String token) async {
     super.setToken(token);
@@ -66,8 +64,6 @@ class Helper extends User with ChangeNotifier  {
       this.callCount = (parsed['calls'] == 0 || parsed['calls'] == null) ? 0 : parsed['calls'];
       this.ratings = (parsed['sum'] == 0 || parsed['sum'] == null) ? 0 : (parsed['sum'] / parsed['total']);
       this.myPoints = (parsed['points'] == 0 || parsed['points'] == null) ? 0 : parsed['points'];
-    } else {
-      print(response2.statusCode);
     }
     notifyListeners();
   }
@@ -139,13 +135,9 @@ class Helper extends User with ChangeNotifier  {
 
   Future<void> sendPosition() async {
     if (!await _location.serviceEnabled()) {
-
       changeStatus("Busy");
     }
-
-
     if (longitude != null && latitude != null && status == "Available") {
-
       String tempToken = token;
       final http.Response response = await http.post(
         Uri.parse('$url/helper/update_location/'),
@@ -159,9 +151,8 @@ class Helper extends User with ChangeNotifier  {
           'longitude': longitude
         }),
       );
-
       if (response.statusCode == 200) {
-        print("Submitted");
+        print("Sampling");
       } else {
         makeToast('Failed to submit user.');
       }
@@ -188,9 +179,11 @@ class Helper extends User with ChangeNotifier  {
     requestLatitude = _prefs.getDouble("requestLatitude");
     requestLongitude = _prefs.getDouble("requestLongitude");
   }
+
   hasActiveRequest() {
     return requestID != null && requestID.isNotEmpty;
   }
+
   removeRequest() async {
     requestPhone = requestID = "";
     requestLongitude = requestLatitude = 0;

@@ -8,7 +8,6 @@ import '../../main.dart';
 
 class NormalUserNotification extends NotificationRoute {
   NormalUserNotification(RemoteMessage message, bool isBackground) : super(message, isBackground) {
-    print("Normal Constructor");
     var data = message.data;
     showNotification();
     if (data["description"] == "accept") {
@@ -26,7 +25,6 @@ class NormalUserNotification extends NotificationRoute {
 
   @override
   Future onSelectNotification(String payload) async {
-    print("Normal On Select");
     navigate(NotificationRoute.selectNavigate, null, true);
   }
 }

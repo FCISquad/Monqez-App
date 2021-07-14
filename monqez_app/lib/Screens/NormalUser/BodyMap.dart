@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:assorted_layout_widgets/assorted_layout_widgets.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
 
-void main() => runApp(BodyMapPage());
-
 class BodyMapPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -43,9 +41,7 @@ class BodyMap extends StatefulWidget {
 
   BodyMap.init(int bodyValue, double size) {
     setSelected(bodyValue);
-    if (bodyValue == 16)
-      print("Khaled"+ _selected);
-    _size = size;
+    if (bodyValue == 16) _size = size;
   }
 
   BodyMap();
@@ -56,12 +52,11 @@ class BodyMap extends StatefulWidget {
 
   void setSelected(int selected) {
     _selected = selected.toRadixString(2);
-    int diff = injury.length-_selected.length ;
-    for (int i=0 ; i<(diff) ; i++) {
+    int diff = injury.length - _selected.length;
+    for (int i = 0; i < (diff); i++) {
       _selected = "0" + _selected;
     }
   }
-
 
   int getSelected() {
     List<int> binary = [];
@@ -73,13 +68,11 @@ class BodyMap extends StatefulWidget {
       } else
         binary.add(0);
     }
-    print(selected);
     int result = 0;
     for (var digit in binary) {
       result <<= 1;
       result |= digit;
     }
-    print(result);
     return result;
   }
 }
@@ -88,7 +81,6 @@ class _BodyMapState extends State<BodyMap> {
   @override
   Widget build(BuildContext context) {
     if (widget._selected != null) setSelected(widget._selected);
-
     return new Scaffold(
         backgroundColor: Colors.white,
         body: InteractiveViewer(

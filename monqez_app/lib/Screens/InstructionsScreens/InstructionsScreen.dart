@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monqez_app/Models/Instructions/Injury.dart';
 import 'package:monqez_app/Models/Instructions/InstructionsList.dart';
-
 import '../../main.dart';
 import 'ImageController.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
@@ -11,7 +10,6 @@ class InstructionsScreen extends StatelessWidget {
   final bool _isAdmin;
   final String _token;
   InstructionsScreen([this._isAdmin = false, this._token]);
-
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +37,6 @@ class InstructionsScreen extends StatelessWidget {
                   child: CircularProgressIndicator(
                     backgroundColor: secondColor,
                     strokeWidth: 5,
-                    //    valueColor:
-                    //      new AlwaysStoppedAnimation<Color>(firstColor)
                   ))));
     } else {
       return MaterialApp(

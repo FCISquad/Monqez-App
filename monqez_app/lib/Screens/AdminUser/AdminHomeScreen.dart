@@ -15,7 +15,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:monqez_app/Backend/Authentication.dart';
 import 'package:monqez_app/Screens/Utils/MaterialUI.dart';
-
 import '../Authentication/LoginScreen.dart';
 
 class AdminHomeScreen extends StatefulWidget {
@@ -24,11 +23,11 @@ class AdminHomeScreen extends StatefulWidget {
 }
 
 class AdminHomeScreenState extends State<AdminHomeScreen> {
+  static String token;
   User user;
   bool isLoading = true;
   int applicationNumber;
   int complaintsNumber;
-  static String token;
 
   AdminHomeScreenState() {
     applicationNumber = 0;
@@ -60,7 +59,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
       });
       return true;
     } else {
-      print(response.statusCode);
       setState(() {
         isLoading = false;
       });
@@ -71,7 +69,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
   Future<void> getToken() async {
     var _prefs = await SharedPreferences.getInstance();
     AdminHomeScreenState.token = _prefs.getString("userToken");
-    //Provider.of<User>(context, listen: false).setToken(token);
     await getState();
   }
 
@@ -143,9 +140,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                                     : secondColor,
                                 elevation: 5.0,
                                 cacheImage: true,
-                                onTap: () {
-                                  print('Tabbed');
-                                }, // sets on tap
                               ),
                             ),
                           ])),
@@ -163,7 +157,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                       leading: Icon(Icons.account_circle_rounded,
                           size: 30, color: firstColor),
                       onTap: () {
-                        //Navigator.pop(context);
                         navigate(ProfileScreen(user), context, false);
                       },
                     ),
@@ -173,7 +166,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                         leading:
                             Icon(Icons.file_copy, size: 30, color: firstColor),
                         onTap: () {
-                          //Navigator.pop(context);
                           navigate(ApplicationsScreen(), context, false);
                         }),
                     ListTile(
@@ -182,7 +174,6 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                         leading: Icon(Icons.thumb_down_sharp,
                             size: 30, color: firstColor),
                         onTap: () {
-                          //Navigator.pop(context);
                           navigate(ComplaintsScreen(), context, false);
                         }),
                     ListTile(
@@ -191,17 +182,15 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                         leading: Icon(Icons.person_add_sharp,
                             size: 30, color: firstColor),
                         onTap: () {
-                          // Navigator.pop(context);
                           navigate(AddNewAdminScreen(), context, false);
                         }),
                     ListTile(
-                        title: getTitle(
-                            'Modify Instructions', 18, firstColor, TextAlign.start, true),
-                        leading: Icon(Icons.add,
-                            size: 30, color: firstColor),
+                        title: getTitle('Modify Instructions', 18, firstColor,
+                            TextAlign.start, true),
+                        leading: Icon(Icons.add, size: 30, color: firstColor),
                         onTap: () {
-                          // Navigator.pop(context);
-                          navigate(InstructionsScreen(true, user.token), context, false);
+                          navigate(InstructionsScreen(true, user.token),
+                              context, false);
                         }),
                     Expanded(
                       child: Align(
@@ -209,6 +198,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                         child: Container(
                           height: 40,
                           width: 120,
+                          // ignore: deprecated_member_use
                           child: RaisedButton(
                               elevation: 5.0,
                               onPressed: () {
@@ -249,14 +239,7 @@ class AdminHomeScreenState extends State<AdminHomeScreen> {
                           _card(complaintsNumber.toString(), "New Complaints",
                               Icons.thumb_down_sharp, ComplaintsScreen()),
                         ],
-                      ), /*
-                    TableRow(
-                      children: [
-                        _card("Add New Admin", "", Icons.person_add_sharp,
-                            ApplicationsScreen()),
-                        Text(""),
-                      ],
-                    ),*/
+                      ),
                     ],
                   ),
                 ),
