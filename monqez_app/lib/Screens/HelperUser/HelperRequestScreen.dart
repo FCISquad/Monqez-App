@@ -585,7 +585,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                        width: 19*width,
+                        width: 26*width,
                         height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.deepOrange,
@@ -602,7 +602,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         ),
                       ),
                       Container(
-                        width: 19*width,
+                        width: 26*width,
                         height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.green,
@@ -620,7 +620,7 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                         ),
                       ),
                       Container(
-                        width: 19*width,
+                        width: 26*width,
                         height: 8*height,
                         decoration: BoxDecoration(
                             color: Colors.red,
@@ -635,23 +635,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
                           },
                           child: _getText(
                               'Cancel', 14, FontWeight.w700, Colors.white, 1,false),
-                        ),
-                      ),
-                      Container(
-                        width: 19*width,
-                        height: 8*height,
-                        decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(30.0)),
-                        // ignore: deprecated_member_use
-                        child: FlatButton(
-                          color: Colors.transparent,
-                          splashColor: Colors.black26,
-                          onPressed: () {
-                            _trackMonqez();
-                          },
-                          child: _getText(
-                              'Track me', 14, FontWeight.w700, Colors.white, 1,false),
                         ),
                       ),
                       Padding(
