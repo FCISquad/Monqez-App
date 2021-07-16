@@ -3,7 +3,7 @@ const normalUser = require('../User/normalUser');
 const helper = require('../../Tools/requestFunctions');
 
 const sphericalGeometry = require('spherical-geometry-js');
-const max_distance = 1000; // 1 Km = 1000 Meter
+const max_distance = 100000; // 1 Km = 1000 Meter
 
 class HelperUser extends User {
     constructor(userJson) {
