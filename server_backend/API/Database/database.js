@@ -999,7 +999,7 @@ class Database {
                         resolve();
                     }
                 });
-            }).catch(function (_) {
+            }).catch(function (error) {
                 resolve();
             })
         });
