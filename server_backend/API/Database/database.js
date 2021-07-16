@@ -999,8 +999,8 @@ class Database {
                         resolve();
                     }
                 });
-            }).catch(function (error) {
-                reject(error);
+            }).catch(function (_) {
+                resolve();
             })
         });
     }
