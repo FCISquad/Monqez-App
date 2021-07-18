@@ -39,11 +39,11 @@ class Helper extends User with ChangeNotifier  {
     super.setToken(token);
     await getState();
     await getActiveRequest();
+    print (this.status) ;
+    print (status) ;
     if (status == "Available") {
-      if (timer == null) {
         requestGps();
         startBackgroundProcess();
-      }
     }
   }
 
@@ -60,6 +60,7 @@ class Helper extends User with ChangeNotifier  {
 
     if (response2.statusCode == 200) {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
+      // changeStatus( parsed['status']);
       this.status = parsed['status'];
       this.callCount = (parsed['calls'] == 0 || parsed['calls'] == null) ? 0 : parsed['calls'];
       this.ratings = (parsed['sum'] == 0 || parsed['sum'] == null) ? 0 : (parsed['sum'] / parsed['total']);
