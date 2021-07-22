@@ -189,17 +189,16 @@ class NormalUser extends User {
     rate(userId, json) {
         return new Promise((resolve, reject) => {
             User._database.setRequestRate(userId, json).then(() => {
-                resolve();
+                User._database.setMonqezRate(json)
+                    .then(() => {
+                        resolve();
+                    })
+                    .catch(function (error) {
+                        reject(error);
+                    });
             }).catch((error) => {
                 reject(error);
             });
-            User._database.setMonqezRate(json)
-                .then(() => {
-                    resolve();
-                })
-                .catch(function (error) {
-                    reject(error);
-                });
         });
     }
 
