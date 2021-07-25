@@ -41,6 +41,7 @@ class _InjuryScreenState extends State<InjuryScreen> {
     List<Pair> instructions = injury.getInstructions();
 
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
             body: Scaffold(
                 body: CustomScrollView(

@@ -40,6 +40,7 @@ class InstructionsScreen extends StatelessWidget {
                   ))));
     } else {
       return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
             leading: IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
