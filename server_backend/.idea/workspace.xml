@@ -20,14 +20,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="01b92563-12ca-41dc-aacf-c5ca33566215" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Backend/Authentication.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Backend/Authentication.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Backend/FirebaseCloudMessaging.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Backend/FirebaseCloudMessaging.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Backend/NotificationRoutes/NotificationRoute.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Backend/NotificationRoutes/NotificationRoute.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperRequestNotificationScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperRequestNotificationScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperHomeScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperHomeScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperRequestScreen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/HelperUser/HelperRequestScreen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/Helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../monqez_app/lib/Screens/Model/Helper.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Documentation/Final/Document/Monqez Final Document.docx" beforeDir="false" afterPath="$PROJECT_DIR$/../Documentation/Final/Document/Monqez Final Document.docx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Documentation/Final/Document/Monqez Final Document.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/../Documentation/Final/Document/Monqez Final Document.pdf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,8 +49,8 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="dart.analysis.tool.window.visible" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="14.17.3" />
-    <property name="javascript.nodejs.core.library.typings.version" value="14.17.3" />
+    <property name="javascript.nodejs.core.library.configured.version" value="14.15.0" />
+    <property name="javascript.nodejs.core.library.typings.version" value="14.17.6" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -146,6 +140,7 @@
       <workItem from="1626104182494" duration="1811000" />
       <workItem from="1626115615340" duration="4615000" />
       <workItem from="1626284364854" duration="6693000" />
+      <workItem from="1627213251913" duration="322000" />
     </task>
     <servers />
   </component>
