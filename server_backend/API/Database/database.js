@@ -309,10 +309,11 @@ class Database {
 
     archiveComplaint(complaintObject) {
         return new Promise((resolve, reject) => {
+            console.log(complaintObject);
             admin.database().ref('complaints/' + complaintObject["complaintID"] + '/' + complaintObject["complainedUID"] + '/' + complaintObject["date"])
                 .transaction(function (snapshot) {
                     if (snapshot !== null) {
-                        admin.database().ref('complaintsArchive/').update(snapshot)
+                        admin.database().ref('complaintsArchive/' + complaintObject["complaintID"] + '/' + complaintObject["complainedUID"] + '/' + complaintObject["date"]).update(snapshot)
                             .then(function () {
                             })
                             .catch(function (error) {
