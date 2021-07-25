@@ -239,7 +239,7 @@ app.post('/mail_complaint_warnings', function (request, response) {
     })
 });
 
-app.post('/archive_complaint', function (request, response) {
+app.post('/archieve_complaint', function (request, response) {
     tracker.start(request.originalUrl);
     tracker.track("Hello Request");
 
