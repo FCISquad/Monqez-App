@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 String url = "https://monqez.herokuapp.com";
-// String url = "https://monqez6.loca.lt";
+// String url = "https://monqez.loca.lt";
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn googleSignIn = GoogleSignIn();

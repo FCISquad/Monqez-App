@@ -15,6 +15,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "514507937773-3chf9qtsrasaibhnj87i4dfshbc17jf5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.monqez_app",
+            "certificate_hash": "77a594863b5faa8132f7c59e5095a96b8d823431"
+          }
+        },
+        {
+          "client_id": "514507937773-4c02j5r55u3buh7k7uvgc01b28uuncus.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.monqez_app",
+            "certificate_hash": "dbe41ad99bba4b638c61060f5a79229930f83629"
+          }
+        },
+        {
+          "client_id": "514507937773-hn301k25p1igj4laeh68g5e94rfm6tvc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.monqez_app",
+            "certificate_hash": "c4aeb8b1ad846e855ed5a0622770c6629d0e2575"
+          }
+        },
+        {
           "client_id": "514507937773-jnbn06fu05r10iinc4o4cs6uq5cove1i.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -28,7 +52,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "514507937773-jnbn06fu05r10iinc4o4cs6uq5cove1i.apps.googleusercontent.com",
+              "client_id": "514507937773-6guvakgmmbmi0dg0rdkq14gj8g1gr15m.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -517,7 +517,6 @@ class _HelperRequestScreenState extends State<HelperRequestScreen>
   }
 
   Future<void> _cancelRequest() async {
-    await _getCurrentUserLocation();
     _prefs = await SharedPreferences.getInstance();
     String tempToken = _prefs.getString("userToken");
 
