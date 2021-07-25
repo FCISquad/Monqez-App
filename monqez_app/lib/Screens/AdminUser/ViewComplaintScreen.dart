@@ -24,7 +24,6 @@ class ViewComplaintScreen extends StatefulWidget {
 
 class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
   bool isLoading = true;
-  String complaintID;
   Color color = Colors.white;
   String path;
   String complainerName;
@@ -92,8 +91,9 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'complaintID': complaintID,
-        'date': DateTime.now().toString(),
+        'complaintID': complainerUID,
+        'complainedUID': complainedUID,
+        'date': date,
       }),
     );
     if (response.statusCode == 200) {
@@ -113,7 +113,7 @@ class _ViewComplaintScreenState extends State<ViewComplaintScreen> {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(<String, String>{
-        'complaintID': complaintID,
+        'complaintID': complainerUID,
         'complainedUID': complainedUID,
       }),
     );
