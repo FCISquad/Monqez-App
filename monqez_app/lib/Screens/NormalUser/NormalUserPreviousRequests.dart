@@ -356,7 +356,7 @@ class _NormalPreviousRequestsState extends State<NormalPreviousRequests>
           'comment': _commentController.text,
         },
         'time': req.dateId,
-        'uid': req.helperName
+        'uid': req.uid
       }),
     );
     if (response.statusCode == 200) {

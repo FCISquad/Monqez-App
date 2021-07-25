@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:location/location.dart' as loc;
 import 'package:background_location/background_location.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ import 'User.dart';
 class Helper extends User with ChangeNotifier  {
   static Timer timer ;
   static bool isTimerRunning = false ;
+  static bool isFirstTime = true;
   final _samplingPeriod = 60;
   final loc.Location _location = loc.Location();
   String status;
@@ -39,12 +41,12 @@ class Helper extends User with ChangeNotifier  {
     super.setToken(token);
     await getState();
     await getActiveRequest();
-    print (this.status) ;
-    print (status) ;
     if (status == "Available") {
+      if (timer == null) {
         requestGps();
-        startBackgroundProcess();
+      }
     }
+    notifyListeners();
   }
 
   Future<void> getState() async {
@@ -57,16 +59,13 @@ class Helper extends User with ChangeNotifier  {
         'Authorization': 'Bearer $token',
       },
     );
-
     if (response2.statusCode == 200) {
       var parsed = jsonDecode(response2.body).cast<String, dynamic>();
-      // changeStatus( parsed['status']);
       this.status = parsed['status'];
       this.callCount = (parsed['calls'] == 0 || parsed['calls'] == null) ? 0 : parsed['calls'];
       this.ratings = (parsed['sum'] == 0 || parsed['sum'] == null) ? 0 : (parsed['sum'] / parsed['total']);
       this.myPoints = (parsed['points'] == 0 || parsed['points'] == null) ? 0 : parsed['points'];
     }
-    notifyListeners();
   }
 
   startBackgroundProcess() async {
@@ -75,19 +74,55 @@ class Helper extends User with ChangeNotifier  {
       message: "Available",
       icon: "@mipmap/ic_launcher",
     );
-    await BackgroundLocation.setAndroidConfiguration(1000);
-    await BackgroundLocation.startLocationService();
-    BackgroundLocation.getLocationUpdates((location) {
-      latitude = location.latitude;
-      longitude = location.longitude;
-    });
-    if (!isTimerRunning ){
-      timer?.cancel();
-      timer = Timer.periodic(
-          Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
-      isTimerRunning = true ;
 
+    try {
+      await BackgroundLocation.checkPermissions().then((status) {
+// Check status here
+        if (status == PermissionStatus.granted) {
+          BackgroundLocation.startLocationService();
+          BackgroundLocation.getLocationUpdates((location) {
+            latitude = location.latitude;
+            longitude = location.longitude;
+            if(isFirstTime){
+              isFirstTime = false;
+              sendPosition();
+            }
+          });
+          if (!isTimerRunning ){
+            timer?.cancel();
+            timer = Timer.periodic(
+                Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
+            isTimerRunning = true ;
+          }
+
+        } else if (status == PermissionStatus.denied) {
+           BackgroundLocation.getPermissions(onGranted: () {
+            BackgroundLocation.startLocationService();
+            BackgroundLocation.getLocationUpdates((location) {
+              latitude = location.latitude;
+              longitude = location.longitude;
+              if(isFirstTime){
+                isFirstTime = false;
+                sendPosition();
+              }
+            });
+
+            if (!isTimerRunning ){
+              timer?.cancel();
+              timer = Timer.periodic(
+                  Duration(seconds: _samplingPeriod), (Timer t) => sendPosition());
+              isTimerRunning = true ;
+            }
+          }, onDenied: () {
+            changeStatus("Busy");
+          });
+        }
+      });
+    } catch (e) {
+      print(e.toString());
     }
+
+
   }
 
   stopBackgroundProcess() {
@@ -95,6 +130,7 @@ class Helper extends User with ChangeNotifier  {
       timer.cancel();
       timer = null;
       isTimerRunning = false ;
+      isFirstTime = true;
     }
     BackgroundLocation.stopLocationService();
   }
@@ -103,7 +139,6 @@ class Helper extends User with ChangeNotifier  {
     status = newValue;
     if (newValue == "Available") {
       requestGps();
-      startBackgroundProcess();
     } else {
       stopBackgroundProcess();
     }
@@ -131,6 +166,8 @@ class Helper extends User with ChangeNotifier  {
       if (result == false) {
         changeStatus("Busy");
       }
+    } else {
+      startBackgroundProcess();
     }
   }
 
